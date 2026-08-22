@@ -192,6 +192,7 @@
     <ul class="nav">
       <li><a href="#home" data-page="home" class="active">🏠 首页</a></li>
       <li><a href="#chat" data-page="chat">💬 私密聊天室 <span class="tag">已上线</span></a></li>
+      <li><a href="suika-re0/index.html">🍉 RE:0 合成大西瓜 <span class="tag">已上线</span></a></li>
       <li><a href="#tools" data-page="tools">🧰 工具箱 <span class="tag">已上线</span></a></li>
       <li><a href="#library" data-page="library">📚 资料库 <span class="tag soon">整理中</span></a></li>
     </ul>
@@ -363,6 +364,8 @@ node server.js
 
   navLinks.forEach(a => {
     a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href') || '';
+      if (!href.startsWith('#')) return; // 外链（如游戏）放行，直接跳转
       e.preventDefault();
       showPage(a.dataset.page);
       history.replaceState(null, '', '#' + a.dataset.page);
