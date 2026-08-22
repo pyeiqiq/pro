@@ -192,7 +192,7 @@
     <ul class="nav">
       <li><a href="#home" data-page="home" class="active">🏠 首页</a></li>
       <li><a href="#chat" data-page="chat">💬 私密聊天室 <span class="tag">已上线</span></a></li>
-      <li><a href="#tools" data-page="tools">🧰 工具箱 <span class="tag soon">打磨中</span></a></li>
+      <li><a href="#tools" data-page="tools">🧰 工具箱 <span class="tag">已上线</span></a></li>
       <li><a href="#library" data-page="library">📚 资料库 <span class="tag soon">整理中</span></a></li>
     </ul>
     <div class="side-foot">
@@ -238,6 +238,13 @@
             <div class="tdesc">把散落的研究、报告和思考整理成册。做产品的人，总要有点存货。</div>
             <span class="status soon">○ 整理中</span>
           </a>
+          <a class="tool" href="suika-re0/index.html">
+            <div class="go">→</div>
+            <div class="ico">🍉</div>
+            <div class="tname">RE:0 合成大西瓜</div>
+            <div class="tdesc">从零开始的异世界生活主题物理合成小游戏：把相同角色合成更大一级，目标是凑出「强欲魔女」。点开即玩。</div>
+            <span class="status">● 已上线</span>
+          </a>
         </div>
 
         <div class="divider"></div>
@@ -250,7 +257,7 @@
               这个工作室没有商业计划，只有一条朴素的原则：<b style="color:var(--gold)">做出来的东西，先得自己用着顺手。</b>
             </p>
             <div class="stat-row">
-              <div class="stat"><div class="n">01</div><div class="l">已上线工具</div></div>
+              <div class="stat"><div class="n">02</div><div class="l">已上线工具</div></div>
               <div class="stat"><div class="n">∞</div><div class="l">折腾热情</div></div>
               <div class="stat"><div class="n">100%</div><div class="l">手工打磨</div></div>
             </div>
@@ -297,11 +304,29 @@ node server.js
       <section class="page" id="page-tools">
         <div class="eyebrow">TOOLBOX</div>
         <h1>🧰 工具箱<br><span class="grad">正在打磨中的小玩意儿</span></h1>
-        <p class="lead">这里将会是一排顺手的小工具。目前工位上还是空的——</p>
-        <div class="wip">
-          <div class="big">🔨</div>
-          <h3>零件还在车床上</h3>
-          <p>下一个工具已经在路上了。保持关注，或者去首页逛逛现有的。</p>
+        <p class="lead">这里是一排顺手的小工具，已经上线一个，其余还在车床上加工。</p>
+        <div class="grid" style="margin-top:30px;">
+          <a class="tool" href="suika-re0/index.html">
+            <div class="go">→</div>
+            <div class="ico">🍉</div>
+            <div class="tname">RE:0 合成大西瓜</div>
+            <div class="tdesc">从零开始的异世界生活主题物理合成小游戏。把相同角色合成更大一级，目标是凑出「强欲魔女」。点开即玩。</div>
+            <span class="status">● 已上线</span>
+          </a>
+          <a class="tool" href="#chat" data-page-link="chat">
+            <div class="go">→</div>
+            <div class="ico">💬</div>
+            <div class="tname">私密聊天室</div>
+            <div class="tdesc">阅后即焚的私密聊天，随机昵称、自定义销毁时长。详见首页或聊天室页面。</div>
+            <span class="status">● 已上线</span>
+          </a>
+          <a class="tool" href="#home" data-page-link="home">
+            <div class="go">→</div>
+            <div class="ico">🔨</div>
+            <div class="tname">更多工具</div>
+            <div class="tdesc">下一个小工具已经在路上了，打磨好会自己跳出来。保持关注。</div>
+            <span class="status soon">○ 打磨中</span>
+          </a>
         </div>
       </section>
 
