@@ -3,178 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stan 的工作室 · 工具与资料</title>
+<title>Stan 工作室 · 工具与资料工作台</title>
 <style>
   :root{
-    --bg:#0b0e1a;
-    --bg2:#12162b;
-    --panel:rgba(255,255,255,.045);
-    --border:rgba(255,255,255,.09);
-    --text:#e9ecf6;
-    --muted:#8b93ad;
-    --gold:#e6b04c;
-    --blue:#5b8cff;
-    --purple:#8a6bff;
+    --bg:#0e1117;
+    --surface:#151a22;
+    --surface-2:#1b212c;
+    --border:rgba(255,255,255,.08);
+    --border-strong:rgba(255,255,255,.16);
+    --text:#e8ebf2;
+    --muted:#99a2b4;
+    --accent:#4f8cff;
+    --accent-2:#6aa0ff;
+    --accent-soft:rgba(79,140,255,.12);
+    --status:#e0a93b;
+    --status-soft:rgba(224,169,59,.14);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-    background:radial-gradient(1100px 700px at 85% -10%,#1b2145 0%,var(--bg) 55%),var(--bg);
+    background:radial-gradient(1000px 560px at 82% -8%,#19223a 0%,transparent 58%),var(--bg);
     color:var(--text);
     min-height:100vh;
     display:flex;
+    -webkit-font-smoothing:antialiased;
   }
 
   /* ===== 侧边栏 ===== */
   .sidebar{
-    width:248px;flex:none;min-height:100vh;
-    background:rgba(255,255,255,.02);
+    width:260px;flex:none;min-height:100vh;
+    background:rgba(255,255,255,.015);
     border-right:1px solid var(--border);
-    padding:26px 18px;
+    padding:28px 18px;
     display:flex;flex-direction:column;
     position:sticky;top:0;height:100vh;
   }
   .logo{
     display:flex;align-items:center;gap:12px;padding:0 8px 22px;
-    border-bottom:1px solid var(--border);margin-bottom:20px;
+    border-bottom:1px solid var(--border);margin-bottom:22px;
   }
   .logo-badge{
-    width:44px;height:44px;flex:none;border-radius:13px;
-    background:linear-gradient(135deg,var(--blue),var(--purple));
+    width:42px;height:42px;flex:none;border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
     display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:20px;color:#fff;
-    box-shadow:0 8px 24px rgba(91,140,255,.35);
+    font-weight:800;font-size:19px;color:#fff;
   }
-  .logo-name{font-weight:700;font-size:17px;letter-spacing:.5px;}
-  .logo-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .logo-name{font-weight:700;font-size:16px;letter-spacing:.4px;}
+  .logo-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.5px;}
 
-  .nav{list-style:none;display:flex;flex-direction:column;gap:4px;}
+  .nav-label{font-size:11px;letter-spacing:1.5px;color:var(--muted);padding:0 10px 10px;text-transform:uppercase;}
+  .nav{list-style:none;display:flex;flex-direction:column;gap:3px;}
   .nav li a{
     display:flex;align-items:center;gap:11px;
-    padding:11px 12px;border-radius:11px;
+    padding:10px 12px;border-radius:10px;
     color:var(--muted);text-decoration:none;font-size:14px;
     border:1px solid transparent;
-    transition:all .2s ease;
+    transition:background .18s ease,color .18s ease;
   }
-  .nav li a:hover{color:var(--text);background:rgba(255,255,255,.05);}
+  .nav li a:hover{color:var(--text);background:rgba(255,255,255,.04);}
   .nav li a.active{
-    color:#fff;background:linear-gradient(135deg,rgba(91,140,255,.2),rgba(138,107,255,.14));
-    border-color:rgba(91,140,255,.35);
+    color:#fff;background:var(--accent-soft);
+    border-color:rgba(79,140,255,.28);
   }
   .nav .tag{
     margin-left:auto;font-size:10px;padding:2px 8px;border-radius:999px;
-    background:rgba(230,176,76,.15);color:var(--gold);border:1px solid rgba(230,176,76,.35);
+    background:var(--status-soft);color:var(--status);border:1px solid rgba(224,169,59,.3);
   }
-  .nav .tag.soon{background:rgba(255,255,255,.06);color:var(--muted);border-color:var(--border);}
+  .nav .tag.soon{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--border);}
 
   .side-foot{
-    margin-top:auto;padding:16px 8px 0;font-size:11px;color:var(--muted);line-height:1.7;
+    margin-top:auto;padding:16px 10px 0;font-size:11px;color:var(--muted);line-height:1.8;
     border-top:1px solid var(--border);
   }
-  .side-foot a{color:var(--gold);text-decoration:none;}
+  .side-foot a{color:var(--accent);text-decoration:none;}
 
   /* ===== 主区 ===== */
-  .main{flex:1;min-width:0;padding:48px 40px 70px;}
-  .wrap{max-width:880px;margin:0 auto;}
+  .main{flex:1;min-width:0;padding:56px 48px 80px;}
+  .wrap{max-width:900px;margin:0 auto;}
 
   .page{display:none;animation:rise .35s ease;}
   .page.active{display:block;}
-  @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
-  .eyebrow{color:var(--gold);font-size:13px;letter-spacing:2px;font-weight:600;margin-bottom:12px;}
-  h1{font-size:40px;line-height:1.25;font-weight:800;letter-spacing:.5px;}
-  h1 .grad{
-    background:linear-gradient(120deg,var(--gold),#f4d08a);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .lead{margin-top:16px;font-size:16px;line-height:1.8;color:#b9c0d4;max-width:640px;}
+  .eyebrow{color:var(--accent);font-size:12px;letter-spacing:3px;font-weight:600;margin-bottom:14px;}
+  h1{font-size:38px;line-height:1.25;font-weight:700;letter-spacing:-.3px;}
+  h1 .sub{display:block;font-size:17px;font-weight:500;color:var(--muted);margin-top:10px;letter-spacing:0;}
+  .lead{margin-top:18px;font-size:16px;line-height:1.85;color:var(--muted);max-width:640px;}
 
   .card{
-    margin-top:26px;padding:22px 24px;border-radius:18px;
-    background:var(--panel);border:1px solid var(--border);
+    margin-top:28px;padding:24px 26px;border-radius:14px;
+    background:var(--surface);border:1px solid var(--border);
   }
   .card h3{font-size:15px;margin-bottom:10px;color:#fff;}
-  .card p{font-size:14px;line-height:1.8;color:#aab1c8;}
+  .card p{font-size:14px;line-height:1.85;color:var(--muted);}
 
   /* 工具网格 */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:30px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:32px;}
   .tool{
-    padding:22px;border-radius:18px;background:var(--panel);
+    padding:22px;border-radius:14px;background:var(--surface);
     border:1px solid var(--border);text-decoration:none;color:inherit;
-    transition:all .22s ease;position:relative;overflow:hidden;
+    transition:transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease;
+    position:relative;display:block;
   }
-  .tool:hover{transform:translateY(-4px);border-color:rgba(230,176,76,.5);background:rgba(255,255,255,.07);}
-  .tool .ico{font-size:28px;margin-bottom:14px;}
-  .tool .tname{font-weight:700;font-size:16px;color:#fff;margin-bottom:6px;}
-  .tool .tdesc{font-size:13px;line-height:1.7;color:var(--muted);}
+  .tool:hover{transform:translateY(-3px);border-color:var(--border-strong);background:var(--surface-2);box-shadow:0 14px 30px rgba(0,0,0,.28);}
+  .tool .ico{
+    width:42px;height:42px;border-radius:11px;margin-bottom:16px;
+    background:var(--accent-soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .tool .tname{font-weight:600;font-size:16px;color:#fff;margin-bottom:7px;}
+  .tool .tdesc{font-size:13px;line-height:1.75;color:var(--muted);}
   .tool .status{
-    display:inline-block;margin-top:14px;font-size:11px;padding:3px 10px;border-radius:999px;
-    background:rgba(230,176,76,.15);color:var(--gold);border:1px solid rgba(230,176,76,.35);
+    display:inline-block;margin-top:16px;font-size:11px;padding:3px 10px;border-radius:999px;
+    background:var(--status-soft);color:var(--status);border:1px solid rgba(224,169,59,.3);
   }
-  .tool .status.soon{background:rgba(255,255,255,.06);color:var(--muted);border-color:var(--border);}
+  .tool .status.soon{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--border);}
   .tool .go{
-    position:absolute;top:20px;right:20px;color:var(--muted);font-size:18px;
-    transition:all .2s ease;opacity:.5;
+    position:absolute;top:20px;right:20px;color:var(--muted);font-size:17px;
+    transition:all .2s ease;opacity:.4;
   }
-  .tool:hover .go{color:var(--gold);opacity:1;transform:translateX(3px);}
+  .tool:hover .go{color:var(--accent);opacity:1;transform:translateX(3px);}
 
-  .divider{height:1px;background:var(--border);margin:34px 0;}
+  .divider{height:1px;background:var(--border);margin:40px 0;}
   .about{display:flex;gap:18px;align-items:flex-start;}
   .about .av{
-    width:52px;height:52px;flex:none;border-radius:15px;font-size:26px;
-    background:linear-gradient(135deg,rgba(91,140,255,.25),rgba(138,107,255,.18));
-    display:flex;align-items:center;justify-content:center;border:1px solid var(--border);
+    width:50px;height:50px;flex:none;border-radius:13px;font-size:22px;
+    background:var(--accent-soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(79,140,255,.22);
   }
 
-  .stat-row{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap;}
-  .stat .n{font-size:22px;font-weight:800;color:var(--gold);}
-  .stat .l{font-size:12px;color:var(--muted);margin-top:2px;}
+  .stat-row{display:flex;gap:34px;margin-top:24px;flex-wrap:wrap;}
+  .stat .n{font-size:22px;font-weight:700;color:#fff;}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:3px;}
 
   /* 聊天室详情 */
-  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px;}
-  .feat .f{padding:14px 16px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid var(--border);}
-  .feat .f .fi{font-size:18px;}
-  .feat .f .fn{font-size:13px;font-weight:600;margin:7px 0 3px;color:#fff;}
-  .feat .f .fd{font-size:12px;color:var(--muted);line-height:1.6;}
+  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:24px;}
+  .feat .f{padding:16px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);}
+  .feat .f .fi{font-size:18px;color:var(--accent);}
+  .feat .f .fn{font-size:13px;font-weight:600;margin:8px 0 4px;color:#fff;}
+  .feat .f .fd{font-size:12px;color:var(--muted);line-height:1.65;}
 
   pre{
-    margin-top:16px;padding:16px 18px;border-radius:13px;
-    background:#0d1020;border:1px solid var(--border);
+    margin-top:16px;padding:16px 18px;border-radius:12px;
+    background:#0c0f16;border:1px solid var(--border);
     font-family:Consolas,Menlo,monospace;font-size:13px;color:#a5f3c0;overflow-x:auto;line-height:1.7;
   }
   .btn{
     display:inline-flex;align-items:center;gap:8px;
-    margin-top:18px;padding:11px 22px;border-radius:12px;
-    background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;
+    margin-top:18px;padding:11px 22px;border-radius:10px;
+    background:var(--accent);color:#fff;
     font-size:14px;font-weight:600;text-decoration:none;
-    box-shadow:0 10px 30px rgba(91,140,255,.3);transition:all .2s ease;
+    transition:background .2s ease,transform .2s ease;
   }
-  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(91,140,255,.42);}
-  .btn.ghost{background:transparent;border:1px solid var(--border);box-shadow:none;color:var(--text);}
-  .btn.ghost:hover{border-color:rgba(230,176,76,.5);color:var(--gold);}
+  .btn:hover{background:var(--accent-2);transform:translateY(-1px);}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent);}
 
   .note{
-    margin-top:20px;padding:14px 18px;border-radius:13px;font-size:13px;line-height:1.8;
-    background:rgba(230,176,76,.07);border:1px solid rgba(230,176,76,.28);color:#d9c190;
+    margin-top:22px;padding:14px 18px;border-radius:12px;font-size:13px;line-height:1.8;
+    background:rgba(79,140,255,.06);border:1px solid rgba(79,140,255,.2);color:#b9c8e8;
   }
-  .wip{
-    text-align:center;padding:90px 20px;color:var(--muted);
-    border:1px dashed var(--border);border-radius:18px;
+  .placeholder{
+    text-align:center;padding:70px 20px;color:var(--muted);
+    border:1px dashed var(--border);border-radius:14px;background:var(--surface);
   }
-  .wip .big{font-size:44px;margin-bottom:16px;}
-  .wip h3{color:var(--text);font-size:20px;margin-bottom:10px;}
+  .placeholder .big{font-size:34px;margin-bottom:14px;opacity:.8;}
+  .placeholder h3{color:var(--text);font-size:18px;font-weight:600;margin-bottom:8px;}
 
   /* 响应式 */
   @media (max-width:860px){
     body{flex-direction:column;}
-    .sidebar{width:100%;min-height:auto;height:auto;position:static;padding:16px;}
-    .logo{padding:0 4px 14px;margin-bottom:12px;}
+    .sidebar{width:100%;min-height:auto;height:auto;position:static;padding:16px 18px;}
+    .logo{padding:0 4px 14px;margin-bottom:14px;}
     .nav{flex-direction:row;flex-wrap:wrap;}
     .nav li a{padding:9px 12px;font-size:13px;}
+    .nav-label{display:none;}
     .side-foot{display:none;}
-    .main{padding:32px 20px 60px;}
-    h1{font-size:30px;}
+    .main{padding:34px 20px 64px;}
+    h1{font-size:28px;}
   }
 </style>
 </head>
@@ -185,21 +192,22 @@
     <div class="logo">
       <div class="logo-badge">S</div>
       <div>
-        <div class="logo-name">Stan 的工作室</div>
-        <div class="logo-sub">工具 · 资料 · 折腾</div>
+        <div class="logo-name">Stan 工作室</div>
+        <div class="logo-sub">工具 · 资料 · 研究</div>
       </div>
     </div>
+    <div class="nav-label">导航</div>
     <ul class="nav">
       <li><a href="#home" data-page="home" class="active">🏠 首页</a></li>
       <li><a href="#chat" data-page="chat">💬 私密聊天室 <span class="tag">已上线</span></a></li>
-      <li><a href="suika-re0/index.html">🍉 RE:0 合成大西瓜 <span class="tag">已上线</span></a></li>
+      <li><a href="suika-re0/index.html">🎮 RE:0 合成大西瓜 <span class="tag">已上线</span></a></li>
       <li><a href="#tools" data-page="tools">🧰 工具箱 <span class="tag">已上线</span></a></li>
       <li><a href="#library" data-page="library">📚 资料库 <span class="tag soon">整理中</span></a></li>
     </ul>
     <div class="side-foot">
-      ⚡ 本仓库托管于
+      本仓库开源托管于
       <a href="https://github.com/pyeiqiq/pro" target="_blank" rel="noopener">GitHub</a><br>
-      © 2026 Stan · 保持好奇，保持折腾
+      © 2026 Stan 工作室
     </div>
   </aside>
 
@@ -209,12 +217,10 @@
 
       <!-- 首页 -->
       <section class="page active" id="page-home">
-        <div class="eyebrow">WELCOME TO THE WORKSHOP</div>
-        <h1>嘿，来都来了。<br>坐，随便逛。<span class="grad">🛠️</span></h1>
+        <div class="eyebrow">STAN 工作室</div>
+        <h1>工具与资料工作台</h1>
         <p class="lead">
-          这里是 <b>Stan 的工作室</b>——白天和产品、模具、生产线较劲，晚上和代码、想法、好奇心较劲。
-          我把脑子里那些「应该有个工具」的念头，一个一个亲手打磨出来，放在这里。
-          有的很正经，有的不太正经，但都挺能打。
+          这里集中托管 Stan 工作室的自研工具、项目资料与产品研究内容。所有内容均以开源形式托管于 GitHub，便于随时访问与分享。
         </p>
 
         <div class="grid">
@@ -222,28 +228,28 @@
             <div class="go">→</div>
             <div class="ico">💬</div>
             <div class="tname">私密聊天室</div>
-            <div class="tdesc">阅后即焚的私密聊天。随机昵称、自定义销毁时长、成员列表、一键清屏——说点"你知我知"的话。</div>
+            <div class="tdesc">临时会话工具，支持阅后即焚、随机昵称与自定义销毁时长，适用于需要短暂留痕的沟通场景。</div>
             <span class="status">● 已上线</span>
           </a>
           <a class="tool" href="#tools" data-page-link="tools">
             <div class="go">→</div>
             <div class="ico">🧰</div>
             <div class="tname">工具箱</div>
-            <div class="tdesc">一堆小工具正在车床上加工。等打磨好了，它们会自己跳出来跟你打招呼。</div>
+            <div class="tdesc">自研小工具集合。已上线工具可在本页查看，更多工具持续开发中。</div>
             <span class="status soon">○ 打磨中</span>
           </a>
           <a class="tool" href="#library" data-page-link="library">
             <div class="go">→</div>
             <div class="ico">📚</div>
             <div class="tname">资料库</div>
-            <div class="tdesc">把散落的研究、报告和思考整理成册。做产品的人，总要有点存货。</div>
+            <div class="tdesc">品牌调研、技术报告与产品研究材料的归档区，内容整理中。</div>
             <span class="status soon">○ 整理中</span>
           </a>
           <a class="tool" href="suika-re0/index.html">
             <div class="go">→</div>
-            <div class="ico">🍉</div>
+            <div class="ico">🎮</div>
             <div class="tname">RE:0 合成大西瓜</div>
-            <div class="tdesc">从零开始的异世界生活主题物理合成小游戏：把相同角色合成更大一级，目标是凑出「强欲魔女」。点开即玩。</div>
+            <div class="tdesc">基于物理引擎的休闲合成游戏，以《Re:从零开始的异世界生活》角色为主题。点击即玩。</div>
             <span class="status">● 已上线</span>
           </a>
         </div>
@@ -252,15 +258,14 @@
         <div class="card about">
           <div class="av">⚙️</div>
           <div>
-            <h3>关于 Stan</h3>
+            <h3>关于本工作室</h3>
             <p>
-              工厂里的产品经理，键盘前的数字工匠。相信「好产品是聊出来的，好工具是改出来的」。
-              这个工作室没有商业计划，只有一条朴素的原则：<b style="color:var(--gold)">做出来的东西，先得自己用着顺手。</b>
+              Stan 工作室由产品经理 Stan 维护，聚焦产品工具开发与研究资料沉淀。内容以开源形式托管，遵循「自用优先、逐步完善」的迭代方式。
             </p>
             <div class="stat-row">
               <div class="stat"><div class="n">02</div><div class="l">已上线工具</div></div>
-              <div class="stat"><div class="n">∞</div><div class="l">折腾热情</div></div>
-              <div class="stat"><div class="n">100%</div><div class="l">手工打磨</div></div>
+              <div class="stat"><div class="n">整理中</div><div class="l">资料库</div></div>
+              <div class="stat"><div class="n">GitHub</div><div class="l">托管平台</div></div>
             </div>
           </div>
         </div>
@@ -268,64 +273,61 @@
 
       <!-- 私密聊天室 -->
       <section class="page" id="page-chat">
-        <div class="eyebrow">TOOL 01 · PRIVATE CHAT</div>
-        <h1>💬 私密聊天室<br><span class="grad">阅后即焚，话不落地</span></h1>
+        <div class="eyebrow">工具 01 · 私密聊天室</div>
+        <h1>私密聊天室<span class="sub">临时会话，阅后即焚</span></h1>
         <p class="lead">
-          一个没有历史记录的聊天室：进来自动分配一个「颜色 + 动物」的随机昵称，
-          每条消息被读到才开始倒计时销毁——3 秒、20 秒、5 分钟，或者干脆「永久」。
-          聊完即焚，谁也翻不了旧账。
+          一个不保留历史记录的聊天室：进入后自动分配随机昵称，每条消息可在被阅读后按设定时长自动销毁。适用于需要短暂留痕的沟通。
         </p>
 
         <div class="feat">
-          <div class="f"><div class="fi">🎭</div><div class="fn">随机昵称</div><div class="fd">进来自动分配，刷新就换一个，不留痕迹。</div></div>
-          <div class="f"><div class="fi">⏱️</div><div class="fn">自定义销毁</div><div class="fd">3秒 / 10秒 / 20秒 / 60秒 / 5分钟 / 永久，发送者说了算。</div></div>
-          <div class="f"><div class="fi">👁️</div><div class="fn">读后才焚</div><div class="fd">消息没被看到就不倒计时，切回来看到才开始销毁。</div></div>
-          <div class="f"><div class="fi">👥</div><div class="fn">成员列表</div><div class="fd">右侧实时显示在线的人，谁进谁出、谁改了名一目了然。</div></div>
-          <div class="f"><div class="fi">🧹</div><div class="fn">一键清屏</div><div class="fd">永久消息攒太多？点一下，只清自己的屏幕，不影响别人。</div></div>
-          <div class="f"><div class="fi">🔗</div><div class="fn">即点即入</div><div class="fd">分享链接一点复制，局域网或隧道公网地址，对方打开就能进。</div></div>
+          <div class="f"><div class="fi">🎭</div><div class="fn">随机昵称</div><div class="fd">进入后自动分配，刷新即更换，不留存身份。</div></div>
+          <div class="f"><div class="fi">⏱️</div><div class="fn">自定义销毁</div><div class="fd">3秒 / 10秒 / 20秒 / 60秒 / 5分钟 / 永久，由发送者决定。</div></div>
+          <div class="f"><div class="fi">👁️</div><div class="fn">读后才焚</div><div class="fd">消息未被查看不计时，回到页面看到后才开始销毁。</div></div>
+          <div class="f"><div class="fi">👥</div><div class="fn">成员列表</div><div class="fd">实时显示在线成员，进出与改名一目了然。</div></div>
+          <div class="f"><div class="fi">🧹</div><div class="fn">一键清屏</div><div class="fd">永久消息过多时，可仅清除本地屏幕，不影响他人。</div></div>
+          <div class="f"><div class="fi">🔗</div><div class="fn">即点即入</div><div class="fd">分享链接一键复制，支持局域网或隧道公网地址。</div></div>
         </div>
 
-        <div class="card" style="margin-top:26px;">
-          <h3>怎么跑起来</h3>
-          <p>这是一个零依赖的 Node 服务（内置 WebSocket，纯手写协议，不装任何包）。</p>
+        <div class="card" style="margin-top:28px;">
+          <h3>运行方式</h3>
+          <p>这是一个零依赖的 Node 服务（内置 WebSocket，纯手写协议，无需安装依赖）。</p>
           <pre>cd private-chat
 node server.js
 # 本机打开 http://localhost:3000
-# 同 WiFi 的朋友用页面里分享的局域网地址</pre>
+# 同 WiFi 设备使用页面内提供的局域网地址</pre>
           <a class="btn" href="https://github.com/pyeiqiq/pro/tree/main/private-chat" target="_blank" rel="noopener">查看源码 ↗</a>
         </div>
 
         <div class="note">
-          💡 技术备注：消息只存在内存里、服务器不落盘；销毁计时在浏览器端完成（IntersectionObserver 判断「真的看到」）。
-          想跨网络用？配个 cloudflared / ngrok 隧道即可，前端已自动支持 wss。
+          技术说明：消息仅存在于内存中，服务端不落盘；销毁计时在浏览器端完成（以 IntersectionObserver 判断消息是否真正被看到）。跨网络使用时，可配置 cloudflared / ngrok 隧道，前端已自动支持 wss。
         </div>
       </section>
 
       <!-- 工具箱 -->
       <section class="page" id="page-tools">
-        <div class="eyebrow">TOOLBOX</div>
-        <h1>🧰 工具箱<br><span class="grad">正在打磨中的小玩意儿</span></h1>
-        <p class="lead">这里是一排顺手的小工具，已经上线一个，其余还在车床上加工。</p>
-        <div class="grid" style="margin-top:30px;">
+        <div class="eyebrow">工具箱</div>
+        <h1>工具箱<span class="sub">自研小工具集合</span></h1>
+        <p class="lead">以下为已上线与规划中的工具。</p>
+        <div class="grid" style="margin-top:32px;">
           <a class="tool" href="suika-re0/index.html">
             <div class="go">→</div>
-            <div class="ico">🍉</div>
+            <div class="ico">🎮</div>
             <div class="tname">RE:0 合成大西瓜</div>
-            <div class="tdesc">从零开始的异世界生活主题物理合成小游戏。把相同角色合成更大一级，目标是凑出「强欲魔女」。点开即玩。</div>
+            <div class="tdesc">基于物理引擎的休闲合成游戏，以《Re:从零开始的异世界生活》角色为主题。点击即玩。</div>
             <span class="status">● 已上线</span>
           </a>
           <a class="tool" href="#chat" data-page-link="chat">
             <div class="go">→</div>
             <div class="ico">💬</div>
             <div class="tname">私密聊天室</div>
-            <div class="tdesc">阅后即焚的私密聊天，随机昵称、自定义销毁时长。详见首页或聊天室页面。</div>
+            <div class="tdesc">阅后即焚的临时会话工具，支持随机昵称与自定义销毁时长。</div>
             <span class="status">● 已上线</span>
           </a>
           <a class="tool" href="#home" data-page-link="home">
             <div class="go">→</div>
-            <div class="ico">🔨</div>
+            <div class="ico">🔧</div>
             <div class="tname">更多工具</div>
-            <div class="tdesc">下一个小工具已经在路上了，打磨好会自己跳出来。保持关注。</div>
+            <div class="tdesc">更多工具正在规划与开发中，将逐步上线。</div>
             <span class="status soon">○ 打磨中</span>
           </a>
         </div>
@@ -333,13 +335,13 @@ node server.js
 
       <!-- 资料库 -->
       <section class="page" id="page-library">
-        <div class="eyebrow">LIBRARY</div>
-        <h1>📚 资料库<br><span class="grad">存货正在归档</span></h1>
-        <p class="lead">品牌调研、技术报告、产品思考……做产品的人，总得有点拿得出手的存货。</p>
-        <div class="wip">
-          <div class="big">📦</div>
-          <h3>书架还在整理</h3>
-          <p>等我把资料分门别类归置好，会一本一本摆上来。</p>
+        <div class="eyebrow">资料库</div>
+        <h1>资料库<span class="sub">研究材料归档中</span></h1>
+        <p class="lead">品牌调研、技术报告与产品研究内容将在此归档。目前模块建设中。</p>
+        <div class="placeholder">
+          <div class="big">📂</div>
+          <h3>资料库正在建设中</h3>
+          <p>内容整理完成后将在此展示。</p>
         </div>
       </section>
 
@@ -355,7 +357,6 @@ node server.js
     navLinks.forEach(a => {
       a.classList.toggle('active', a.dataset.page === id);
     });
-    // 工具卡片上的跳转
     document.querySelectorAll('[data-page-link]').forEach(el => {
       el.classList.toggle('active', false);
     });
