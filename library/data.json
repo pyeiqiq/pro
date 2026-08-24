@@ -24,7 +24,20 @@
       "icon": "box",
       "desc": "产品文档、规格书与内部资料",
       "children": [],
-      "files": []
+      "files": [
+        {
+          "name": "资料库使用说明.html",
+          "file": "files/product-docs/资料库使用说明.html",
+          "type": "code",
+          "size": "2.6 KB",
+          "date": "2026-08-24",
+          "desc": "Stan 工作室资料库模块使用说明（示例文件，可随时删除）",
+          "tags": [
+            "使用说明",
+            "示例"
+          ]
+        }
+      ]
     },
     {
       "id": "meetings",
