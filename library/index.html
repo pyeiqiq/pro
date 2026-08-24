@@ -370,7 +370,7 @@ function fmtSize(b){ if(b>=1048576) return (b/1048576).toFixed(1)+' MB'; if(b>=1
 function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function fileType(name){
   var ext=(name.split('.').pop()||'').toLowerCase();
-  var map={html:'code',htm:'code',pdf:'doc',doc:'doc',docx:'doc',wps:'doc',xls:'sheet',xlsx:'sheet',csv:'sheet',ppt:'slide',pptx:'slide',png:'image',jpg:'image',jpeg:'image',gif:'image',svg:'image',webp:'image',bmp:'image',md:'file',txt:'file',mp4:'file',mov:'file'};
+  var map={html:'code',htm:'code',mhtml:'code',mht:'code',pdf:'doc',doc:'doc',docx:'doc',wps:'doc',xls:'sheet',xlsx:'sheet',csv:'sheet',ppt:'slide',pptx:'slide',png:'image',jpg:'image',jpeg:'image',gif:'image',svg:'image',webp:'image',bmp:'image',md:'file',txt:'file',mp4:'file',mov:'file'};
   var key=map[ext]||'file';
   var label={code:'HTML',doc:'PDF/文档',sheet:'表格',slide:'PPT',image:'图片',file:(ext||'文件').toUpperCase()}[key]||'文件';
   return {key:key,label:label};
@@ -608,6 +608,7 @@ async function commitData(msg){
   var remote;
   try{ remote=await ghGet('library/data.json'); }
   catch(e){ throw new Error('读取 data.json 失败：'+(e.message||e)); }
+  DB.updated=today();
   await ghPut('library/data.json', b64u(JSON.stringify(DB,null,2)), msg, remote.sha);
 }
 
@@ -646,7 +647,7 @@ $('#catForm').addEventListener('submit', async function(e){
   try{
     await commitData('资料库：新增分类 '+name);
     $('#catName').value=''; $('#catDesc').value='';
-    toast('分类「'+name+'」已创建'); load(); refreshCatParent();
+    toast('分类「'+name+'」已创建'); renderAll(); refreshCatParent();
   }catch(err){ toast(err.message,'err'); }
 });
 
@@ -656,7 +657,7 @@ async function renameCat(id){
   var nn=prompt('新名称：', f.node.name);
   if(!nn || nn.trim()==='' || nn.trim()===f.node.name) return;
   f.node.name=nn.trim();
-  try{ await commitData('资料库：重命名分类为 '+nn.trim()); toast('已重命名'); load(); }
+  try{ await commitData('资料库：重命名分类为 '+nn.trim()); toast('已重命名'); renderAll(); }
   catch(err){ toast(err.message,'err'); }
 }
 
@@ -677,7 +678,7 @@ async function deleteCat(id){
     else{ DB.categories.splice(DB.categories.indexOf(f.node),1); }
     await commitData('资料库：删除分类 '+f.node.name);
     if(sel.cat===id || (sel.cat===f.top.id && sel.sub===id)){ sel.cat=null; sel.sub=null; }
-    toast('分类已删除'); load(); refreshCatParent();
+    toast('分类已删除'); renderAll(); refreshCatParent();
   }catch(err){ toast(err.message,'err'); }
 }
 
@@ -705,7 +706,7 @@ async function uploadFile(){
     prog.querySelector('i').style.width='100%';
     setTimeout(function(){ prog.style.display='none'; prog.querySelector('i').style.width='0'; },500);
     fi.value='';
-    toast('已上传「'+file.name+'」'); load();
+    toast('已上传「'+file.name+'」'); renderAll();
   }catch(err){ prog.style.display='none'; toast(err.message,'err'); }
 }
 
@@ -723,14 +724,14 @@ async function deleteFile(filePath){
     await ghDel('library/'+filePath, '资料库：删除 '+loc.f.name, rm.sha);
     var arr=loc.node.files; arr.splice(arr.indexOf(loc.f),1);
     await commitData('资料库：删除 '+loc.f.name);
-    toast('已删除'); load();
+    toast('已删除'); renderAll();
   }catch(err){ toast(err.message,'err'); }
 }
 
 /* ========== 加载 ========== */
 async function load(){
   try{
-    var r=await fetch('data.json?t='+Date.now());
+    var r=await fetch('data.json?t='+Date.now(), {cache:'no-store'});
     if(!r.ok) throw new Error('data.json '+r.status);
     DB=await r.json();
   }catch(e){ DB={updated:'',categories:[]}; }
