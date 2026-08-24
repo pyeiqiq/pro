@@ -124,12 +124,6 @@ h1.game-name{
 .order-card .num{font-size:26px;font-weight:700;color:var(--gold-hi);font-family:Georgia,serif;}
 .order-card .dim{font-size:10px;color:rgba(233,237,246,.5);margin-top:3px;letter-spacing:1px;}
 .order-card .pairs{font-size:9.5px;color:rgba(233,237,246,.34);margin-top:3px;}
-.order-card .core-badge{
-  position:absolute;top:-7px;right:-7px;font-size:8.5px;letter-spacing:.5px;
-  background:linear-gradient(135deg,#f6e27a,#c9a227);color:#221a06;font-weight:700;
-  padding:2.5px 7px;border-radius:999px;display:none;box-shadow:0 2px 10px rgba(212,175,55,.5);
-}
-.order-card.gold .core-badge{display:block;}
 
 .rules{
   display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;margin:4px 0 30px;
@@ -267,7 +261,6 @@ h1.game-name{
       <div class="rule"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><b>点击</b>一个小立方体，寻找相同人物</div>
       <div class="rule"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8"/></svg>再次点击相同图案，<b>连线消除</b></div>
       <div class="rule"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>外层消除后<b>内层立即显现</b>，内外层同名亦可配对</div>
-      <div class="rule"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>奇数阶通关后，中央将<b>显现黄金核心</b></div>
     </div>
 
     <button class="btn" id="startBtn">开 始 游 戏</button>
@@ -547,18 +540,16 @@ function buildBoard(order){
   materialize(cells,n,sharedCellGeo);
   G.cells=cells;G.grid=grid;
   cells.forEach(c=>{cubeGroup.add(c.mesh);cubeGroup.add(c.frame);});
-  // 黄金核心（奇数阶，置于中心）
+  // 黄金核心（全阶通用，置于中心，通关后显现）
   coreAnim=null;coreLive=false;
-  if(order%2===1){
-    coreMat=new THREE.MeshStandardMaterial({
-      color:0xc9a227,metalness:.92,roughness:.16,emissive:0xd4af37,emissiveIntensity:0
-    });
-    coreMesh=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),coreMat);
-    coreMesh.visible=false;cubeGroup.add(coreMesh);
-    coreGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTexture('rgba(255,236,160,.95)','rgba(220,170,60,.4)'),transparent:true,opacity:0,depthWrite:false}));
-    coreGlow.scale.setScalar(1.1);coreGlow.visible=false;cubeGroup.add(coreGlow);
-    coreLight=new THREE.PointLight(0xffd86a,.0,6);coreLight.position.set(0,0,0);cubeGroup.add(coreLight);
-  }
+  coreMat=new THREE.MeshStandardMaterial({
+    color:0xc9a227,metalness:.92,roughness:.16,emissive:0xd4af37,emissiveIntensity:0
+  });
+  coreMesh=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),coreMat);
+  coreMesh.visible=false;cubeGroup.add(coreMesh);
+  coreGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTexture('rgba(255,236,160,.95)','rgba(220,170,60,.4)'),transparent:true,opacity:0,depthWrite:false}));
+  coreGlow.scale.setScalar(1.1);coreGlow.visible=false;cubeGroup.add(coreGlow);
+  coreLight=new THREE.PointLight(0xffd86a,.0,6);coreLight.position.set(0,0,0);cubeGroup.add(coreLight);
   G.pairsTotal=G.pairsLeft=pairs;
   G.clicks=0;G.over=false;G.locked=false;G.selected=null;G.candidates=[];
   updateHUD();
@@ -748,22 +739,17 @@ function shuffleRemaining(auto){
 let coreLive=false;
 function win(){
   G.over=true;G.locked=true;
-  const odd=G.order%2===1;
-  if(odd){
-    sfxCore();
-    coreLive=true;coreAnim={t:0};
-    coreMesh.visible=true;coreGlow.visible=true;
-    setTimeout(()=>{sfxWin();showResult();},2300);
-  }else{
-    sfxWin();
-    setTimeout(showResult,900);
-  }
+  sfxCore();
+  coreLive=true;coreAnim={t:0};
+  if(coreMesh)coreMesh.visible=true;
+  if(coreGlow)coreGlow.visible=true;
+  setTimeout(()=>{sfxWin();showResult();},2300);
 }
 function showResult(){
   const card=$('resultCard');
-  card.classList.toggle('gold',G.order%2===1);
-  $('resultTitle').textContent=G.order%2===1?'黄金核心 显现':'立方解除';
-  $('resultSub').textContent=G.order%2===1?'圣杯的碎片，于立方之核苏醒':'全部配对已消除';
+  card.classList.add('gold');
+  $('resultTitle').textContent='黄金核心 显现';
+  $('resultSub').textContent='圣杯的碎片，于立方之核苏醒';
   $('statTime').textContent=fmtTime((performance.now()-G.timeStart)/1000);
   $('statPairs').textContent=G.pairsTotal;
   $('statOrder').textContent=G.order+' 阶';
@@ -798,7 +784,6 @@ function buildOrderCards(){
     const div=document.createElement('div');
     div.className='order-card'+(n%2?' gold':'')+(n===G.order?' selected':'');
     div.innerHTML=`
-      <div class="core-badge">✦ 黄金核心</div>
       <div class="num">${n}</div>
       <div class="dim">${n}×${n}×${n}</div>
       <div class="pairs">${total} 格 · ${pairs} 对</div>`;
