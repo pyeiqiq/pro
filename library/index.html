@@ -43,13 +43,15 @@
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
   }
   .logo{display:flex;align-items:center;gap:11px;padding:0 8px 18px;border-bottom:1px solid var(--border);margin-bottom:16px;}
-  .logo-badge{width:40px;height:40px;flex:none;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;}
+  .logo-badge{width:40px;height:40px;flex:none;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;}
+  .logo-badge svg{width:22px;height:22px;color:#fff;stroke:#fff;}
   .logo-name{font-weight:700;font-size:15px;letter-spacing:.3px;}
   .logo-sub{font-size:11px;color:var(--faint);margin-top:3px;letter-spacing:.6px;}
   .back{
     display:flex;align-items:center;gap:7px;margin:2px 4px 16px;padding:8px 10px;border-radius:10px;
     color:var(--muted);text-decoration:none;font-size:13px;transition:background .2s ease,color .2s ease;
   }
+  .back svg{width:16px;height:16px;flex:none;}
   .back:hover{background:var(--surface-2);color:var(--accent);}
   .search{position:relative;margin:0 4px 18px;}
   .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--faint);}
@@ -503,16 +505,18 @@ function renderList(){
     var any=false;
     DB.categories.forEach(function(c){
       var items=(c.files||[]).filter(matches);
-      if(q && items.length===0) return;
-      var grp='<div class="group-h"><span class="gn">'+ico(c.icon||'folder',16)+esc(c.name)+'</span><span class="gc">'+items.length+' 份</span></div>';
-      rows+=grp;
-      items.forEach(function(f){ rows+=rowHtml(f,null); any=true; });
+      var childBlocks='';
       (c.children||[]).forEach(function(s){
         var sitems=(s.files||[]).filter(matches);
         if(q && sitems.length===0) return;
-        rows+='<div class="group-h" style="margin-left:18px;"><span class="gn" style="font-weight:600;font-size:13.5px;color:var(--muted);">'+esc(s.name)+'</span><span class="gc">'+sitems.length+' 份</span></div>';
-        sitems.forEach(function(f){ rows+=rowHtml(f,null); any=true; });
+        childBlocks+='<div class="group-h" style="margin-left:18px;"><span class="gn" style="font-weight:600;font-size:13.5px;color:var(--muted);">'+esc(s.name)+'</span><span class="gc">'+sitems.length+' 份</span></div>';
+        sitems.forEach(function(f){ childBlocks+=rowHtml(f,null); any=true; });
       });
+      if(q && items.length===0 && childBlocks==='') return;
+      var grp='<div class="group-h"><span class="gn">'+ico(c.icon||'folder',16)+esc(c.name)+'</span><span class="gc">'+items.length+' 份</span></div>';
+      rows+=grp;
+      items.forEach(function(f){ rows+=rowHtml(f,null); any=true; });
+      rows+=childBlocks;
     });
     if(!any){ showEmpty(q?'没有找到与「'+esc(q)+'」相关的资料':'资料库暂无内容'); return; }
   } else {
