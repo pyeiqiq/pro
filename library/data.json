@@ -8,7 +8,17 @@
       "icon": "search",
       "desc": "竞品品牌、市场与渠道调研报告",
       "children": [],
-      "files": []
+      "files": [
+        {
+          "name": "Ameda（阿美达）品牌深度调研报告.mhtml",
+          "file": "files/brand-research/Ameda（阿美达）品牌深度调研报告.mhtml",
+          "type": "file",
+          "size": "58 KB",
+          "date": "2026-08-24",
+          "desc": "",
+          "tags": []
+        }
+      ]
     },
     {
       "id": "tech-research",
