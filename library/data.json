@@ -1,0 +1,38 @@
+{
+  "updated": "2026-08-24",
+  "note": "资料库数据索引。文件按 library/files/<分类id>/ 存放；请通过资料库页面右上角「管理」或联系维护者修改本文件。",
+  "categories": [
+    {
+      "id": "brand-research",
+      "name": "品牌调研",
+      "icon": "search",
+      "desc": "竞品品牌、市场与渠道调研报告",
+      "children": [],
+      "files": []
+    },
+    {
+      "id": "tech-research",
+      "name": "技术研究",
+      "icon": "flask",
+      "desc": "加热 / 制冷等关键技术专题研究",
+      "children": [],
+      "files": []
+    },
+    {
+      "id": "product-docs",
+      "name": "产品资料",
+      "icon": "box",
+      "desc": "产品文档、规格书与内部资料",
+      "children": [],
+      "files": []
+    },
+    {
+      "id": "meetings",
+      "name": "会议与客户",
+      "icon": "users",
+      "desc": "会议纪要、客户拜访与往来材料",
+      "children": [],
+      "files": []
+    }
+  ]
+}
