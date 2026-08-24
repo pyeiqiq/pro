@@ -476,6 +476,10 @@ function rowHtml(f, pathLabel){
   var tags=(f.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('');
   var delBtn=adminOpen?'<button class="op danger" data-del=\''+esc(f.file)+'\' title="删除"><svg viewBox="0 0 24 24">'+ICONS.trash+'</svg>删除</button>':'';
   var pathTxt=pathLabel?'<span class="meta" style="margin-right:2px;">'+esc(pathLabel)+'</span>':'';
+  var isMhtml=/\.mhtml?$/i.test(f.file);
+  var viewBtn=isMhtml
+    ?'<button class="op" data-view="'+esc(f.file)+'" title="在线查看"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</button>'
+    :'<a class="op" href="'+esc(f.file)+'" target="_blank" rel="noopener" title="查看/打开"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</a>';
   return '<div class="row">'+
     '<div class="ficon">'+ico(ft.key,20)+'</div>'+
     '<div class="finfo">'+
@@ -484,7 +488,7 @@ function rowHtml(f, pathLabel){
       '<div class="fmeta">'+pathTxt+'<span class="tag type">'+ft.label+'</span>'+tags+'<span class="meta">'+esc(f.size||'')+'</span><span class="meta">'+esc(f.date||'')+'</span></div>'+
     '</div>'+
     '<div class="fops">'+
-      '<a class="op" href="'+esc(f.file)+'" target="_blank" rel="noopener" title="查看/打开"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</a>'+
+      viewBtn+
       '<button class="op" data-copy="'+esc(share)+'" title="复制分享链接"><svg viewBox="0 0 24 24">'+ICONS.link+'</svg>复制链接</button>'+
       delBtn+
     '</div>'+
@@ -570,6 +574,9 @@ function bindRows(){
   document.querySelectorAll('[data-copy]').forEach(function(b){
     b.onclick=function(){ copyText(b.getAttribute('data-copy')); };
   });
+  document.querySelectorAll('[data-view]').forEach(function(b){
+    b.onclick=function(){ viewMhtml(b.getAttribute('data-view')); };
+  });
   document.querySelectorAll('[data-del]').forEach(function(b){
     b.onclick=function(){ deleteFile(b.getAttribute('data-del')); };
   });
@@ -579,6 +586,116 @@ function bindRows(){
   document.querySelectorAll('[data-delcat]').forEach(function(b){
     b.onclick=function(){ deleteCat(b.getAttribute('data-delcat')); };
   });
+}
+
+/* ========== MHTML 在线查看 ========== */
+function qpDecode(s){
+  s=s.replace(/=\r?\n/g,'');
+  var bytes=[];
+  for(var i=0;i<s.length;i++){
+    var ch=s[i];
+    if(ch==='=' && i+2<s.length && /^[0-9A-Fa-f]{2}$/.test(s.substr(i+1,2))){
+      bytes.push(parseInt(s.substr(i+1,2),16)); i+=2; continue;
+    }
+    var code=ch.charCodeAt(0);
+    if(code<128){ bytes.push(code); }
+    else{
+      var enc=unescape(encodeURIComponent(ch));
+      for(var j=0;j<enc.length;j++) bytes.push(enc.charCodeAt(j));
+    }
+  }
+  try{ return new TextDecoder('utf-8').decode(new Uint8Array(bytes)); }
+  catch(e){ return s; }
+}
+function b64DecodeUtf8(s){
+  try{
+    var bin=atob(s.replace(/\s/g,''));
+    var bytes=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }catch(e){ return ''; }
+}
+function mhtmlToHtml(text){
+  /* Content-Type 头可能是多行（Chrome 导出格式），放宽匹配 */
+  var bm=text.match(/multipart\/related;[\s\S]*?boundary="?([^";\r\n]+)"?/i);
+  if(!bm) throw new Error('无法识别 MHTML 格式');
+  var boundary=bm[1];
+  var escB=boundary.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  var parts=text.split(new RegExp('--'+escB));
+  var resources={}, mainHtml=null;
+  for(var i=0;i<parts.length;i++){
+    var p=parts[i];
+    var he=p.indexOf('\r\n\r\n');
+    if(he<0) he=p.indexOf('\n\n');
+    if(he<0) continue;
+    var headers=p.slice(0,he);
+    var body=p.slice(he+ (p.indexOf('\r\n\r\n')===he?4:2));
+    var ctM=headers.match(/Content-Type:\s*([^\r\n;]+)/i);
+    var ct=ctM?ctM[1].trim().toLowerCase():'';
+    var cteM=headers.match(/Content-Transfer-Encoding:\s*([^\r\n]+)/i);
+    var cte=cteM?cteM[1].trim().toLowerCase():'';
+    var cidM=headers.match(/Content-ID:\s*<([^>]+)>/i);
+    var cid=cidM?cidM[1].trim():null;
+    var clM=headers.match(/Content-Location:\s*([^\r\n]+)/i);
+    var cl=clM?clM[1].trim():null;
+    if(ct==='text/html'){
+      mainHtml=(cte.indexOf('base64')>-1)?b64DecodeUtf8(body):qpDecode(body);
+      continue;
+    }
+    if(!cid && !cl) continue;
+    var dataUri;
+    if(ct==='text/css'){
+      var cssText=(cte.indexOf('base64')>-1)?b64DecodeUtf8(body):qpDecode(body);
+      dataUri='data:text/css;charset=utf-8,'+encodeURIComponent(cssText);
+    } else if(ct==='text/javascript'||ct==='application/javascript'||ct==='application/json'){
+      var jsText=(cte.indexOf('base64')>-1)?b64DecodeUtf8(body):qpDecode(body);
+      dataUri='data:'+ct+';charset=utf-8,'+encodeURIComponent(jsText);
+    } else if(ct.indexOf('image/')===0||ct.indexOf('font')>-1||ct==='application/font-woff'){
+      var b64=cte.indexOf('base64')>-1?body.replace(/\s/g,''):btoa(unescape(encodeURIComponent(qpDecode(body))));
+      dataUri='data:'+ct+';base64,'+b64;
+    } else {
+      var b64b=cte.indexOf('base64')>-1?body.replace(/\s/g,''):btoa(unescape(encodeURIComponent(qpDecode(body))));
+      dataUri='data:'+ct+';base64,'+b64b;
+    }
+    var keys=[];
+    if(cid){ keys.push(cid); if(cid.toLowerCase().indexOf('cid:')===0) keys.push(cid.slice(4)); }
+    if(cl){ keys.push(cl); if(cl.toLowerCase().indexOf('cid:')===0) keys.push(cl.slice(4)); }
+    keys.forEach(function(k){
+      resources[k]=dataUri; resources[k.toLowerCase()]=dataUri;
+    });
+  }
+  if(!mainHtml) throw new Error('MHTML 中未找到 HTML 内容');
+  var out=mainHtml.replace(/cid:([^"'\s\)>]+)/gi, function(m,k){
+    return resources[k]||resources[k.toLowerCase()]||m;
+  });
+  Object.keys(resources).forEach(function(k){
+    if(k.indexOf('http')===0||k.indexOf('cid:')===0) return;
+    out=out.replace(new RegExp('src="'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'"','g'),'src="'+resources[k]+'"');
+    out=out.replace(new RegExp("src='"+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+"'",'g'),"src='"+resources[k]+"'");
+    out=out.replace(new RegExp('href="'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'"','g'),'href="'+resources[k]+'"');
+    out=out.replace(new RegExp("href='"+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+"'",'g'),"href='"+resources[k]+"'");
+  });
+  return out;
+}
+function viewMhtml(filePath){
+  var url=(SITE+filePath).split('#')[0];
+  var w=window.open('','_blank');
+  if(!w){ toast('浏览器拦截了弹窗，请允许后重试','err'); return; }
+  w.document.write('<style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#646b78;background:#f4f6f9;}p{font-size:14px;}</style><p>正在解析 MHTML 文件，请稍候…</p>');
+  fetch(url,{cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('文件读取失败 ('+r.status+')'); return r.text(); })
+    .then(function(text){
+      var html=mhtmlToHtml(text);
+      var doc=w.document; doc.open();
+      doc.write(html);
+      doc.close();
+      doc.title=doc.title||'MHTML 查看';
+    })
+    .catch(function(e){
+      w.document.write('<p>解析失败：'+esc(e.message||e)+'</p>');
+      toast('MHTML 解析失败：'+(e.message||e),'err');
+      w.location.href=url; /* 兜底：直接打开（下载） */
+    });
 }
 
 /* ========== GitHub API ========== */
