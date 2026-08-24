@@ -401,6 +401,17 @@ function findCat(catId, subId){
   }
   return null;
 }
+function findAnyCat(id){
+  for(var i=0;i<DB.categories.length;i++){
+    var c=DB.categories[i];
+    if(c.id===id) return {node:c, top:c, isChild:false};
+    for(var j=0;j<(c.children||[]).length;j++){
+      var s=c.children[j];
+      if(s.id===id) return {node:s, top:c, isChild:true};
+    }
+  }
+  return null;
+}
 function totalFiles(){ var n=0; DB.categories.forEach(function(c){ n+=(c.files||[]).length; (c.children||[]).forEach(function(s){n+=(s.files||[]).length;}); }); return n; }
 function countOf(c){ return (c.files||[]).length + (c.children||[]).reduce(function(n,s){return n+(s.files||[]).length;},0); }
 
@@ -637,7 +648,7 @@ $('#catForm').addEventListener('submit', async function(e){
 
 async function renameCat(id){
   if(!needToken()) return;
-  var f=findCat(id,null); if(!f){ toast('分类不存在','err'); return; }
+  var f=findAnyCat(id); if(!f){ toast('分类不存在','err'); return; }
   var nn=prompt('新名称：', f.node.name);
   if(!nn || nn.trim()==='' || nn.trim()===f.node.name) return;
   f.node.name=nn.trim();
@@ -647,9 +658,9 @@ async function renameCat(id){
 
 async function deleteCat(id){
   if(!needToken()) return;
-  var f=findCat(id,null); if(!f){ toast('分类不存在','err'); return; }
+  var f=findAnyCat(id); if(!f){ toast('分类不存在','err'); return; }
   var files=[].concat(f.node.files||[]);
-  (f.node.children||[]).forEach(function(s){ files=files.concat(s.files||[]); });
+  if(!f.isChild){ (f.node.children||[]).forEach(function(s){ files=files.concat(s.files||[]); }); }
   var msg='删除分类「'+f.node.name+'」？';
   if(files.length>0) msg+='\n该分类下有 '+files.length+' 份资料，将一并从仓库删除，不可恢复！';
   if(!confirm(msg)) return;
@@ -658,11 +669,10 @@ async function deleteCat(id){
       var rm=await ghGet('library/'+files[i].file);
       await ghDel('library/'+files[i].file, '资料库：删除 '+files[i].name, rm.sha);
     }
-    if(f.node.children && f.node.children.length){} // 子分类随顶级删除
-    var idx=DB.categories.indexOf(f.node);
-    if(idx>-1) DB.categories.splice(idx,1);
+    if(f.isChild){ var arr=f.top.children; arr.splice(arr.indexOf(f.node),1); }
+    else{ DB.categories.splice(DB.categories.indexOf(f.node),1); }
     await commitData('资料库：删除分类 '+f.node.name);
-    if(sel.cat===id){ sel.cat=null; sel.sub=null; }
+    if(sel.cat===id || (sel.cat===f.top.id && sel.sub===id)){ sel.cat=null; sel.sub=null; }
     toast('分类已删除'); load(); refreshCatParent();
   }catch(err){ toast(err.message,'err'); }
 }
@@ -744,6 +754,8 @@ function route(){
     var parts=h.slice(4).split('/');
     sel.cat=decodeURIComponent(parts[0])||null;
     sel.sub=decodeURIComponent(parts[1]||'')||null;
+  } else if(h===''){
+    sel.cat=null; sel.sub=null;
   }
 }
 window.addEventListener('hashchange', function(){ route(); renderAll(); });
