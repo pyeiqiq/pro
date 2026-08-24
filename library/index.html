@@ -622,7 +622,10 @@ function mhtmlToHtml(text){
   var boundary=bm[1];
   var escB=boundary.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   var parts=text.split(new RegExp('--'+escB));
-  var resources={}, mainHtml=null;
+
+  /* 有些 MHTML 会保存多个 text/html 分段（主页面+iframe/frame）。
+     主文档几乎一定是内容最多的那一段，因此取最长的 text/html 分段。 */
+  var resources={}, htmlParts=[];
   for(var i=0;i<parts.length;i++){
     var p=parts[i];
     var he=p.indexOf('\r\n\r\n');
@@ -639,7 +642,8 @@ function mhtmlToHtml(text){
     var clM=headers.match(/Content-Location:\s*([^\r\n]+)/i);
     var cl=clM?clM[1].trim():null;
     if(ct==='text/html'){
-      mainHtml=(cte.indexOf('base64')>-1)?b64DecodeUtf8(body):qpDecode(body);
+      var html=(cte.indexOf('base64')>-1)?b64DecodeUtf8(body):qpDecode(body);
+      htmlParts.push({loc:cl||'', html:html, len:html.length});
       continue;
     }
     if(!cid && !cl) continue;
@@ -664,7 +668,9 @@ function mhtmlToHtml(text){
       resources[k]=dataUri; resources[k.toLowerCase()]=dataUri;
     });
   }
-  if(!mainHtml) throw new Error('MHTML 中未找到 HTML 内容');
+  if(!htmlParts.length) throw new Error('MHTML 中未找到 HTML 内容');
+  htmlParts.sort(function(a,b){ return b.len-a.len; });
+  var mainHtml=htmlParts[0].html;
   var out=mainHtml.replace(/cid:([^"'\s\)>]+)/gi, function(m,k){
     return resources[k]||resources[k.toLowerCase()]||m;
   });
