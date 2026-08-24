@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fate Cube · 型月立方连连看</title>
+<style>
+:root{
+  --gold:#d4af37; --gold-hi:#f0d678; --gold-deep:#a8842c;
+  --blue:#16213e; --blue-2:#1a2a52; --ink:#e9edf6;
+  --panel:rgba(13,18,38,.72); --line:rgba(212,175,55,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  background:radial-gradient(ellipse at 50% 18%, #182350 0%, #0d1226 52%, #090d1c 100%);
+  color:var(--ink);
+  user-select:none; -webkit-user-select:none;
+}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#gameCanvas{position:fixed;inset:0;z-index:1;width:100%;height:100%;display:block;touch-action:none;cursor:grab;}
+#gameCanvas.grabbing{cursor:grabbing;}
+
+/* ===== HUD ===== */
+#hud{
+  position:fixed;top:0;left:0;right:0;z-index:5;pointer-events:none;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;gap:12px;
+  transition:opacity .4s;
+}
+#hud.hidden{opacity:0;}
+.hud-left{display:flex;align-items:center;gap:12px;pointer-events:auto;}
+.hud-info{line-height:1.35;}
+.hud-title{font-size:13px;font-weight:600;color:var(--gold-hi);letter-spacing:1px;font-family:Georgia,'Times New Roman','STSong',serif;}
+.hud-pairs{font-size:11.5px;color:rgba(233,237,246,.62);}
+.hud-pairs b{color:var(--gold-hi);font-size:13px;}
+.hud-right{display:flex;align-items:center;gap:8px;pointer-events:auto;}
+.timer{
+  font-family:'Consolas',monospace;font-size:15px;color:rgba(233,237,246,.85);
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;
+  padding:7px 12px;letter-spacing:.5px;margin-right:2px;
+}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold-hi);transition:transform .15s,background .2s;
+  pointer-events:auto;
+}
+.icon-btn:hover{transform:translateY(-2px);background:rgba(212,175,55,.16);}
+.icon-btn:active{transform:scale(.94);}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.icon-btn .badge{
+  position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;
+  background:#e0483f;border:2px solid #0d1226;display:none;
+}
+.icon-btn.pulse{animation:btnPulse 1.2s infinite;}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 0 0 rgba(224,72,63,.55);}50%{box-shadow:0 0 0 7px rgba(224,72,63,0);}}
+
+#selInfo{
+  position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:5;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:7px 20px;font-size:12.5px;color:var(--ink);letter-spacing:.4px;
+  backdrop-filter:blur(8px);transition:opacity .35s,top .35s;opacity:0;pointer-events:none;
+  white-space:nowrap;
+}
+#selInfo.show{opacity:1;top:62px;}
+#selInfo b{color:var(--gold-hi);}
+
+#footHint{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:4;
+  font-size:11.5px;color:rgba(233,237,246,.42);letter-spacing:.6px;text-align:center;
+  background:rgba(13,18,38,.45);padding:6px 16px;border-radius:999px;
+  border:1px solid rgba(212,175,55,.12);white-space:nowrap;
+}
+
+/* ===== Toast ===== */
+#toast{
+  position:fixed;top:46%;left:50%;transform:translate(-50%,-50%);z-index:40;
+  background:rgba(10,14,30,.9);border:1px solid var(--line);border-radius:12px;
+  padding:12px 24px;font-size:14px;color:var(--ink);letter-spacing:.5px;
+  opacity:0;transition:opacity .3s;pointer-events:none;text-align:center;
+  backdrop-filter:blur(8px);box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+#toast.show{opacity:1;}
+#toast.warn{border-color:rgba(224,72,63,.55);color:#ffb4ae;}
+
+/* ===== 开始界面 ===== */
+#startScreen{
+  position:fixed;inset:0;z-index:20;overflow-y:auto;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 12%, #1b2858 0%, #0d1226 55%, #090d1c 100%);
+  transition:opacity .45s;
+}
+#startScreen.hide{opacity:0;pointer-events:none;}
+.start-box{width:min(880px,94vw);padding:44px 30px 56px;text-align:center;animation:rise .6s cubic-bezier(.22,.61,.36,1);}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.logo{
+  font-family:Georgia,'Times New Roman','STSong',serif;
+  font-size:15px;letter-spacing:12px;color:rgba(212,175,55,.75);margin-bottom:8px;text-indent:12px;
+}
+h1.game-name{
+  font-family:Georgia,'Times New Roman','STSong','SimSun',serif;
+  font-size:clamp(34px,5.4vw,52px);font-weight:700;letter-spacing:3px;line-height:1.15;
+  background:linear-gradient(180deg,#f6e27a 0%,#d4af37 55%,#a8842c 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 18px rgba(212,175,55,.28));
+}
+.subtitle-en{font-size:12px;color:rgba(233,237,246,.45);letter-spacing:4px;margin:10px 0 34px;}
+.subtitle-en span{color:var(--gold);}
+
+.difficulty-label{font-size:12px;letter-spacing:3px;color:rgba(233,237,246,.55);margin-bottom:16px;}
+.order-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:26px;}
+.order-card{
+  background:rgba(255,255,255,.045);border:1px solid rgba(212,175,55,.2);border-radius:14px;
+  padding:14px 6px 12px;cursor:pointer;position:relative;transition:all .22s;
+}
+.order-card:hover{transform:translateY(-3px);border-color:rgba(212,175,55,.6);background:rgba(212,175,55,.08);}
+.order-card.selected{
+  border-color:var(--gold);background:linear-gradient(160deg,rgba(212,175,55,.2),rgba(212,175,55,.06));
+  box-shadow:0 6px 24px rgba(212,175,55,.22);
+}
+.order-card .num{font-size:26px;font-weight:700;color:var(--gold-hi);font-family:Georgia,serif;}
+.order-card .dim{font-size:10px;color:rgba(233,237,246,.5);margin-top:3px;letter-spacing:1px;}
+.order-card .pairs{font-size:9.5px;color:rgba(233,237,246,.34);margin-top:3px;}
+.order-card .core-badge{
+  position:absolute;top:-7px;right:-7px;font-size:8.5px;letter-spacing:.5px;
+  background:linear-gradient(135deg,#f6e27a,#c9a227);color:#221a06;font-weight:700;
+  padding:2.5px 7px;border-radius:999px;display:none;box-shadow:0 2px 10px rgba(212,175,55,.5);
+}
+.order-card.gold .core-badge{display:block;}
+
+.rules{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;margin:4px 0 30px;
+}
+.rule{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(233,237,246,.6);letter-spacing:.3px;}
+.rule svg{width:15px;height:15px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+.rule b{color:var(--gold-hi);font-weight:600;}
+
+.btn{
+  font-family:inherit;border:none;cursor:pointer;border-radius:999px;
+  padding:14px 52px;font-size:16px;font-weight:700;letter-spacing:3px;
+  background:linear-gradient(135deg,#f0d678 0%,#c9a227 55%,#a8842c 100%);
+  color:#1c1420;box-shadow:0 8px 30px rgba(212,175,55,.35);
+  transition:transform .18s,box-shadow .18s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(212,175,55,.5);}
+.btn:active{transform:scale(.97);}
+.btn.ghost{
+  background:transparent;border:1px solid var(--line);color:var(--gold-hi);
+  box-shadow:none;padding:12px 34px;font-size:14px;letter-spacing:2px;
+}
+.btn.ghost:hover{background:rgba(212,175,55,.1);}
+
+/* ===== 结算 ===== */
+#resultModal{
+  position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  background:rgba(6,9,20,.78);backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity .45s;
+}
+#resultModal.show{opacity:1;pointer-events:auto;}
+.modal-card{
+  width:min(420px,92vw);text-align:center;padding:40px 34px 36px;border-radius:22px;
+  background:linear-gradient(165deg,rgba(26,34,66,.96),rgba(13,18,38,.96));
+  border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(212,175,55,.12);
+  animation:rise .5s cubic-bezier(.22,.61,.36,1);
+}
+.modal-card .core{margin:0 auto 20px;display:none;}
+.modal-card.gold .core{display:block;}
+.core{width:70px;height:70px;position:relative;}
+.core .gem{
+  position:absolute;inset:12px;transform:rotate(45deg);border-radius:8px;
+  background:linear-gradient(135deg,#fff3b0 0%,#f0d678 35%,#c9a227 70%,#8f6d1e 100%);
+  box-shadow:0 0 34px rgba(240,214,120,.85),inset 0 2px 6px rgba(255,255,255,.55);
+  animation:gemSpin 2.4s ease-in-out infinite;
+}
+.core .ring{position:absolute;inset:0;border:1.5px solid rgba(212,175,55,.5);border-radius:50%;animation:ringPulse 2s infinite;}
+.core .ring.r2{animation-delay:.5s;border-color:rgba(212,175,55,.25);}
+@keyframes gemSpin{
+  0%,100%{transform:rotate(45deg) scale(1);}
+  50%{transform:rotate(45deg) scale(1.1);}
+}
+@keyframes ringPulse{
+  0%{transform:scale(.7);opacity:0;}
+  35%{opacity:1;}
+  100%{transform:scale(1.45);opacity:0;}
+}
+.modal-card h2{
+  font-family:Georgia,'Times New Roman','STSong',serif;font-size:26px;letter-spacing:2px;
+  background:linear-gradient(180deg,#f6e27a,#d4af37);-webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:8px;
+}
+.modal-card .sub{font-size:12px;color:rgba(233,237,246,.5);letter-spacing:2px;margin-bottom:26px;}
+.stats{display:flex;justify-content:center;gap:14px;margin-bottom:30px;flex-wrap:wrap;}
+.stat{background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.16);border-radius:14px;padding:13px 22px;min-width:96px;}
+.stat .v{font-size:22px;font-weight:700;color:var(--gold-hi);font-family:Georgia,serif;}
+.stat .l{font-size:10.5px;color:rgba(233,237,246,.5);margin-top:4px;letter-spacing:1.5px;}
+.modal-btns{display:flex;gap:12px;justify-content:center;}
+
+@media (max-width:640px){
+  .order-grid{grid-template-columns:repeat(4,1fr);gap:8px;}
+  .start-box{padding:34px 14px 44px;}
+  .hud-title{font-size:12px;}
+  .timer{font-size:13px;padding:6px 9px;}
+  .icon-btn{width:34px;height:34px;}
+  #footHint{font-size:10px;padding:5px 12px;white-space:normal;width:90%;}
+  .rules{gap:8px 14px;}
+  .rule{font-size:11px;}
+}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<canvas id="gameCanvas"></canvas>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-left">
+    <button class="icon-btn" id="backBtn" title="返回难度选择">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="hud-info">
+      <div class="hud-title" id="hudTitle">5 阶 · Fate Cube</div>
+      <div class="hud-pairs">剩余 <b id="pairsLeft">0</b> / <span id="pairsTotal">0</span> 对</div>
+    </div>
+  </div>
+  <div class="hud-right">
+    <div class="timer" id="timer">00:00</div>
+    <button class="icon-btn" id="hintBtn" title="提示一对可消除的图案">
+      <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.8.6 1.5 1.6 1.5 2.6h4c0-1 .7-2 1.5-2.6A6 6 0 0 0 12 3z"/></svg>
+    </button>
+    <button class="icon-btn" id="shuffleBtn" title="重新洗牌">
+      <svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+    </button>
+    <button class="icon-btn" id="soundBtn" title="声音开关">
+      <svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+    </button>
+    <button class="icon-btn" id="restartBtn" title="重新开始本局">
+      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+    </button>
+  </div>
+</div>
+<div id="selInfo">当前选中：<b id="selName">—</b></div>
+<div id="footHint">拖动旋转立方体（360° 自由旋转） · 点击小立方体 · 外层消除后内层显现，同名（含内外层）即可配对消除</div>
+
+<!-- 开始界面 -->
+<div id="startScreen">
+  <div class="start-box">
+    <div class="logo">FATE / TYPE-MOON</div>
+    <h1 class="game-name">型月立方连连看</h1>
+    <div class="subtitle-en">FATE CUBE LINK &nbsp;·&nbsp; 3D <span>PAIR</span> PUZZLE</div>
+
+    <div class="difficulty-label">选 择 阶 数</div>
+    <div class="order-grid" id="orderGrid"></div>
+
+    <div class="rules">
+      <div class="rule"><svg viewBox="0 0 24 24"><path d="M8 5l-3 3 3 3"/><path d="M3 8h8a5 5 0 0 1 5 5v6"/></svg>按住左键<b>拖动旋转</b>立方体（360° 自由旋转）</div>
+      <div class="rule"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><b>点击</b>一个小立方体，寻找相同人物</div>
+      <div class="rule"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8"/></svg>再次点击相同图案，<b>连线消除</b></div>
+      <div class="rule"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>外层消除后<b>内层立即显现</b>，内外层同名亦可配对</div>
+      <div class="rule"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>奇数阶通关后，中央将<b>显现黄金核心</b></div>
+    </div>
+
+    <button class="btn" id="startBtn">开 始 游 戏</button>
+  </div>
+</div>
+
+<!-- 结算 -->
+<div id="resultModal">
+  <div class="modal-card" id="resultCard">
+    <div class="core">
+      <div class="ring"></div><div class="ring r2"></div>
+      <div class="gem"></div>
+    </div>
+    <h2 id="resultTitle">立方解除</h2>
+    <div class="sub" id="resultSub">通关完成</div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="statTime">00:00</div><div class="l">用时</div></div>
+      <div class="stat"><div class="v" id="statPairs">0</div><div class="l">消除对数</div></div>
+      <div class="stat"><div class="v" id="statOrder">5</div><div class="l">立方阶数</div></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" id="againBtn" style="padding:12px 30px;font-size:14px;">再来一局</button>
+      <button class="btn ghost" id="changeBtn">更换难度</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ==================== 型月人物池 ==================== */
+const HEROES = [
+  {n:'Saber',c:'阿尔托莉雅',col:'#3b6cb5'},{n:'Archer',c:'卫宫士郎',col:'#c0553f'},
+  {n:'Rin',c:'远坂凛',col:'#b03a3a'},{n:'Sakura',c:'间桐樱',col:'#9a4f8f'},
+  {n:'Ilya',c:'伊莉雅',col:'#d89ac0'},{n:'Shirou',c:'卫宫士郎',col:'#8a7a5a'},
+  {n:'Lancer',c:'库丘林',col:'#3f9f9f'},{n:'Caster',c:'美狄亚',col:'#7d5ba6'},
+  {n:'Rider',c:'美杜莎',col:'#4f9f6a'},{n:'Berserker',c:'赫拉克勒斯',col:'#c08a3a'},
+  {n:'Assassin',c:'佐佐木小次郎',col:'#7a7a82'},{n:'Gilgamesh',c:'吉尔伽美什',col:'#c9a227'},
+  {n:'Nero',c:'尼禄',col:'#c93a3a'},{n:'Tamamo',c:'玉藻前',col:'#d9a05b'},
+  {n:'Scathach',c:'斯卡哈',col:'#6a4fa8'},{n:'Ishtar',c:'伊什塔尔',col:'#c08a4f'},
+  {n:'Ereshkigal',c:'艾蕾',col:'#6a8fc0'},{n:'Mordred',c:'莫德雷德',col:'#b0392f'},
+  {n:'Jeanne',c:'贞德',col:'#c9c2b5'},{n:'Karna',c:'迦尔纳',col:'#d47a2f'},
+  {n:'Arjuna',c:'阿周那',col:'#3a6a9f'},{n:'Musashi',c:'宫本武藏',col:'#4a6a8a'},
+  {n:'Okita',c:'冲田总司',col:'#c9cdd8'},{n:'Nobunaga',c:'织田信长',col:'#8a2f2f'},
+  {n:'BB',c:'BB',col:'#b9a8d8'},{n:'Meltryllis',c:'溶解莉莉丝',col:'#d05f9f'},
+  {n:'Kama',c:'迦摩',col:'#4f8f8f'},{n:'Koyanskaya',c:'高扬斯卡娅',col:'#a07040'},
+  {n:'Mash',c:'玛修',col:'#6a5a9f'},{n:'Astolfo',c:'阿斯托尔福',col:'#e8a0c0'},
+  {n:'Achilles',c:'阿喀琉斯',col:'#d0b040'},{n:'Siegfried',c:'齐格飞',col:'#9f5a3f'},
+  {n:'Semiramis',c:'塞弥拉弥斯',col:'#8f4f6a'},{n:'Hassan',c:'王哈桑',col:'#4a4a55'},
+  {n:'Gorgon',c:'戈耳工',col:'#3f9f6a'},{n:'Quetzal',c:'魁札尔科亚特尔',col:'#4f9fb0'},
+  {n:'Euryale',c:'尤瑞艾莉',col:'#a0b0d0'},{n:'Stheno',c:'斯忒诺',col:'#c0b0d0'},
+  {n:'Jalter',c:'黑贞',col:'#3a3a4a'},{n:'Iskandar',c:'伊斯坎达尔',col:'#7a5a3a'},
+];
+const heroMap = {}; HEROES.forEach(h=>heroMap[h.c]=h);
+
+/* ==================== 游戏状态 ==================== */
+const G = {
+  order: 5, cells: [], selected: null, candidates: [],
+  pairsTotal: 0, pairsLeft: 0, clicks: 0,
+  rotating: false, locked: false, over: false,
+  timeStart: 0, timerTick: null,
+  soundOn: true, started: false,
+};
+
+/* ==================== 工具 ==================== */
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function hexToRgb(hex){const n=parseInt(hex.slice(1),16);return[(n>>16)&255,(n>>8)&255,n&255];}
+function mix(c1,c2,r){const a=hexToRgb(c1),b=hexToRgb(c2);return`rgb(${(a[0]+(b[0]-a[0])*r)|0},${(a[1]+(b[1]-a[1])*r)|0},${(a[2]+(b[2]-a[2])*r)|0})`;}
+function lighten(hex,r){return mix(hex,'#ffffff',r);}
+function darken(hex,r){return mix(hex,'#101426',r);}
+
+/* ==================== 音效 ==================== */
+let actx=null;
+function ensureAudio(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(actx&&actx.state==='suspended')actx.resume();}
+function beep(freq,dur,type='sine',vol=.18,delay=0,slide=0){
+  if(!G.soundOn||!actx)return;
+  const t=actx.currentTime+delay;
+  const o=actx.createOscillator(),g=actx.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(vol,t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(actx.destination);
+  o.start(t);o.stop(t+dur+0.05);
+}
+const sfxClick=()=>beep(520,.06,'triangle',.12);
+const sfxSelect=()=>{beep(620,.07,'sine',.16);beep(900,.1,'sine',.14,.06);};
+const sfxMatch=()=>[523,659,784,1047].forEach((f,i)=>beep(f,.11,'sine',.17,i*.065));
+const sfxEliminate=()=>{beep(1150,.13,'sine',.17,0,-500);beep(1600,.2,'sine',.13,.05,-300);};
+const sfxError=()=>beep(175,.2,'sawtooth',.1);
+const sfxWin=()=>[523,659,784,1047,1319].forEach((f,i)=>beep(f,.28,'sine',.2,i*.11));
+const sfxCore=()=>{beep(1568,.55,'sine',.2);beep(2093,.7,'sine',.14,.12);beep(2637,.8,'sine',.1,.3);};
+
+/* ==================== DOM ==================== */
+const $=id=>document.getElementById(id);
+const canvas=$('gameCanvas'), renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setClearColor(0x000000,0);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.12;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,.1,60);
+camera.position.set(3.4,2.6,4.5);camera.lookAt(0,0,0);
+
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.55,.42,.58);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+scene.add(new THREE.AmbientLight(0xffffff,.72));
+const dirLight=new THREE.DirectionalLight(0xffffff,1.15);dirLight.position.set(4,6,7);scene.add(dirLight);
+const warm=new THREE.PointLight(0xd8b25a,.55,20);warm.position.set(-3,-4,3);scene.add(warm);
+
+const cubeGroup=new THREE.Group();scene.add(cubeGroup);
+scene.background=new THREE.Color(0x0d1226);
+const clock=new THREE.Clock();
+
+/* 3D 星空背景（作为 WebGL 场景背景，不依赖 canvas alpha 合成） */
+function createStarfield(){
+  const geo=new THREE.BufferGeometry();
+  const N=480,pos=[],col=[];
+  for(let i=0;i<N;i++){
+    const r=20+Math.random()*18;
+    const u=Math.random()*Math.PI*2;
+    const v=Math.acos(2*Math.random()-1);
+    const x=r*Math.sin(v)*Math.cos(u);
+    const y=r*Math.sin(v)*Math.sin(u);
+    const z=r*Math.cos(v);
+    pos.push(x,y,z);
+    const gold=Math.random()<.18;
+    const c=new THREE.Color(gold?0xf0d678:0xc8d4f0);
+    col.push(c.r,c.g,c.b);
+  }
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  const mat=new THREE.PointsMaterial({size:.09,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
+  const pts=new THREE.Points(geo,mat);pts.name='stars3d';scene.add(pts);
+}
+
+/* ==================== 纹理 ==================== */
+const textureCache={}, radialCache={};
+function heroTexture(hero){
+  if(textureCache[hero.c])return textureCache[hero.c];
+  const S=512,cv=document.createElement('canvas');cv.width=cv.height=S;
+  const x=cv.getContext('2d');
+  // 深色 Navy 底，配合整体深蓝金主题，避免 bloom 过曝
+  x.beginPath();x.moveTo(46,10);x.arcTo(S-10,10,S-10,S-10,36);x.arcTo(S-10,S-10,S-10,S-10,36);
+  x.arcTo(10,S-10,10,S-10,36);x.arcTo(10,10,S-10,10,36);x.closePath();
+  x.fillStyle='#0d1226';x.fill();
+  x.lineWidth=7;x.strokeStyle='rgba(212,175,55,.55)';x.stroke();
+  // 顶部英雄色条
+  x.save();x.beginPath();x.rect(10,10,S-20,44);x.clip();
+  x.fillStyle=hero.col;x.globalAlpha=.82;x.fillRect(10,10,S-20,44);x.globalAlpha=1;x.restore();
+  x.fillStyle='rgba(0,0,0,.45)';
+  x.font='bold 22px Georgia,serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('FATE',S/2,32);
+  // 顶部小标
+  x.fillStyle='rgba(0,0,0,.45)';
+  x.font='bold 22px Georgia,serif';x.textAlign='center';x.textBaseline='middle';
+  x.fillText('命运',S/2,32);
+  // 中央人物名（中文）
+  let fs=150;
+  x.font=`bold ${fs}px Georgia,'Segoe UI',sans-serif`;
+  while(x.measureText(hero.c).width>S*0.9&&fs>40){fs-=8;x.font=`bold ${fs}px Georgia,'Segoe UI',sans-serif`;}
+  x.fillStyle='#e9edf6';
+  x.textAlign='center';x.textBaseline='middle';
+  x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=10;
+  x.fillText(hero.c,S/2,S/2+22);
+  x.shadowBlur=0;
+  // 底部细饰线 + 色点
+  x.strokeStyle=hero.col;x.lineWidth=6;x.lineCap='round';
+  x.beginPath();x.moveTo(S*0.24,S-42);x.lineTo(S*0.76,S-42);x.stroke();
+  x.fillStyle=hero.col;
+  x.beginPath();x.arc(S/2,S-42,8,0,Math.PI*2);x.fill();
+  const tex=new THREE.CanvasTexture(cv);
+  tex.anisotropy=4;tex.colorSpace=THREE.SRGBColorSpace;
+  textureCache[hero.c]=tex;return tex;
+}
+function radialTexture(inner,outer){
+  const key=inner+outer;if(radialCache[key])return radialCache[key];
+  const S=128,cv=document.createElement('canvas');cv.width=cv.height=S;
+  const x=cv.getContext('2d');
+  const g=x.createRadialGradient(S/2,S/2,2,S/2,S/2,S/2);
+  g.addColorStop(0,inner);g.addColorStop(.4,outer);g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g;x.fillRect(0,0,S,S);
+  const t=new THREE.CanvasTexture(cv);radialCache[key]=t;return t;
+}
+
+/* ==================== 立方体构建（实心多层级） ==================== */
+const sideMat=new THREE.MeshStandardMaterial({color:0x1d2745,roughness:.55,metalness:.25});
+const edgeGeo=new THREE.EdgesGeometry(new THREE.BoxGeometry(1,1,1));
+const glowTex=radialTexture('rgba(255,240,190,1)','rgba(240,200,90,.55)');
+const glowMat=new THREE.SpriteMaterial({map:glowTex,transparent:true,opacity:.85,depthWrite:false});
+let sharedCellGeo=null;
+
+/* 生成全部 n^3 小立方体（奇数阶中心格留作黄金核心，不计入可玩） */
+function buildAllCells(n){
+  const g=2/n,m=(n-1)/2;
+  const cells=[];const grid={};
+  let id=0;
+  const skipCenter=(n%2===1), ci=(n-1)/2;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let k=0;k<n;k++){
+    if(skipCenter && i===ci && j===ci && k===ci)continue; // 黄金核心位
+    const center=new THREE.Vector3((i-m)*g,(j-m)*g,(k-m)*g);
+    const c={id:id++,i,j,k,hero:'',center,nv:center.clone().normalize(),
+      mesh:null,frame:null,faceMat:null,active:true,frameMode:0,size:g*.92};
+    cells.push(c);grid[i+','+j+','+k]=c;
+  }
+  return {cells,grid};
+}
+
+/* 英雄分配：每个英雄成对出现 → 全盘必然可解 */
+function assignHeroes(cells){
+  const pairs=cells.length/2, seq=[];
+  for(let i=0;i<pairs;i++){const h=HEROES[i%HEROES.length].c;seq.push(h,h);}
+  shuffle(seq);
+  cells.forEach((c,idx)=>c.hero=seq[idx]);
+}
+
+/* 创建立方体网格（六个面均贴同一英雄纹理，从任意面看名字一致） */
+function materialize(cells,n,geo){
+  cells.forEach(c=>{
+    const hero=heroMap[c.hero];
+    const heroMat=new THREE.MeshStandardMaterial({map:heroTexture(hero),roughness:.5,metalness:.06});
+    c.faceMat=heroMat;
+    const mesh=new THREE.Mesh(geo,[heroMat,heroMat,heroMat,heroMat,heroMat,heroMat]);
+    mesh.position.copy(c.center);
+    mesh.userData={cell:c};
+    const frame=new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0xf0d678,transparent:true,opacity:0}));
+    frame.scale.setScalar(c.size);frame.position.copy(c.center);
+    c.mesh=mesh;c.frame=frame;
+  });
+}
+
+/* 6 邻向，用于判断某格是否暴露（可被点击 / 可见） */
+const NEI=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+function isExposed(c){
+  const n=G.order;
+  for(const d of NEI){
+    const ni=c.i+d[0],nj=c.j+d[1],nk=c.k+d[2];
+    if(ni<0||ni>=n||nj<0||nj>=n||nk<0||nk>=n)return true;
+    const nb=G.grid[ni+','+nj+','+nk];
+    if(!nb||!nb.active)return true;
+  }
+  return false;
+}
+
+/* ==================== 场景装配 ==================== */
+let coreMesh=null,coreMat=null,coreGlow=null,coreLight=null,coreAnim=null;
+
+function clearBoard(){
+  while(cubeGroup.children.length>0){
+    const o=cubeGroup.children[0];
+    cubeGroup.remove(o);
+    if(o.material){
+      if(Array.isArray(o.material))o.material.forEach(m=>m.dispose&&m.dispose());
+      else if(o.material.dispose)o.material.dispose();
+    }
+  }
+}
+
+function buildBoard(order){
+  const n=order,g=2/n;
+  const {cells,grid}=buildAllCells(n);
+  const pairs=cells.length/2;
+  assignHeroes(cells);
+  if(sharedCellGeo)sharedCellGeo.dispose();
+  sharedCellGeo=new THREE.BoxGeometry(g*.96,g*.96,g*.96);
+  materialize(cells,n,sharedCellGeo);
+  G.cells=cells;G.grid=grid;
+  cells.forEach(c=>{cubeGroup.add(c.mesh);cubeGroup.add(c.frame);});
+  // 黄金核心（奇数阶，置于中心）
+  coreAnim=null;coreLive=false;
+  if(order%2===1){
+    coreMat=new THREE.MeshStandardMaterial({
+      color:0xc9a227,metalness:.92,roughness:.16,emissive:0xd4af37,emissiveIntensity:0
+    });
+    coreMesh=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,.22),coreMat);
+    coreMesh.visible=false;cubeGroup.add(coreMesh);
+    coreGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:radialTexture('rgba(255,236,160,.95)','rgba(220,170,60,.4)'),transparent:true,opacity:0,depthWrite:false}));
+    coreGlow.scale.setScalar(1.1);coreGlow.visible=false;cubeGroup.add(coreGlow);
+    coreLight=new THREE.PointLight(0xffd86a,.0,6);coreLight.position.set(0,0,0);cubeGroup.add(coreLight);
+  }
+  G.pairsTotal=G.pairsLeft=pairs;
+  G.clicks=0;G.over=false;G.locked=false;G.selected=null;G.candidates=[];
+  updateHUD();
+}
+
+/* ==================== 旋转（360° 自由拖拽） ==================== */
+let targetQuat=new THREE.Quaternion();
+const _yAxis=new THREE.Vector3(0,1,0), _xAxis=new THREE.Vector3(1,0,0);
+function initView(){
+  targetQuat.setFromEuler(new THREE.Euler(-0.5,0.66,0,'XYZ'));
+  cubeGroup.quaternion.copy(targetQuat);
+}
+/* 以世界轴为基准旋转整个立方体（左键拖拽 = 自由 360° 旋转） */
+function rotateWorld(axis,rad){
+  const q=new THREE.Quaternion().setFromAxisAngle(axis,rad);
+  targetQuat.premultiply(q);
+  cubeGroup.quaternion.premultiply(q);
+}
+
+/* ==================== 交互 ==================== */
+const raycaster=new THREE.Raycaster();
+const ndc=new THREE.Vector2();
+let downX=0,downY=0,dragging=false,pointerOn=false,pointerId=null;
+
+function setPointer(e){canvas.setPointerCapture(e.pointerId);pointerId=e.pointerId;}
+canvas.addEventListener('pointerdown',e=>{
+  ensureAudio();setPointer(e);
+  downX=e.clientX;downY=e.clientY;dragging=false;pointerOn=true;
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!pointerOn)return;
+  const dx=e.clientX-downX,dy=e.clientY-downY;
+  if(Math.abs(dx)+Math.abs(dy)>7)dragging=true;
+  if(dragging&&!G.over&&!G.locked){
+    const sp=0.011; // 每像素弧度
+    if(dx)rotateWorld(_yAxis,dx*sp);   // 左右：拖右 → 立方体右旋（方向已校正）
+    if(dy)rotateWorld(_xAxis,dy*sp);   // 上下：拖下 → 顶部朝你（方向已校正）
+    downX=e.clientX;downY=e.clientY;
+    canvas.classList.add('grabbing');
+  }
+});
+canvas.addEventListener('pointerup',e=>{
+  pointerOn=false;canvas.classList.remove('grabbing');
+  if(!dragging){
+    if(G.over||G.locked)return;
+    handleClick(e.clientX,e.clientY);
+  }
+  dragging=false;
+});
+canvas.addEventListener('pointercancel',()=>{pointerOn=false;dragging=false;canvas.classList.remove('grabbing');});
+
+function handleClick(cx,cy){
+  const rect=canvas.getBoundingClientRect();
+  ndc.set(((cx-rect.left)/rect.width)*2-1,-((cy-rect.top)/rect.height)*2+1);
+  raycaster.setFromCamera(ndc,camera);
+  const meshes=[];G.cells.forEach(c=>{if(c.active)meshes.push(c.mesh);});
+  const hits=raycaster.intersectObjects(meshes,false);
+  if(hits.length===0)return;
+  const cell=hits[0].object.userData?hits[0].object.userData.cell:null;
+  if(cell)onCellClick(cell);
+}
+
+/* ==================== 游戏逻辑 ==================== */
+function clearSelection(){
+  G.cells.forEach(c=>{
+    c.frameMode=0;c.frame.material.opacity=0;c.frame.material.color.setHex(0xf0d678);
+    c.faceMat.emissive.setHex(0x000000);c.faceMat.emissiveIntensity=0;
+    c.frame.scale.setScalar(c.size);
+  });
+  G.selected=null;
+  $('selInfo').classList.remove('show');
+}
+function selectCell(cell){
+  clearSelection();
+  G.selected=cell;
+  cell.frameMode=1;cell.frame.material.opacity=.95;cell.frame.scale.setScalar(cell.size*1.03);
+  cell.faceMat.emissive.setHex(0xd4af37);cell.faceMat.emissiveIntensity=.22;
+  $('selName').textContent=cell.hero;
+  $('selInfo').classList.add('show');
+}
+function flashError(cell){
+  cell.frameMode=3;cell.frame.material.color.setHex(0xff5a4e);cell.frame.material.opacity=.95;
+  setTimeout(()=>{if(cell.frameMode===3){cell.frameMode=0;cell.frame.material.opacity=0;cell.frame.material.color.setHex(0xf0d678);}},300);
+}
+function onCellClick(cell){
+  G.clicks++;
+  if(!G.selected){ sfxSelect(); selectCell(cell); return; }
+  if(cell===G.selected){ sfxClick(); clearSelection(); return; }
+  if(cell.hero===G.selected.hero){
+    doMatch(G.selected,cell);          // 任意两面（含同面）相同即可消除
+  }else{
+    sfxSelect(); selectCell(cell);     // 人物不同 → 改选当前块
+  }
+}
+
+/* ==================== 连线与消除 ==================== */
+let linkAnim=null,particles=[];
+function doMatch(a,b){
+  G.locked=true;
+  clearSelection();
+  sfxMatch();
+  const pts=[a.center.clone(),b.center.clone()];
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineBasicMaterial({color:0xe8c96a,transparent:true,opacity:.95,depthTest:false});
+  const line=new THREE.Line(geo,mat);line.renderOrder=20;cubeGroup.add(line);
+  const orb=new THREE.Sprite(glowMat.clone());orb.scale.setScalar(.12);orb.renderOrder=21;cubeGroup.add(orb);
+  geo.setDrawRange(0,0);
+  const t0=clock.getElapsedTime();
+  const dur=Math.min(.8,.28+a.center.distanceTo(b.center)*.12);
+  linkAnim={line,orb,pts,geo,mat,dur,t0,cb:()=>{
+    removePair(a,b);
+    G.pairsLeft--;
+    updateHUD();
+    G.locked=false;
+    if(G.pairsLeft<=0)win();
+    else setTimeout(checkDeadlock,400);
+  },done:false};
+}
+function removePair(a,b){
+  a.active=false;b.active=false;
+  a.mesh.visible=false;b.mesh.visible=false;
+  a.frame.visible=false;b.frame.visible=false;
+  burst(a.center.clone().addScaledVector(a.nv,.05),a.hero);
+  burst(b.center.clone().addScaledVector(b.nv,.05),b.hero);
+  sfxEliminate();
+}
+function burst(pos,name){
+  const h=heroMap[name],n=16;
+  for(let i=0;i<n;i++){
+    const m=new THREE.SpriteMaterial({map:radialTexture('rgba(255,255,255,.95)',hexToRgbaStr(h.col,.7)),transparent:true,depthWrite:false});
+    const s=new THREE.Sprite(m);
+    s.position.copy(pos);s.scale.setScalar(.05+Math.random()*.07);
+    cubeGroup.add(s);
+    const vel=new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize().multiplyScalar(.7+Math.random()*1.3);
+    particles.push({s,vel,life:1,decay:1.9+Math.random()*1.4});
+  }
+}
+function hexToRgbaStr(hex,a){
+  const n=parseInt(hex.slice(1),16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function checkDeadlock(){
+  if(G.over)return;
+  const pair=findAnyPair();
+  if(!pair){
+    toast('当前无可消除的配对，已自动洗牌');
+    shuffleRemaining(true);
+  }
+}
+
+/* ==================== 提示 / 洗牌 ==================== */
+function findAnyPair(){
+  const exposed=G.cells.filter(c=>c.active&&isExposed(c));
+  const groups={};exposed.forEach(c=>{(groups[c.hero]||=[]).push(c);});
+  for(const list of Object.values(groups)){
+    if(list.length>=2)return[list[0],list[1]];
+  }
+  return null;
+}
+function hint(){
+  const pair=findAnyPair();
+  if(!pair){toast('当前无配对，请先洗牌','warn');return;}
+  selectCell(pair[0]);
+  toast('已为你找到一对，再点另一枚相同图案即可配对');
+}
+function assignHero(cell,heroName){
+  cell.hero=heroName;
+  cell.faceMat.map=heroTexture(heroMap[heroName]);
+  cell.faceMat.needsUpdate=true;
+}
+function shuffleRemaining(auto){
+  const act=G.cells.filter(c=>c.active);
+  if(act.length<2)return;
+  clearSelection();
+  const heroes=act.map(c=>c.hero);
+  // 多次洗牌直到暴露面存在可解配对（保证实心立方体不会卡死）
+  for(let t=0;t<40;t++){
+    shuffle(heroes);
+    act.forEach((c,i)=>assignHero(c,heroes[i]));
+    if(findAnyPair())break;
+  }
+  if(!auto)toast('已重新洗牌');
+  if(auto)toast('已自动洗牌');
+}
+
+/* ==================== 通关 / 黄金核心 ==================== */
+let coreLive=false;
+function win(){
+  G.over=true;G.locked=true;
+  const odd=G.order%2===1;
+  if(odd){
+    sfxCore();
+    coreLive=true;coreAnim={t:0};
+    coreMesh.visible=true;coreGlow.visible=true;
+    setTimeout(()=>{sfxWin();showResult();},2300);
+  }else{
+    sfxWin();
+    setTimeout(showResult,900);
+  }
+}
+function showResult(){
+  const card=$('resultCard');
+  card.classList.toggle('gold',G.order%2===1);
+  $('resultTitle').textContent=G.order%2===1?'黄金核心 显现':'立方解除';
+  $('resultSub').textContent=G.order%2===1?'圣杯的碎片，于立方之核苏醒':'全部配对已消除';
+  $('statTime').textContent=fmtTime((performance.now()-G.timeStart)/1000);
+  $('statPairs').textContent=G.pairsTotal;
+  $('statOrder').textContent=G.order+' 阶';
+  $('resultModal').classList.add('show');
+  stopTimer();
+}
+
+/* ==================== HUD / 计时 ==================== */
+function fmtTime(s){s=Math.max(0,Math.floor(s));const m=(s/60)|0,ss=s%60;return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0');}
+function updateHUD(){
+  $('pairsLeft').textContent=G.pairsLeft;
+  $('pairsTotal').textContent=G.pairsTotal;
+  $('hudTitle').textContent=G.order+' 阶 · Fate Cube';
+}
+function startTimer(){G.timeStart=performance.now();stopTimer();G.timerTick=setInterval(()=>{$('timer').textContent=fmtTime((performance.now()-G.timeStart)/1000);},500);}
+function stopTimer(){if(G.timerTick){clearInterval(G.timerTick);G.timerTick=null;}}
+
+/* ==================== Toast ==================== */
+let toastTimer=null;
+function toast(msg,type){
+  const t=$('toast');t.textContent=msg;t.className=type==='warn'?'show warn':'show';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.className='',1700);
+}
+
+/* ==================== 难度选择 ==================== */
+const orderGrid=$('orderGrid');
+function buildOrderCards(){
+  orderGrid.innerHTML='';
+  for(let n=3;n<=10;n++){
+    const total=n*n*n-(n%2);   // 可玩小立方体总数（奇数阶中心为核心不计入）
+    const pairs=total/2;
+    const div=document.createElement('div');
+    div.className='order-card'+(n%2?' gold':'')+(n===G.order?' selected':'');
+    div.innerHTML=`
+      <div class="core-badge">✦ 黄金核心</div>
+      <div class="num">${n}</div>
+      <div class="dim">${n}×${n}×${n}</div>
+      <div class="pairs">${total} 格 · ${pairs} 对</div>`;
+    div.onclick=()=>{
+      orderGrid.querySelectorAll('.order-card').forEach(x=>x.classList.remove('selected'));
+      div.classList.add('selected');
+      G.order=n;
+    };
+    orderGrid.appendChild(div);
+  }
+}
+
+/* ==================== 开始 / 重开 ==================== */
+function startGame(order){
+  ensureAudio();
+  G.order=order;G.started=true;
+  clearBoard();clearSelection();G.over=false;G.locked=false;
+  buildBoard(order);
+  initView();
+  linkAnim=null;
+  $('startScreen').classList.add('hide');
+  $('hud').classList.remove('hidden');
+  $('resultModal').classList.remove('show');
+  startTimer();
+}
+function goHome(){
+  stopTimer();
+  $('hud').classList.add('hidden');
+  $('resultModal').classList.remove('show');
+  G.over=true;G.locked=true;
+  $('startScreen').classList.remove('hide');
+}
+$('startBtn').onclick=()=>startGame(G.order);
+$('againBtn').onclick=()=>startGame(G.order);
+$('changeBtn').onclick=goHome;
+$('backBtn').onclick=goHome;
+$('restartBtn').onclick=()=>startGame(G.order);
+$('hintBtn').onclick=()=>{if(G.started&&!G.over&&!G.locked)hint();};
+$('shuffleBtn').onclick=()=>{if(G.started&&!G.over&&!G.locked)shuffleRemaining(false);};
+$('soundBtn').onclick=()=>{
+  G.soundOn=!G.soundOn;
+  $('soundBtn').style.opacity=G.soundOn?1:.4;
+  if(G.soundOn)sfxClick();
+};
+
+/* ==================== 星星背景 ==================== */
+const starsCanvas=$('stars'),sx=starsCanvas.getContext('2d');
+let stars=[];
+function initStars(){
+  starsCanvas.width=innerWidth;starsCanvas.height=innerHeight;
+  const n=Math.min(120,Math.floor(innerWidth*innerHeight/16000));
+  stars=Array.from({length:n},()=>({
+    x:Math.random(),y:Math.random(),r:Math.random()*1.5+.4,
+    p:Math.random()*Math.PI*2,s:.5+Math.random()*1.6,
+    gold:Math.random()<.18
+  }));
+}
+function drawStars(t){
+  sx.clearRect(0,0,starsCanvas.width,starsCanvas.height);
+  for(const st of stars){
+    const a=.25+.55*(0.5+0.5*Math.sin(t*st.s+st.p));
+    sx.beginPath();
+    if(st.gold){sx.fillStyle=`rgba(240,214,120,${a})`;}
+    else{sx.fillStyle=`rgba(200,215,255,${a*.8})`;}
+    sx.arc(st.x*starsCanvas.width,st.y*starsCanvas.height,st.r,0,Math.PI*2);
+    sx.fill();
+  }
+}
+addEventListener('resize',()=>{initStars();});
+
+/* ==================== 主循环 ==================== */
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=Math.min(.05,clock.getDelta());
+  const t=clock.getElapsedTime();
+  drawStars(t);
+
+  // 旋转吸附
+  const q=cubeGroup.quaternion;
+  if(q.angleTo(targetQuat)>0.0008){
+    q.slerp(targetQuat,1-Math.exp(-dt*14));
+    if(q.angleTo(targetQuat)<=0.004)q.copy(targetQuat);
+    G.rotating=q.angleTo(targetQuat)>0.004;
+  }else{G.rotating=false;}
+
+  // 选中块呼吸高亮（不再提示其它相同块）
+  if(G.selected){
+    G.selected.frame.material.opacity=.8+.2*Math.sin(t*4);
+  }
+
+  // 连线动画
+  if(linkAnim){
+    const la=linkAnim;
+    const el=t-la.t0;
+    const p=Math.min(1,el/la.dur);
+    const segs=la.pts.length-1;
+    const nSeg=Math.floor(p*segs);
+    la.geo.setDrawRange(0,Math.max(0,nSeg+1));
+    const i=Math.min(nSeg,segs-1);
+    const sf=p*segs-nSeg;
+    la.orb.position.lerpVectors(la.pts[i],la.pts[i+1],sf);
+    la.orb.scale.setScalar(.1*(1-p*.3));
+    if(p>=1){
+      if(!la.done){la.done=true;la.tEnd=t;}
+      if(t-la.tEnd>.13){
+        cubeGroup.remove(la.line);cubeGroup.remove(la.orb);
+        la.geo.dispose();la.mat.dispose();
+        linkAnim=null;la.cb();
+      }
+    }
+  }
+
+  // 粒子
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.life-=p.decay*dt;
+    if(p.life<=0){
+      cubeGroup.remove(p.s);p.s.material.dispose();particles.splice(i,1);continue;
+    }
+    p.s.position.addScaledVector(p.vel,dt);
+    p.vel.multiplyScalar(1-dt*1.6);
+    p.s.scale.multiplyScalar(1-dt*1.8);
+    p.s.material.opacity=Math.max(0,p.life);
+  }
+
+  // 黄金核心动画
+  if(coreAnim){
+    coreAnim.t+=dt;
+    const k=Math.min(1,coreAnim.t/1.2);
+    const ease=1-Math.pow(1-k,3);
+    coreMat.emissiveIntensity=.35+1.45*k;
+    coreMesh.scale.setScalar(.3+.7*ease);
+    if(coreMesh.scale.x>=1&&k>=1){coreAnim=null;}
+  }
+  if(coreLive&&coreMesh){
+    coreMesh.rotation.y=t*1.4;coreMesh.rotation.x=t*.9;
+    coreMesh.position.y=Math.sin(t*2.2)*.05;
+    coreGlow.material.opacity=.45+.45*(.5+.5*Math.sin(t*5));
+    coreGlow.rotation.z=t*.6;
+    coreLight.intensity=2.2+.8*Math.sin(t*3);
+  }
+
+  composer.render();
+}
+
+/* ==================== 启动 ==================== */
+function resize(){
+  const w=innerWidth,h=innerHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+  composer.setSize(w,h);
+  bloom.setSize(w,h);
+}
+addEventListener('resize',resize);
+resize();
+initStars();
+createStarfield();
+buildOrderCards();
+initView();
+animate();
+
+/* 深链接：#play=N 直接进入 N 阶（便于分享 / 快速开局） */
+(function(){
+  const m=/[#&]play=(\d+)/.exec(location.hash||'');
+  if(m){const n=Math.max(3,Math.min(10,+m[1]));setTimeout(()=>startGame(n),400);}
+})();
+</script>
+</body>
+</html>
