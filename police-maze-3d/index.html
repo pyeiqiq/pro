@@ -82,8 +82,9 @@
   .legend i{width:12px; height:12px; border-radius:3px; display:inline-block; vertical-align:middle; margin-right:4px;}
 
   @media (max-width:560px){
-    #hpWrap,#shieldWrap{width:170px;}
-    #bossWrap{width:240px;}
+    #hpWrap,#shieldWrap{width:150px;}
+    #bossWrap{top:132px; width:220px;}
+    #compass{top:auto; bottom:18px;}
     #minimap{width:110px; height:110px;}
     #score{font-size:18px;}
     .card h1{font-size:24px;}
@@ -123,7 +124,6 @@
   <div id="touchBtns">
     <div class="tbtn" id="btnShield">🛡</div>
     <div class="tbtn" id="btnSprint">💨</div>
-    <div class="tbtn" id="btnShoot">🔫</div>
   </div>
 </div>
 
@@ -151,7 +151,7 @@
       <div><b>左键 / 空格</b> 开枪</div>
       <div><b>F</b> 开启护盾减伤</div>
       <div><b>Shift</b> 加速冲刺</div>
-      <div><b>手机</b> 左摇杆移动·右拖看·按钮射击</div>
+      <div><b>手机</b> 左摇杆移动·右拖看视角·点屏射击</div>
     </div>
     <button class="btn" id="startBtn">开始游戏 ▶</button>
     <p class="sub">提示：靠近坏人会听到💓心跳警示，越近越急——先下手为强！</p>
@@ -532,13 +532,15 @@ function setupTouch(dom){
   const endJoy=e=>{ for(const t of e.changedTouches){ if(t.identifier===joyId){ joyId=null; joy.x=0; joy.y=0; knob.style.transform='translate(0,0)'; } } };
   joyEl.addEventListener('touchend', endJoy); joyEl.addEventListener('touchcancel', endJoy);
 
-  // 拖动看视角
-  let lookId=null, lx=0, ly=0;
-  dom.addEventListener('touchstart', e=>{ if(state!=='playing') return; const t=e.changedTouches[0]; lookId=t.identifier; lx=t.clientX; ly=t.clientY; }, {passive:false});
+  // 拖动看视角；轻点屏幕开枪
+  let lookId=null, lx=0, ly=0, tapX=0, tapY=0;
+  dom.addEventListener('touchstart', e=>{ if(state!=='playing') return; const t=e.changedTouches[0]; lookId=t.identifier; lx=t.clientX; ly=t.clientY; tapX=t.clientX; tapY=t.clientY; }, {passive:false});
   dom.addEventListener('touchmove', e=>{ if(lookId===null) return; for(const t of e.changedTouches){ if(t.identifier===lookId){
     const dx=t.clientX-lx, dy=t.clientY-ly; lx=t.clientX; ly=t.clientY;
     player.yaw-=dx*0.005; player.pitch-=dy*0.005; player.pitch=Math.max(-1.2,Math.min(1.2,player.pitch)); } } e.preventDefault(); }, {passive:false});
-  const endLook=e=>{ for(const t of e.changedTouches){ if(t.identifier===lookId) lookId=null; } };
+  const endLook=e=>{ for(const t of e.changedTouches){ if(t.identifier===lookId){
+    if(Math.hypot(t.clientX-tapX, t.clientY-tapY) < 16 && state==='playing') shoot();
+    lookId=null; } } };
   dom.addEventListener('touchend', endLook); dom.addEventListener('touchcancel', endLook);
 
   // 按钮
@@ -547,7 +549,6 @@ function setupTouch(dom){
   const bn=document.getElementById('btnSprint');
   bn.addEventListener('touchstart', e=>{ e.preventDefault(); sprintHeld=true; bn.classList.add('on'); });
   bn.addEventListener('touchend', e=>{ e.preventDefault(); sprintHeld=false; bn.classList.remove('on'); });
-  document.getElementById('btnShoot').addEventListener('touchstart', e=>{ e.preventDefault(); shoot(); });
 }
 
 function attemptMove(nx, nz){
