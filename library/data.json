@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-24",
+  "updated": "2026-08-25",
   "note": "资料库数据索引。文件按 library/files/<分类id>/ 存放；请通过资料库页面右上角「管理」或联系维护者修改本文件。",
   "categories": [
     {
@@ -326,7 +326,17 @@
       "icon": "users",
       "desc": "会议纪要、客户拜访与往来材料",
       "children": [],
-      "files": []
+      "files": [
+        {
+          "name": "Willow 合作会议白板记录 · 产品开发需求.mhtml",
+          "file": "files/meetings/Willow 合作会议白板记录 · 产品开发需求.mhtml",
+          "type": "code",
+          "size": "32 KB",
+          "date": "2026-08-25",
+          "desc": "",
+          "tags": []
+        }
+      ]
     },
     {
       "id": "cmt7bb2fq",
