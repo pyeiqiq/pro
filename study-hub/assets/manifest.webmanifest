@@ -1,0 +1,13 @@
+{
+  "name": "我刷题你炸了？",
+  "short_name": "刷题炸了",
+  "description": "高中生理科生网页学习平台：知识地图、题库、错题本、公式速查、AI 助手",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#185fa5",
+  "icons": [
+    { "src": "assets/img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
