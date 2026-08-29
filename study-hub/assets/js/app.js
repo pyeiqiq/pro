@@ -33,8 +33,15 @@
   function allKps(subject) {
     var out = []; (SEED.map[subject] || []).forEach(function (c) { (c.kps || []).forEach(function (k) { out.push({ chap: c, kp: k }); }); }); return out;
   }
-  // 题目来源 = 种子题库 ∪ 用户题库（AI 生成 / 导入）
-  function allQuestions() { return SEED.questions.concat(state.userQuestions || []); }
+  // 题目来源 = 种子题库 ∪ 固化的用户题库(SEED_EXTRA) ∪ 浏览器本地题库(去重)
+  function allQuestions() {
+    var seed = SEED.questions.concat(window.SEED_EXTRA || []);
+    var seen = {}; seed.forEach(function (q) { seen[q.id] = 1; });
+    var user = state.userQuestions || [];
+    var clean = [];
+    for (var i = 0; i < user.length; i++) { if (!seen[user[i].id]) { seen[user[i].id] = 1; clean.push(user[i]); } }
+    return seed.concat(clean);
+  }
   function kpQCount() { var m = {}; allQuestions().forEach(function (q) { m[q.kp] = (m[q.kp] || 0) + 1; }); return m; }
   function subjQCount() { var m = {}; allQuestions().forEach(function (q) { m[q.subject] = (m[q.subject] || 0) + 1; }); return m; }
   function chapterOfKp(subject, kpId) {
