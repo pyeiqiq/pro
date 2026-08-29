@@ -379,10 +379,16 @@
       var total = allQuestions().length, userN = (state.userQuestions || []).length;
       var html = '<h1 class="page-title">题库练习</h1><p class="page-sub">选择范围开始练习，客观题自动判分，错题自动进入错题本</p>';
       html += subjectChips(selSubject, "quiz", function (id) { return ssc[id] || 0; });
-      html += '<div class="field"><label>章节</label><select id="qChap"><option value="">全部章节</option>'
-        + (SEED.map[selSubject] || []).map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + "</option>"; }).join("") + "</select></div>";
-      html += '<div class="field"><label>知识点（可选，括号为当前题数）</label><select id="qKp"><option value="">不限</option>'
-        + allKps(selSubject).map(function (o) { return '<option value="' + o.kp.id + '">' + esc(o.kp.name) + "（" + (kpc[o.kp.id] || 0) + "题）</option>"; }).join("") + "</select></div>";
+      var selChap = params.chap || "", selKp = params.kp || "";
+      var chapOpts = (SEED.map[selSubject] || []).map(function (c) {
+        return '<option value="' + c.id + '"' + (c.id === selChap ? " selected" : "") + ">" + esc(c.name) + "</option>";
+      }).join("");
+      var kpList = selChap ? allKps(selSubject).filter(function (o) { return o.chap.id === selChap; }) : allKps(selSubject);
+      var kpOpts = kpList.map(function (o) {
+        return '<option value="' + o.kp.id + '"' + (o.kp.id === selKp ? " selected" : "") + ">" + esc(o.kp.name) + "（" + (kpc[o.kp.id] || 0) + "题）</option>";
+      }).join("");
+      html += '<div class="field"><label>章节</label><select id="qChap"><option value="">全部章节</option>' + chapOpts + "</select></div>";
+      html += '<div class="field"><label>知识点（可选，括号为当前题数；选定章节后仅显示该章节下知识点）</label><select id="qKp"><option value="">不限</option>' + kpOpts + "</select></div>";
       html += '<div class="field"><label>练习题数</label><select id="qCount">'
         + [5, 10, 20, 30, 50].map(function (n) { return '<option value="' + n + '"' + (n === (state.settings.quizCount || 5) ? " selected" : "") + ">" + n + " 题</option>"; }).join("") + "</select></div>";
       html += '<button class="btn primary" data-act="quizStart" data-subject="' + selSubject + '">开始练习</button>';
@@ -396,7 +402,8 @@
       html += '<div id="genOut" class="small" style="margin-top:10px;white-space:pre-wrap"></div></div>';
       html += '<div class="flex wrap" style="gap:10px;margin-top:12px"><button class="btn" data-act="importQ">导入题库文件</button><button class="btn" data-act="exportQ">导出我的题库（' + userN + '）</button></div>';
       view.innerHTML = html;
-      $("#qChap").onchange = function () { navigate("quiz", { subject: selSubject, chap: this.value }); };
+      $("#qChap").onchange = function () { navigate("quiz", { subject: selSubject, chap: this.value, kp: "" }); };
+      $("#qKp").onchange = function () { navigate("quiz", { subject: selSubject, chap: selChap, kp: this.value }); };
       return;
     }
     renderQuizCard();
