@@ -370,6 +370,7 @@ var TOK_KEY = 'stan_lib_token';
 
 var DB = { updated:'', categories:[] };
 var sel = { cat:null, sub:null };   // null = 全部
+var openSet = {};   // 已展开的顶级分类 id（分类树展开/收起状态）
 var q = '';
 var token = localStorage.getItem(TOK_KEY) || '';
 var adminOpen = false;
@@ -461,7 +462,7 @@ function totalFiles(){ var n=0; DB.categories.forEach(function(c){ n+=(c.files||
 function countOf(c){ return (c.files||[]).length + (c.children||[]).reduce(function(n,s){return n+(s.files||[]).length;},0); }
 
 /* ========== 渲染 ========== */
-function renderAll(){ renderTree(); renderCrumb(); renderList(); renderStats(); renderUpTarget(); renderCatAdm(); }
+function renderAll(){ renderTree(); renderCrumb(); renderList(); renderStats(); renderUpTarget(); renderCatAdm(); bindRows(); }
 
 function renderTree(){
   var tree=$('#tree'); tree.innerHTML='';
@@ -475,16 +476,13 @@ function renderTree(){
   DB.categories.forEach(function(c){
     var li=document.createElement('li');
     var hasSub=(c.children||[]).length>0;
-    var open=hasSub && sel.cat===c.id && sel.sub!==null;
+    var open=hasSub && (openSet[c.id] || (sel.cat===c.id && sel.sub!==null));
     var b=document.createElement('button');
     b.className='node'+(sel.cat===c.id && sel.sub===null?' active':'');
     b.innerHTML=(hasSub?'<span class="tw'+(open?' open':'')+'">'+ico('chev',13)+'</span>':'<span class="tw"></span>')+ico(c.icon||'folder',16)+'<span class="nm">'+esc(c.name)+'</span><span class="cnt">'+countOf(c)+'</span>';
     b.onclick=function(){
-      if(hasSub){
-        if(sel.cat===c.id && sel.sub!==null){ sel.sub=null; }
-        else if(sel.cat===c.id){ /* 点击已选中的顶级：展开子分类 */ sel.sub=null; }
-        else { sel.cat=c.id; sel.sub=null; }
-      } else { sel.cat=c.id; sel.sub=null; }
+      if(hasSub){ openSet[c.id]=!openSet[c.id]; }  /* 有子分类：点顶级=展开/收起 */
+      sel.cat=c.id; sel.sub=null;
       renderAll();
     };
     li.appendChild(b); tree.appendChild(li);
@@ -831,7 +829,16 @@ async function commitData(msg){
   try{ remote=await ghGet('library/data.json'); }
   catch(e){ throw new Error('读取 data.json 失败：'+(e.message||e)); }
   DB.updated=today();
-  await ghPut('library/data.json', b64u(JSON.stringify(DB,null,2)), msg, remote.sha);
+  var payload=b64u(JSON.stringify(DB,null,2));
+  try{
+    await ghPut('library/data.json', payload, msg, remote.sha);
+  }catch(e1){
+    /* sha 竞态（连续快速操作/多标签页）：重取最新 sha 重试一次 */
+    try{
+      var r2=await ghGet('library/data.json');
+      await ghPut('library/data.json', payload, msg, r2.sha);
+    }catch(e2){ throw new Error('保存 data.json 失败：'+(e2.message||e2)); }
+  }
 }
 
 /* ========== 管理操作 ========== */
@@ -863,7 +870,17 @@ $('#catForm').addEventListener('submit', async function(e){
   if(!needToken()) return;
   var name=$('#catName').value.trim(), desc=$('#catDesc').value.trim(), icon=$('#catIcon').value, parent=$('#catParent').value;
   if(!name){ toast('请输入分类名称','err'); return; }
-  var node={id:'c'+Date.now().toString(36), name:name, icon:icon, desc:desc, children:[], files:[]};
+  /* 同级重名检查 */
+  var dup=false;
+  if(parent){
+    var p=findCat(parent,null);
+    if(!p){ toast('父分类不存在，请重新选择','err'); return; }
+    dup=(p.node.children||[]).some(function(x){ return x.name===name; });
+  } else {
+    dup=DB.categories.some(function(x){ return x.name===name; });
+  }
+  if(dup){ toast('同级已存在同名分类「'+name+'」','err'); return; }
+  var node={id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name:name, icon:icon, desc:desc, children:[], files:[]};
   if(parent){ var p=findCat(parent,null); if(!p){toast('父分类不存在','err');return;} p.node.children.push(node); }
   else DB.categories.push(node);
   try{
@@ -1012,7 +1029,10 @@ async function doMove(){
   $('#moveModal').classList.remove('open');
   try{
     var old=await ghGet('library/'+moveSrcFile);
-    await ghPut('library/'+newPath, old.content, '资料库：移动 '+fileObj.name+' → '+tf.node.name);
+    /* 目标路径若已存在（如上次移动残留的幽灵文件），需带 sha 覆盖，否则 422 */
+    var targetSha=null;
+    try{ var t=await ghGet('library/'+newPath); targetSha=t.sha; }catch(e){}
+    await ghPut('library/'+newPath, old.content, '资料库：移动 '+fileObj.name+' → '+tf.node.name, targetSha);
     fileObj.file=newPath;
     srcArr.splice(idx,1);
     tf.node.files=tf.node.files||[];
@@ -1038,7 +1058,10 @@ async function renameFile(filePath){
   var newPath='files/'+loc.node.id+'/'+nn;
   try{
     var old=await ghGet('library/'+filePath);
-    await ghPut('library/'+newPath, old.content, '资料库：重命名 '+f.name+' → '+nn);
+    /* 目标路径若已存在（上次操作残留），需带 sha 覆盖 */
+    var targetSha=null;
+    try{ var t=await ghGet('library/'+newPath); targetSha=t.sha; }catch(e){}
+    await ghPut('library/'+newPath, old.content, '资料库：重命名 '+f.name+' → '+nn, targetSha);
     f.name=nn; f.file=newPath;
     await commitData('资料库：重命名 '+nn);
     await ghDel('library/'+filePath, '资料库：删除旧名 '+f.name, old.sha);
@@ -1089,6 +1112,7 @@ function route(){
     var parts=h.slice(4).split('/');
     sel.cat=decodeURIComponent(parts[0])||null;
     sel.sub=decodeURIComponent(parts[1]||'')||null;
+    if(sel.cat) openSet[sel.cat]=true;   /* 深链进入子分类时，自动展开其顶级分类 */
   } else if(h===''){
     sel.cat=null; sel.sub=null;
   }
