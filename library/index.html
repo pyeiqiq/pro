@@ -202,6 +202,18 @@
   .viewer-name{font-size:13.5px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .viewer iframe{flex:1;width:100%;border:0;background:#fff;}
 
+  /* 弹窗（移动资料） */
+  .modal{position:fixed;inset:0;z-index:1100;display:none;align-items:center;justify-content:center;}
+  .modal.open{display:flex;}
+  .modal-mask{position:absolute;inset:0;background:rgba(20,24,35,.45);}
+  .modal-box{position:relative;background:var(--surface);width:min(420px,92vw);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-lg);animation:rise .3s cubic-bezier(.22,.61,.36,1);}
+  .modal-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .modal-head h3{font-size:16px;font-weight:700;flex:1;}
+  .modal-head .x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;}
+  .modal-head .x:hover{border-color:var(--border-strong);color:var(--text);}
+  .modal-sub{font-size:12.5px;color:var(--muted);margin:2px 0 16px;word-break:break-all;}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+
   /* 响应式 */
   @media(max-width:860px){
     body{flex-direction:column;}
@@ -329,6 +341,20 @@
   <iframe id="viewerFrame" title="MHTML 查看"></iframe>
 </div>
 
+<!-- 移动资料弹窗 -->
+<div class="modal" id="moveModal">
+  <div class="modal-mask" data-mclose></div>
+  <div class="modal-box">
+    <div class="modal-head"><h3>移动资料</h3><button class="x" id="moveClose" type="button">×</button></div>
+    <div class="modal-sub" id="moveSub"></div>
+    <div class="field"><label>目标分类</label><select id="moveTarget"></select></div>
+    <div class="modal-actions">
+      <button class="btn" id="moveCancel" type="button">取消</button>
+      <button class="btn primary" id="moveOk" type="button">移动</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -360,6 +386,7 @@ var ICONS = {
   slide:'<path d="M2 4h20"/><path d="M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4"/><path d="M12 16v4M9 20h6"/>',
   image:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 15l-5-5-9 9"/>',
   link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  move:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1"/><path d="M3 9.5 4.6 16a2 2 0 0 0 2 1.6h10.8a2 2 0 0 0 2-1.6L21 9.5H3Z"/><path d="M12 12v4"/><path d="M10 14l2 2 2-2"/>',
   trash:'<path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/>',
   plus:'<path d="M12 5v14"/><path d="M5 12h14"/>',
   edit:'<path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
@@ -491,11 +518,15 @@ function rowHtml(f, pathLabel){
   var isMhtml=/\.mhtml?$/i.test(f.file);
   var share=isMhtml ? (SITE + 'index.html?v=' + encodeURIComponent(f.file)) : catPath(f);
   var tags=(f.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('');
-  var delBtn=adminOpen?'<button class="op danger" data-del=\''+esc(f.file)+'\' title="删除"><svg viewBox="0 0 24 24">'+ICONS.trash+'</svg>删除</button>':'';
   var pathTxt=pathLabel?'<span class="meta" style="margin-right:2px;">'+esc(pathLabel)+'</span>':'';
   var viewBtn=isMhtml
     ?'<button class="op" data-view="'+esc(f.file)+'" title="在线查看"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</button>'
     :'<a class="op" href="'+esc(f.file)+'" target="_blank" rel="noopener" title="查看/打开"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</a>';
+  var adminOps=adminOpen
+    ?'<button class="op" data-move="'+esc(f.file)+'" title="移动到其它分类"><svg viewBox="0 0 24 24">'+ICONS.move+'</svg>移动</button>'
+     +'<button class="op" data-fren="'+esc(f.file)+'" title="重命名"><svg viewBox="0 0 24 24">'+ICONS.edit+'</svg>重命名</button>'
+     +'<button class="op danger" data-del="'+esc(f.file)+'" title="删除"><svg viewBox="0 0 24 24">'+ICONS.trash+'</svg>删除</button>'
+    :'';
   return '<div class="row">'+
     '<div class="ficon">'+ico(ft.key,20)+'</div>'+
     '<div class="finfo">'+
@@ -506,7 +537,7 @@ function rowHtml(f, pathLabel){
     '<div class="fops">'+
       viewBtn+
       '<button class="op" data-copy="'+esc(share)+'" title="复制分享链接"><svg viewBox="0 0 24 24">'+ICONS.link+'</svg>复制链接</button>'+
-      delBtn+
+      adminOps+
     '</div>'+
   '</div>';
 }
@@ -571,16 +602,20 @@ function renderUpTarget(){
 
 function renderCatAdm(){
   var el=$('#catAdmList'); el.innerHTML='';
-  DB.categories.forEach(function(c){
-    el.appendChild(catAdmRow(c,false));
-    (c.children||[]).forEach(function(s){ el.appendChild(catAdmRow(s,true)); });
+  DB.categories.forEach(function(c,i){
+    el.appendChild(catAdmRow(c,false,i,DB.categories));
+    (c.children||[]).forEach(function(s,j){ el.appendChild(catAdmRow(s,true,j,c.children)); });
   });
   if(DB.categories.length===0) el.innerHTML='<div class="hint" style="padding:4px;">暂无分类，请在左侧「新增分类」创建。</div>';
 }
-function catAdmRow(c,isSub){
+function catAdmRow(c,isSub,idx,arr){
   var d=document.createElement('div');
   d.className='ci'+(isSub?' child':'');
+  var upDisabled = idx<=0 ? 'disabled' : '';
+  var downDisabled = idx>=arr.length-1 ? 'disabled' : '';
   d.innerHTML='<span style="color:var(--accent);display:flex;">'+ico(c.icon||'folder',14)+'</span><span class="nm">'+esc(c.name)+'<small>'+((c.files||[]).length+' 份资料')+(isSub?' · 子分类':' · 顶级')+'</small></span>'+
+    '<button class="btn sm" data-up="'+c.id+'" '+upDisabled+' title="上移">↑</button>'+
+    '<button class="btn sm" data-down="'+c.id+'" '+downDisabled+' title="下移">↓</button>'+
     '<button class="btn sm" data-ren="'+c.id+'">重命名</button>'+
     '<button class="btn sm danger" data-delcat="'+c.id+'">删除</button>';
   return d;
@@ -593,8 +628,20 @@ function bindRows(){
   document.querySelectorAll('[data-view]').forEach(function(b){
     b.onclick=function(){ viewMhtml(b.getAttribute('data-view')); };
   });
+  document.querySelectorAll('[data-move]').forEach(function(b){
+    b.onclick=function(){ openMoveModal(b.getAttribute('data-move')); };
+  });
+  document.querySelectorAll('[data-fren]').forEach(function(b){
+    b.onclick=function(){ renameFile(b.getAttribute('data-fren')); };
+  });
   document.querySelectorAll('[data-del]').forEach(function(b){
     b.onclick=function(){ deleteFile(b.getAttribute('data-del')); };
+  });
+  document.querySelectorAll('[data-up]').forEach(function(b){
+    b.onclick=function(){ moveCat(b.getAttribute('data-up'),-1); };
+  });
+  document.querySelectorAll('[data-down]').forEach(function(b){
+    b.onclick=function(){ moveCat(b.getAttribute('data-down'),1); };
   });
   document.querySelectorAll('[data-ren]').forEach(function(b){
     b.onclick=function(){ renameCat(b.getAttribute('data-ren')); };
@@ -903,6 +950,102 @@ async function deleteFile(filePath){
   }catch(err){ toast(err.message,'err'); }
 }
 
+/* 查找文件所在分类（返回叶子节点、数组与索引） */
+function findFileLoc(filePath){
+  for(var i=0;i<DB.categories.length;i++){
+    var c=DB.categories[i];
+    var k=c.files||[];
+    for(var a=0;a<k.length;a++){ if(k[a].file===filePath) return {top:c, sub:null, node:c, arr:k, idx:a}; }
+    for(var j=0;j<(c.children||[]).length;j++){
+      var s=c.children[j];
+      var sk=s.files||[];
+      for(var b=0;b<sk.length;b++){ if(sk[b].file===filePath) return {top:c, sub:s, node:s, arr:sk, idx:b}; }
+    }
+  }
+  return null;
+}
+
+/* 分类排序：上移/下移 */
+async function moveCat(id, dir){
+  if(!needToken()) return;
+  var f=findAnyCat(id); if(!f) return;
+  var arr = f.isChild ? f.top.children : DB.categories;
+  var i = arr.indexOf(f.node);
+  var j = i+dir;
+  if(j<0 || j>=arr.length) return;
+  arr.splice(i,1); arr.splice(j,0,f.node);
+  try{ await commitData('资料库：调整分类顺序'); toast('已调整顺序'); renderAll(); refreshCatParent(); }
+  catch(err){ toast(err.message,'err'); }
+}
+
+/* 移动资料：打开弹窗 */
+var moveSrcFile=null;
+function openMoveModal(filePath){
+  var sel=$('#moveTarget'); sel.innerHTML='';
+  DB.categories.forEach(function(c){
+    var o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o);
+    (c.children||[]).forEach(function(s){
+      var o2=document.createElement('option'); o2.value=s.id; o2.textContent='  └ '+c.name+' / '+s.name; sel.appendChild(o2);
+    });
+  });
+  var loc=findFileLoc(filePath);
+  if(loc) sel.value = loc.node.id;
+  moveSrcFile=filePath;
+  $('#moveSub').textContent='文件：'+(filePath.split('/').pop());
+  $('#moveModal').classList.add('open');
+}
+
+/* 移动资料：确认执行（复制 blob 到新路径 + 删除旧路径 + 更新索引） */
+async function doMove(){
+  if(!needToken()) return;
+  var targetId=$('#moveTarget').value;
+  var loc=findFileLoc(moveSrcFile);
+  if(!loc){ toast('未找到文件记录','err'); return; }
+  var tf=findAnyCat(targetId);
+  if(!tf){ toast('目标分类不存在','err'); return; }
+  var srcArr=loc.arr, idx=loc.idx;
+  var fileObj=srcArr[idx];
+  if(!fileObj){ toast('未找到文件记录','err'); return; }
+  var newPath='files/'+tf.node.id+'/'+fileObj.name;
+  if(newPath===moveSrcFile){ toast('已在该分类中','err'); return; }
+  if((tf.node.files||[]).some(function(x){ return x.name===fileObj.name; })){ toast('目标分类已存在同名文件「'+fileObj.name+'」','err'); return; }
+  $('#moveModal').classList.remove('open');
+  try{
+    var old=await ghGet('library/'+moveSrcFile);
+    await ghPut('library/'+newPath, old.content, '资料库：移动 '+fileObj.name+' → '+tf.node.name);
+    fileObj.file=newPath;
+    srcArr.splice(idx,1);
+    tf.node.files=tf.node.files||[];
+    tf.node.files.push(fileObj);
+    await commitData('资料库：移动 '+fileObj.name);
+    await ghDel('library/'+moveSrcFile, '资料库：删除旧路径 '+fileObj.name, old.sha);
+    toast('已移动到「'+tf.node.name+'」'); renderAll();
+  }catch(err){ toast(err.message,'err'); }
+}
+
+/* 重命名资料 */
+async function renameFile(filePath){
+  if(!needToken()) return;
+  var loc=findFileLoc(filePath); if(!loc){ toast('未找到文件','err'); return; }
+  var arr=loc.arr, f=arr[loc.idx];
+  if(!f) return;
+  var nn=prompt('新文件名（含扩展名，如 report.pdf）：', f.name);
+  if(!nn || nn.trim()==='') return;
+  nn=nn.trim();
+  if(nn===f.name) return;
+  if(/[\/\\]/.test(nn)){ toast('文件名不能包含 / 或 \\','err'); return; }
+  if(arr.some(function(x){ return x.name===nn; })){ toast('该分类已存在同名文件','err'); return; }
+  var newPath='files/'+loc.node.id+'/'+nn;
+  try{
+    var old=await ghGet('library/'+filePath);
+    await ghPut('library/'+newPath, old.content, '资料库：重命名 '+f.name+' → '+nn);
+    f.name=nn; f.file=newPath;
+    await commitData('资料库：重命名 '+nn);
+    await ghDel('library/'+filePath, '资料库：删除旧名 '+f.name, old.sha);
+    toast('已重命名为「'+nn+'」'); renderAll();
+  }catch(err){ toast(err.message,'err'); }
+}
+
 /* ========== 加载 ========== */
 async function load(){
   try{
@@ -932,6 +1075,12 @@ $('#manageBtn').addEventListener('click', function(){
 });
 $('#tokSave').addEventListener('click', saveToken);
 $('#uploadBtn').addEventListener('click', uploadFile);
+
+/* 移动资料弹窗控制 */
+$('#moveClose').addEventListener('click', function(){ $('#moveModal').classList.remove('open'); });
+$('#moveCancel').addEventListener('click', function(){ $('#moveModal').classList.remove('open'); });
+$('#moveOk').addEventListener('click', doMove);
+document.querySelectorAll('[data-mclose]').forEach(function(b){ b.addEventListener('click', function(){ $('#moveModal').classList.remove('open'); }); });
 
 /* ========== 路由（#cat/xxx 或 #cat/xxx/yyy） ========== */
 function route(){
