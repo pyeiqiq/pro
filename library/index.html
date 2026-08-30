@@ -195,6 +195,13 @@
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.err{background:var(--danger);}
 
+  /* MHTML 共享查看器（深链 index.html?v=... 直接以网页形式打开） */
+  .viewer{position:fixed;inset:0;background:#fff;z-index:1000;display:none;flex-direction:column;}
+  .viewer.open{display:flex;}
+  .viewer-bar{display:flex;align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid var(--border);background:var(--surface);flex:none;}
+  .viewer-name{font-size:13.5px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .viewer iframe{flex:1;width:100%;border:0;background:#fff;}
+
   /* 响应式 */
   @media(max-width:860px){
     body{flex-direction:column;}
@@ -312,6 +319,15 @@
     <div class="empty" id="empty" style="display:none;"></div>
   </div>
 </main>
+
+<!-- MHTML 共享查看器（深链打开时显示） -->
+<div class="viewer" id="viewer">
+  <div class="viewer-bar">
+    <button class="btn sm" id="viewerBack"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>返回资料库</button>
+    <span class="viewer-name" id="viewerName"></span>
+  </div>
+  <iframe id="viewerFrame" title="MHTML 查看"></iframe>
+</div>
 
 <div id="toast"></div>
 
@@ -472,11 +488,11 @@ function renderCrumb(){
 
 function rowHtml(f, pathLabel){
   var ft=fileType(f.name);
-  var share=catPath(f);
+  var isMhtml=/\.mhtml?$/i.test(f.file);
+  var share=isMhtml ? (SITE + 'index.html?v=' + encodeURIComponent(f.file)) : catPath(f);
   var tags=(f.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('');
   var delBtn=adminOpen?'<button class="op danger" data-del=\''+esc(f.file)+'\' title="删除"><svg viewBox="0 0 24 24">'+ICONS.trash+'</svg>删除</button>':'';
   var pathTxt=pathLabel?'<span class="meta" style="margin-right:2px;">'+esc(pathLabel)+'</span>':'';
-  var isMhtml=/\.mhtml?$/i.test(f.file);
   var viewBtn=isMhtml
     ?'<button class="op" data-view="'+esc(f.file)+'" title="在线查看"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</button>'
     :'<a class="op" href="'+esc(f.file)+'" target="_blank" rel="noopener" title="查看/打开"><svg viewBox="0 0 24 24">'+ICONS.eye+'</svg>查看</a>';
@@ -589,6 +605,28 @@ function bindRows(){
 }
 
 /* ========== MHTML 在线查看 ========== */
+var viewerEl=null, viewerFrameEl=null, viewerNameEl=null;
+function ensureViewer(){
+  if(viewerEl) return;
+  viewerEl=$('#viewer'); viewerFrameEl=$('#viewerFrame'); viewerNameEl=$('#viewerName');
+  $('#viewerBack').onclick=function(){ viewerEl.classList.remove('open'); };
+}
+function showViewerLoading(name){
+  ensureViewer();
+  viewerNameEl.textContent=name||'MHTML 查看';
+  viewerEl.classList.add('open');
+  var doc=viewerFrameEl.contentDocument;
+  doc.open();
+  doc.write('<style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#646b78;background:#f4f6f9;}p{font-size:14px;}</style><p>正在解析 MHTML 文件，请稍候…</p>');
+  doc.close();
+}
+function showViewerOverlay(html, name){
+  ensureViewer();
+  viewerNameEl.textContent=name||'MHTML 查看';
+  var doc=viewerFrameEl.contentDocument;
+  doc.open(); doc.write(html); doc.close();
+  viewerEl.classList.add('open');
+}
 function qpDecode(s){
   s=s.replace(/=\r?\n/g,'');
   var bytes=[];
@@ -683,8 +721,22 @@ function mhtmlToHtml(text){
   });
   return out;
 }
-function viewMhtml(filePath){
+function viewMhtml(filePath, mode){
+  mode=mode||'blank';
   var url=(SITE+filePath).split('#')[0];
+  var name=decodeURIComponent(filePath.split('/').pop());
+  /* 深链共享：在当前页以网页形式打开（全屏查看器） */
+  if(mode==='self'){
+    showViewerLoading(name);
+    fetch(url,{cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('文件读取失败 ('+r.status+')'); return r.text(); })
+      .then(function(text){ showViewerOverlay(mhtmlToHtml(text), name); })
+      .catch(function(e){
+        showViewerOverlay('<p style="font-family:sans-serif;padding:40px;color:#c0392b;">解析失败：'+esc(e.message||e)+'</p>', '解析失败');
+      });
+    return;
+  }
+  /* 站内"查看"按钮：弹新窗口渲染（保持原行为） */
   var w=window.open('','_blank');
   if(!w){ toast('浏览器拦截了弹窗，请允许后重试','err'); return; }
   w.document.write('<style>body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#646b78;background:#f4f6f9;}p{font-size:14px;}</style><p>正在解析 MHTML 文件，请稍候…</p>');
@@ -695,7 +747,7 @@ function viewMhtml(filePath){
       var doc=w.document; doc.open();
       doc.write(html);
       doc.close();
-      doc.title=doc.title||'MHTML 查看';
+      doc.title=doc.title||name;
     })
     .catch(function(e){
       w.document.write('<p>解析失败：'+esc(e.message||e)+'</p>');
@@ -860,6 +912,12 @@ async function load(){
   }catch(e){ DB={updated:'',categories:[]}; }
   renderAll(); refreshCatParent();
   if(token) verifyToken();
+  /* 深链共享：index.html?v=<文件路径> 直接以网页形式打开 MHTML，而非下载 */
+  try{
+    var params=new URLSearchParams(location.search);
+    var v=params.get('v');
+    if(v){ viewMhtml(decodeURIComponent(v),'self'); }
+  }catch(e){}
 }
 
 /* ========== 事件 ========== */
