@@ -439,10 +439,12 @@ function toast(msg,type){
 function findCat(catId, subId){
   for(var i=0;i<DB.categories.length;i++){
     var c=DB.categories[i];
-    if(c.id===catId) return subId? null : {node:c, top:c};
-    for(var j=0;j<(c.children||[]).length;j++){
-      var s=c.children[j];
-      if(s.id===subId) return {node:s, top:c};
+    if(c.id===catId){
+      if(!subId) return {node:c, top:c};
+      for(var j=0;j<(c.children||[]).length;j++){
+        if(c.children[j].id===subId) return {node:c.children[j], top:c};
+      }
+      return null;   // 父级匹配但子分类不存在
     }
   }
   return null;
@@ -602,6 +604,7 @@ function renderUpTarget(){
   if(sel.cat===null){ $('#upTarget').innerHTML='未选择分类（请先在左侧选择一个分类）'; }
   else{
     var f=findCat(sel.cat,sel.sub);
+    if(!f){ $('#upTarget').innerHTML='分类不存在或已被删除'; return; }
     $('#upTarget').innerHTML='上传至：<b>'+esc(f.top.name)+(sel.sub?' / '+esc(f.node.name):'')+'</b>（files/'+esc(sel.cat)+'/）';
   }
 }
