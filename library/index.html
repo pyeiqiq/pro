@@ -240,7 +240,7 @@
   <a class="back" href="../index.html"><svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>返回工作台</a>
   <div class="search">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-    <input id="q" type="text" placeholder="搜索资料…" autocomplete="off">
+    <input id="q" type="text" placeholder="搜索资料…" autocomplete="new-password">
   </div>
   <div class="nav-label">分类</div>
   <ul class="tree" id="tree"></ul>
@@ -1084,7 +1084,7 @@ async function renameFile(filePath){
 
 /* ========== 加载 ========== */
 async function load(){
-  searchTouched=false; $('#q').value=''; q='';   // 清掉浏览器可能预填的历史搜索词
+  searchTouched=false; qEl.setAttribute('readonly', true); qEl.value=''; q='';   // 清掉浏览器可能预填的历史搜索词
   try{
     var r=await fetch('data.json?t='+Date.now(), {cache:'no-store'});
     if(!r.ok) throw new Error('data.json '+r.status);
@@ -1101,15 +1101,20 @@ async function load(){
 }
 
 /* ========== 事件 ========== */
-/* 防浏览器（如 Edge）刷新时自动回填历史搜索词（例：deepseek-chat）导致列表被过滤为空。
-   只有真实键盘输入才视为有效搜索；浏览器自动填充(无 keydown)则清空，保持默认显示全部。 */
+/* 防 Edge/Chrome 刷新自动填充历史搜索词(如 deepseek-chat)导致列表被过滤为空：
+   搜索框默认设为 readonly，浏览器不会对只读输入框做自动填充；用户点击/聚焦时才可输入。 */
+var qEl=$('#q');
 var searchTouched=false;
-$('#q').addEventListener('keydown', function(){ searchTouched=true; });
-$('#q').addEventListener('input', function(){
+qEl.setAttribute('readonly', true);
+function enableSearch(){ qEl.removeAttribute('readonly'); }
+qEl.addEventListener('focus', enableSearch);
+qEl.addEventListener('mousedown', enableSearch);
+qEl.addEventListener('keydown', function(){ searchTouched=true; });
+qEl.addEventListener('input', function(){
   if(searchTouched){ q=this.value.trim(); renderList(); }
-  else { this.value=''; q=''; }   // 浏览器自动回填，丢弃
+  else { this.value=''; q=''; }   // 兜底：丢弃任何非键盘输入的回填
 });
-window.addEventListener('pageshow', function(){ if(!searchTouched){ $('#q').value=''; q=''; } });
+window.addEventListener('pageshow', function(){ if(!searchTouched){ qEl.value=''; q=''; } });
 
 $('#manageBtn').addEventListener('click', function(){
   adminOpen=!adminOpen;
