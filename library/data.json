@@ -327,6 +327,14 @@
       "desc": "会议纪要、客户拜访与往来材料",
       "children": [
         {
+          "id": "cmtg3btg9",
+          "name": "Medela",
+          "icon": "users",
+          "desc": "美德乐客户相关资料",
+          "children": [],
+          "files": []
+        },
+        {
           "id": "cmtghyg177id",
           "name": "Willow",
           "icon": "users",
@@ -343,30 +351,6 @@
               "tags": []
             }
           ]
-        },
-        {
-          "id": "cmtgso5oqgie",
-          "name": "Medela",
-          "icon": "users",
-          "desc": "",
-          "children": [],
-          "files": []
-        },
-        {
-          "id": "cmtgsogx1e3h",
-          "name": "TJY",
-          "icon": "users",
-          "desc": "",
-          "children": [],
-          "files": []
-        },
-        {
-          "id": "cmtgsox86jaa",
-          "name": "十月结晶",
-          "icon": "users",
-          "desc": "",
-          "children": [],
-          "files": []
         }
       ],
       "files": [
@@ -403,6 +387,15 @@
           "type": "code",
           "size": "1.3 MB",
           "date": "2026-07-31",
+          "desc": "",
+          "tags": []
+        },
+        {
+          "name": "冷敷类产品亚马逊美国站调研报告.html",
+          "file": "files/cmt7bb2fq/冷敷类产品亚马逊美国站调研报告.html",
+          "type": "code",
+          "size": "47 KB",
+          "date": "2026-08-31",
           "desc": "",
           "tags": []
         }
