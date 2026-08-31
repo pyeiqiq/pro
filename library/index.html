@@ -840,18 +840,32 @@ async function ghDel(p, msg, sha){
   if(!r.ok){ var t=await r.text(); throw new Error('删除失败 ('+r.status+') '+(t||'').slice(0,160)); }
   return r.json();
 }
-var commitChain=null;   // 串行化多次 commit，避免 data.json 的 sha 竞争导致 422/409
+var commitQueue=Promise.resolve();   // 持久串行队列：所有 data.json 提交排队执行，绝不并发
 async function commitData(msg){
-  var run=async function(){
-    var remote;
-    try{ remote=await ghGet('library/data.json'); }
-    catch(e){ throw new Error('读取 data.json 失败：'+(e.message||e)); }
-    DB.updated=today();
-    await ghPut('library/data.json', b64u(JSON.stringify(DB,null,2)), msg, remote.sha);
-  };
-  if(commitChain) commitChain=commitChain.then(run, run);
-  else commitChain=run();
-  return commitChain;
+  /* 单次尝试：读取最新 sha → 提交；遇 409/422（sha 过期=并发提交导致）自动重读 sha 重试 */
+  async function attempt(){
+    for(var i=0;i<6;i++){
+      var remote;
+      try{ remote=await ghGet('library/data.json'); }
+      catch(e){ throw new Error('读取 data.json 失败：'+(e.message||e)); }
+      DB.updated=today();
+      try{
+        await ghPut('library/data.json', b64u(JSON.stringify(DB,null,2)), msg, remote.sha);
+        return;   // 提交成功
+      }catch(e){
+        // 409/422 = 文件已被改动（sha 不匹配）。退避后重读最新 sha 再提交，最多 6 次
+        if(i<5 && /(does not match|409|422|changed since|Resource.*changed)/i.test(e.message||'')){
+          await new Promise(function(r){ setTimeout(r, 200*(i+1)); });
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+  // 即便队列前一项失败也继续排队；队列本身永不 reject，供后续提交复用
+  var p=commitQueue.then(attempt, attempt);
+  commitQueue=p.catch(function(){});
+  return p;
 }
 
 /* ========== 管理操作 ========== */
