@@ -333,18 +333,27 @@
           "desc": "美德乐客户相关资料",
           "children": [],
           "files": []
+        },
+        {
+          "id": "cmtghyg177id",
+          "name": "Willow",
+          "icon": "users",
+          "desc": "willow客户相关资料",
+          "children": [],
+          "files": [
+            {
+              "name": "Willow 合作会议白板记录 · 产品开发需求.mhtml",
+              "file": "files/cmtghyg177id/Willow 合作会议白板记录 · 产品开发需求.mhtml",
+              "type": "code",
+              "size": "32 KB",
+              "date": "2026-08-25",
+              "desc": "",
+              "tags": []
+            }
+          ]
         }
       ],
       "files": [
-        {
-          "name": "Willow 合作会议白板记录 · 产品开发需求.mhtml",
-          "file": "files/meetings/Willow 合作会议白板记录 · 产品开发需求.mhtml",
-          "type": "code",
-          "size": "32 KB",
-          "date": "2026-08-25",
-          "desc": "",
-          "tags": []
-        },
         {
           "name": "关于_幼萌被列入美国ITC侵权名单_一事的核查报告1.mhtml",
           "file": "files/meetings/关于_幼萌被列入美国ITC侵权名单_一事的核查报告1.mhtml",
