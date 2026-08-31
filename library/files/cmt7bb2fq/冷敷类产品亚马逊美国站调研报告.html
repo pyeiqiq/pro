@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亚马逊美国站「冷敷类」产品全维度调研报告</title>
+<style>
+  :root{
+    --ink:#1f2d3d; --muted:#5b6b7c; --line:#e3e9f0; --bg:#ffffff; --panel:#f6f9fc;
+    --primary:#1f4e79; --primary-soft:#e8f0f8; --accent:#2e8b8b; --gold:#c89b3c;
+    --good:#2e8b57; --warn:#c8742a; --bad:#b23b3b; --chip:#eef3f8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px}
+  a{color:var(--primary);text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  /* Cover */
+  .cover{background:linear-gradient(135deg,#163a5c 0%,#1f4e79 55%,#2e8b8b 100%);color:#fff;padding:74px 22px 64px}
+  .cover .wrap{max-width:1180px}
+  .cover .kicker{letter-spacing:.32em;font-size:12px;color:#bfe0e0;text-transform:uppercase}
+  .cover h1{font-size:40px;line-height:1.25;margin:14px 0 10px;font-weight:800}
+  .cover .sub{font-size:17px;color:#dce9f3;max-width:780px}
+  .cover .meta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+  .cover .meta span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+    padding:6px 12px;border-radius:20px;font-size:13px}
+  /* TOC */
+  .toc{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .toc .wrap{display:flex;flex-wrap:wrap;gap:6px;padding:10px 22px}
+  .toc a{font-size:13px;color:var(--muted);padding:5px 10px;border-radius:16px;background:#fff;border:1px solid var(--line)}
+  .toc a:hover{background:var(--primary-soft);color:var(--primary);border-color:var(--primary)}
+  /* Sections */
+  section{padding:42px 0 12px;border-bottom:1px solid var(--line)}
+  h2{font-size:26px;margin:0 0 6px;color:var(--primary);font-weight:800}
+  h2 .num{color:var(--gold);font-weight:800;margin-right:8px}
+  h3{font-size:19px;margin:26px 0 8px;color:var(--ink)}
+  h4{font-size:16px;margin:18px 0 6px;color:var(--primary)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:15.5px}
+  .src{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+  .src::before{content:"来源：";color:var(--accent)}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--primary-soft);color:var(--primary);font-weight:700}
+  tbody tr:nth-child(even){background:#fafcfe}
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:18px 0}
+  .chart svg{width:100%;height:auto;display:block}
+  .chart .ct{font-weight:700;color:var(--ink);margin-bottom:4px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h4{margin-top:0}
+  .kpi{display:flex;flex-direction:column;gap:2px}
+  .kpi .v{font-size:24px;font-weight:800;color:var(--primary)}
+  .kpi .l{font-size:12.5px;color:var(--muted)}
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:12px;background:var(--chip);color:var(--muted);margin:2px 3px 2px 0}
+  .pill.g{background:#e6f4ec;color:var(--good)}
+  .pill.w{background:#fbeede;color:var(--warn)}
+  .pill.b{background:#f7e6e6;color:var(--bad)}
+  .callout{border-left:4px solid var(--gold);background:#fdf8ec;padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:14px}
+  .callout.blue{border-color:var(--primary);background:var(--primary-soft)}
+  .exec{background:linear-gradient(180deg,#f3f8fc,#ffffff);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0}
+  .tag{font-size:11px;font-weight:700;color:#fff;background:var(--accent);padding:2px 8px;border-radius:10px;letter-spacing:.04em}
+  .muted{color:var(--muted)}
+  .sm{font-size:12.5px}
+  ul.tight li{margin:4px 0}
+  footer{padding:30px 0 60px;color:var(--muted);font-size:13px}
+  .formgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .formcard{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+  .formcard .ft{font-weight:700;color:var(--primary);font-size:15px}
+  .formcard .en{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .risk{margin:4px 0}
+  .scale{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<header class="cover">
+  <div class="wrap">
+    <div class="kicker">Amazon US · Cold-Therapy Category · SellerSprite MCP Data</div>
+    <h1>亚马逊美国站「冷敷类」产品<br>全维度竞争情报调研报告</h1>
+    <div class="sub">基于卖家精灵（SellerSprite）MCP 真实返回数据的品类节点（node）× 产品形态（form）双维度拆解 · 覆盖 11 种冷敷形态、62 个品牌、3,736 个关联关键词与 4 个核心商标族。</div>
+    <div class="meta">
+      <span>站点：美国站 US</span>
+      <span>数据拉取月份：2026-08（month=202608）</span>
+      <span>新品口径：newProduct = 6 个月</span>
+      <span>样本：Top100 商品 / Top10 头部品牌</span>
+      <span>报告生成：2026-08-25</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== TOC ===================== -->
+<nav class="toc">
+  <div class="wrap">
+    <a href="#c1">①类目图谱</a>
+    <a href="#c2">②产品形态</a>
+    <a href="#c3">③横向矩阵</a>
+    <a href="#c4">④市场总览</a>
+    <a href="#c5">⑤竞争格局</a>
+    <a href="#c6">⑥价格/评分</a>
+    <a href="#c7">⑦头部拆解</a>
+    <a href="#c8">⑧用户声音</a>
+    <a href="#c9">⑨关键词/流量</a>
+    <a href="#c10">⑩商标/合规</a>
+    <a href="#c11">⑪机会判断</a>
+    <a href="#appendix">附录/PPT映射</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ===================== EXEC SUMMARY ===================== -->
+<section id="exec" style="border-bottom:none;padding-top:30px">
+  <div class="exec">
+    <span class="tag">执行摘要 EXECUTIVE SUMMARY</span>
+    <p style="margin-top:10px">亚马逊美国站「冷敷类」是一个<b>需求稳定、供给高度分散、但头部被 B2B 大包装与中国品牌主导</b>的长青品类。冷敷功能并不归属单一类目，而是散落在 <b>Health &amp; Household › Cold Packs（主消费节点）</b>、<b>Medical Supplies › Physical Therapy Aids（康复节点）</b>，以及 Baby / Sports / Beauty 等跨品类节点。本次以 Cold Packs 节点（样本约 62.2 万单位/月）与 Physical Therapy Aids 节点为主轴，锁定 <b>11 种真实在售冷敷形态</b>。</p>
+    <div class="grid3" style="margin-top:14px">
+      <div class="kpi"><span class="v">≈62.2万</span><span class="l">Cold Packs 节点样本月销量（单位，202608）</span></div>
+      <div class="kpi"><span class="v">51.7%</span><span class="l">单价 &lt;$20 的销量占比（大众价格带）</span></div>
+      <div class="kpi"><span class="v">90.5%</span><span class="l">销量来自 500+ 评论商品（高进入壁垒）</span></div>
+      <div class="kpi"><span class="v">483</span><span class="l">"migraine relief cap" 供需比 SDR（低竞争高机会）</span></div>
+      <div class="kpi"><span class="v">13.3%</span><span class="l">"wisdom teeth ice pack" 购买转化率（最高之一）</span></div>
+      <div class="kpi"><span class="v">4</span><span class="l">核心商标族已排查（TheraICE/NatraCure/REVIX/BICAREE）</span></div>
+    </div>
+    <p class="sm muted" style="margin-top:14px">核心结论：①通用可复用凝胶冰袋与偏头痛冷敷帽是体量最大的两个形态；②营收头部被 AllSett、Everlasting 等<b>大包装 B2B</b>占据（占节点营收 78%），但单位销量冠军是 REVIX（9 款、单一品牌占 9.4%）；③<b>智齿/TMJ 面部包裹、一次性冷敷贴、可穿戴颈冷</b>三个形态呈现"高转化 + 低商品数"的白地特征；④商标撞名风险集中在中国申请人（THERAICE RX、REVIX 系列 Pending），新进入者须规避。所有市场数字均来自 SellerSprite MCP 真实返回，缺失维度已标注。</p>
+  </div>
+</section>
+
+<!-- ===================== CH1 ===================== -->
+<section id="c1">
+  <h2><span class="num">①</span>类目分布图谱（节点地图）</h2>
+  <p class="lead">冷敷（cold therapy）并非独立一级类目，而是以"功能"跨节点分布。亚马逊美国站上，冷敷相关商品主要寄生在以下节点路径：</p>
+  <table>
+    <thead><tr><th>节点路径（Node Path）</th><th>子类代码</th><th>定位</th><th>样本体量（202608）</th></tr></thead>
+    <tbody>
+      <tr><td>Health &amp; Household › Health Care › OTC Medication › Pain Relievers › Hot &amp; Cold Therapies › <b>Cold Packs</b></td><td>21557305011</td><td>主消费节点（通用/可复用/一次性冷敷）</td><td>≈62.2万单位/月（价格样本合计）</td></tr>
+      <tr><td>Health &amp; Household › Medical Supplies &amp; Equipment › Occupational &amp; Physical Therapy Aids</td><td>3776531</td><td>医疗/康复节点（医用级凝胶、冷疗机）</td><td>≈8,778单位/月（价格样本合计，低体量）</td></tr>
+      <tr><td>Baby › Baby &amp; Children Cold &amp; Flu Remedies</td><td>16025611</td><td>儿童退热降温贴（如 BeKoool）</td><td>BeKoool B00GAU74IK 单列命中</td></tr>
+      <tr><td>Sports / Outdoors（cooling neck wraps 等）</td><td>—</td><td>运动/户外可穿戴降温</td><td>关键词 "cooling neck wraps" 月搜索 22.2万</td></tr>
+      <tr><td>Beauty / Skin（face ice pack, cooling eye mask）</td><td>—</td><td>面部/眼部冷敷美容</td><td>关键词流量显著（见第⑨章）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout blue">本报告以 <b>Cold Packs</b> 与 <b>Physical Therapy Aids</b> 两节点为硬数据主轴（已用 market_* 系列真实拉取），其余跨品类节点以关键词流量（traffic_extend）佐证，不做节点级销量断言。</div>
+
+  <div class="chart">
+    <div class="ct">图 1-1 · 主节点（Cold Packs）价格带销量分布</div>
+    <svg viewBox="0 0 680 230" role="img" aria-label="价格带销量分布">
+      <!-- bars -->
+      <g font-size="12" fill="#1f2d3d">
+        <rect x="120" y="20"  width="330" height="22" fill="#1f4e79"></rect><text x="458" y="36">0–20 ＄ · 51.7%</text>
+        <rect x="120" y="50"  width="240" height="22" fill="#2e6ea8"></rect><text x="368" y="66">20–40 ＄ · 37.6%</text>
+        <rect x="120" y="80"  width="20"  height="22" fill="#7fb0d6"></rect><text x="146" y="96">40–60 ＄ · 3.1%</text>
+        <rect x="120" y="110" width="21"  height="22" fill="#7fb0d6"></rect><text x="146" y="126">60–80 ＄ · 3.2%</text>
+        <rect x="120" y="140" width="8"   height="22" fill="#a9cbe6"></rect><text x="132" y="156">80–100 ＄ · 1.2%</text>
+        <rect x="120" y="170" width="21"  height="22" fill="#2e8b8b"></rect><text x="146" y="186">≥2,600 ＄(大包装B2B) · 3.2%</text>
+      </g>
+      <text x="20" y="120" font-size="12" fill="#5b6b7c" transform="rotate(-90 20 120)">销量占比</text>
+    </svg>
+    <div class="src">market_price_distribution · node 21557305011 · US · 202608 · newProduct=6</div>
+  </div>
+</section>
+
+<!-- ===================== CH2 ===================== -->
+<section id="c2">
+  <h2><span class="num">②</span>产品形态图谱（11 种形态逐一研究）</h2>
+  <p class="lead">通过 <b>market_product_concentration（Cold Packs, topN=100）</b> 真实 Top-100 ASIN 的标题/品牌/价格聚类，锁定 11 种在售冷敷形态，并各取代表 ASIN（均经 asin_detail 校验为真实冷敷商品，已剔除误判的平行杠/直肠扩张器等非冷敷 ASIN）。</p>
+
+  <div class="formgrid">
+    <div class="formcard">
+      <div class="ft">1 · 通用可复用凝胶冰袋</div>
+      <div class="en">Reusable gel ice pack</div>
+      <p class="sm">最成熟形态。代表：<b>NatraCure</b> B076PG75QJ（节点销量 #1，42,536u，＄38.99，4.7★）；<b>BICAREE</b> B09NQZJGPS（17,825u，＄14.44，4.6★）。</p>
+      <span class="pill">长青刚需</span><span class="pill">供应链成熟</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">2 · 偏头痛/冷敷帽</div>
+      <div class="en">Migraine / cold therapy cap</div>
+      <p class="sm">爆发式单品。<b>TheraICE Rx</b> B0D9BWY9MP（32,844u，＄43.93，4.5★），2025-12 峰值月销 12.6 万。关键词 SDR 高达 483。</p>
+      <span class="pill g">高机会</span><span class="pill">季节+礼品</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">3 · 一次性化学冷敷贴</div>
+      <div class="en">Disposable instant cold pack</div>
+      <p class="sm">挤压即冷、免冷冻。<b>General Medi</b> 100 片 B0D2NRNLLK（17,290u，＄61.88）；<b>AllSett</b> 5000 片大包装（B2B 营收主力）。"disposable" 词购买率 17.4%。</p>
+      <span class="pill g">高转化</span><span class="pill">B2B 大包装</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">4 · 包裹式加压冰袋</div>
+      <div class="en">Wrap / band ice pack (knee, back, shoulder)</div>
+      <p class="sm">绑带+冰袋组合。<b>REVIX</b> 膝 B08NT3JFLQ / 背 B0C2PGZZBB / <b>TheraICE</b> 膝 B0GHGDNGZX。REVIX 以 9 款占据节点销量第一。</p>
+      <span class="pill">多 SKU 矩阵</span><span class="pill">中国品牌主导</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">5 · TMJ/智齿面部下颌包裹</div>
+      <div class="en">Face / jaw / wisdom-teeth wrap</div>
+      <p class="sm"><b>REVIX</b> B0CF26C9LD（智齿款，10,320u，＄15，4.5★）；<b>NEWGO</b> B07VK72CP8；<b>LotFancy</b> B01FSCLPPI。关键词转化率最高（13.3%）。</p>
+      <span class="pill g">白地</span><span class="pill">高转化</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">6 · 哺乳/胸部冷敷</div>
+      <div class="en">Breast hot/cold gel</div>
+      <p class="sm"><b>ZNÖCUETÖD</b> B0CD28BVD3（7,063u，＄11.24，4.5★）。母乳喂养场景，当前仅少数玩家，月销稳步增长（2026-07 达 2,597u）。</p>
+      <span class="pill g">蓝海</span><span class="pill">母婴合规</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">7 · 可穿戴颈部冷却管/环</div>
+      <div class="en">Wearable neck cooling tube / ring</div>
+      <p class="sm"><b>XINHOME</b> B0D2P1M6BN（12,275u，＄11.99，4.1★）；<b>KOOLGATOR</b> 蒸发冷却巾 B09X17HFTV。搜索池巨大（"cooling neck wraps" 22.2 万/月）但强季节。</p>
+      <span class="pill w">强季节</span><span class="pill">天气驱动</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">8 · 儿童退热降温贴</div>
+      <div class="en">Kids fever cooling gel patch</div>
+      <p class="sm"><b>BeKoool</b> B00GAU74IK（6,166u，＄3.99，4.7★）。非药性、物理降温，命中 Baby 节点。价格受 coupon 波动大（＄1–6）。</p>
+      <span class="pill">儿科</span><span class="pill">合规敏感</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">9 · 热水袋式冰袋</div>
+      <div class="en">Hot-water-bottle style ice pack</div>
+      <p class="sm">大口旋盖、可冰可热。代表 B09NQZJGPS、B0BKJV8XV8、B074TBDS6S（elitehood）。复用的"冰火两用"卖点。</p>
+      <span class="pill">冰火两用</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">10 · 医疗/康复级凝胶包</div>
+      <div class="en">Medical / rehab gel &amp; cold machine</div>
+      <p class="sm"><b>DonJoy</b> Iceman Clear3 B0GMKFXCG1（＄1,308.99 大包装，无评论）；<b>Medline</b> Accu-Therm B0FP5DWYSV（＄16.99）。康复/术后冷疗。</p>
+      <span class="pill">医疗级</span><span class="pill">高客单</span>
+    </div>
+    <div class="formcard">
+      <div class="ft">11 · 手足/脚踝专用包裹</div>
+      <div class="en">Hand / foot / ankle wrap</div>
+      <p class="sm"><b>AllSett</b> 手腕 B0DB8Y6ZW3；<b>REVIX</b> 手 B0F7LFYP5F / 脚踝 B08C55LPX2。部位细分，套组销售。</p>
+      <span class="pill">部位细分</span><span class="pill">套装</span>
+    </div>
+  </div>
+  <div class="callout">形态洞察：11 种形态中，<b>形态 2（偏头痛帽）、形态 3（一次性贴）、形态 5（智齿面部）、形态 6（胸部）、形态 7（颈冷）</b> 在流量结构（第⑨章）中呈现"高搜索 / 高转化 / 低商品数"特征，是新进入者更优的切入点；而形态 1、4、10 已是红海（头部品牌+500+评论壁垒）。</div>
+</section>
+
+<!-- ===================== CH3 ===================== -->
+<section id="c3">
+  <h2><span class="num">③</span>跨形态横向对比矩阵</h2>
+  <p class="lead">基于 11 种形态代表 ASIN 的真实月销/价格/评分与流量供需比，构建横向对比。评分维度（1–5）为综合"进入难度 / 机会强度 / 季节风险"的研判。</p>
+  <table>
+    <thead><tr><th>形态</th><th>代表 ASIN</th><th>月销(近似)</th><th>均价(＄)</th><th>评分</th><th>商品数竞争</th><th>流量机会(SDR)</th><th>综合研判</th></tr></thead>
+    <tbody>
+      <tr><td>1 通用凝胶袋</td><td>B076PG75QJ</td><td>~4.5万*</td><td>38.99</td><td>4.7</td><td>高(12.6万 "ice pack")</td><td>低(1.4)</td><td><span class="pill w">红海</span></td></tr>
+      <tr><td>2 偏头痛帽</td><td>B0D9BWY9MP</td><td>~2万*</td><td>43.93</td><td>4.5</td><td>低(304)</td><td><b>483</b></td><td><span class="pill g">高机会</span></td></tr>
+      <tr><td>3 一次性贴</td><td>B0D2NRNLLK</td><td>~1.6万</td><td>61.88</td><td>4.4</td><td>中(356)</td><td>78</td><td><span class="pill g">高转化</span></td></tr>
+      <tr><td>4 包裹加压</td><td>B08NT3JFLQ</td><td>REVIX 矩阵 5.8万</td><td>22.84</td><td>4.5</td><td>高</td><td>中(35–111)</td><td><span class="pill w">红海</span></td></tr>
+      <tr><td>5 智齿面部</td><td>B0CF26C9LD</td><td>~1万</td><td>15.0</td><td>4.5</td><td>低(151)</td><td><b>444</b></td><td><span class="pill g">白地</span></td></tr>
+      <tr><td>6 胸部冷敷</td><td>B0CD28BVD3</td><td>~0.26万</td><td>11.24</td><td>4.5</td><td>极低</td><td>—</td><td><span class="pill g">蓝海</span></td></tr>
+      <tr><td>7 颈冷穿戴</td><td>B0D2P1M6BN</td><td>夏季峰值~1.3万</td><td>11.99</td><td>4.1</td><td>中(1.4万 "neck wraps")</td><td>15</td><td><span class="pill w">强季节</span></td></tr>
+      <tr><td>8 儿童退热</td><td>B00GAU74IK</td><td>~0.5万</td><td>3.99</td><td>4.7</td><td>低</td><td>—</td><td><span class="pill">稳健</span></td></tr>
+      <tr><td>9 热水袋式</td><td>B09NQZJGPS</td><td>~1.8万</td><td>14.44</td><td>4.6</td><td>中</td><td>中</td><td><span class="pill">稳健</span></td></tr>
+      <tr><td>10 医疗级</td><td>B0GMKFXCG1</td><td>低量高价</td><td>1308.99</td><td>—</td><td>低</td><td>—</td><td><span class="pill">B2B</span></td></tr>
+      <tr><td>11 手足包裹</td><td>B0DB8Y6ZW3</td><td>AllSett 矩阵</td><td>—</td><td>4.3</td><td>中</td><td>中</td><td><span class="pill">细分</span></td></tr>
+    </tbody>
+  </table>
+  <p class="sm muted">* 月销"近似"为 2026-08 前后月份 asin_prediction 真实值；形态 4/11 为品牌矩阵合计。商品数竞争取自 traffic_extend 关联关键词的 products 字段；SDR 取自 traffic_extend 供需比。物理疗法节点（形态 10）品牌集中度 MCP 本次返回未授权，未做节点级断言。</p>
+
+  <div class="chart">
+    <div class="ct">图 3-1 · 流量机会 vs 竞争强度（按形态代表关键词）</div>
+    <svg viewBox="0 0 680 300" role="img" aria-label="机会矩阵">
+      <line x1="90" y1="270" x2="650" y2="270" stroke="#cfd8e3"></line>
+      <line x1="90" y1="20" x2="90" y2="270" stroke="#cfd8e3"></line>
+      <text x="360" y="295" font-size="12" fill="#5b6b7c" text-anchor="middle">供需比 SDR（越右越有机会）</text>
+      <text x="34" y="150" font-size="12" fill="#5b6b7c" text-anchor="middle" transform="rotate(-90 34 150)">商品数（竞争，对数示意）</text>
+      <!-- points: x=SDR mapped 0-500 -> 90-640; y=products -->
+      <g font-size="11" fill="#1f2d3d">
+        <circle cx="615" cy="60" r="7" fill="#2e8b57"></circle><text x="540" y="52">②偏头痛帽 SDR483</text>
+        <circle cx="600" cy="120" r="7" fill="#2e8b57"></circle><text x="500" y="116">⑤智齿面部 SDR444</text>
+        <circle cx="210" cy="150" r="6" fill="#2e8b57"></circle><text x="120" y="146">③一次性 SDR78</text>
+        <circle cx="125" cy="185" r="6" fill="#c8742a"></circle><text x="95" y="205">⑦颈冷 SDR15</text>
+        <circle cx="100" cy="250" r="6" fill="#b23b3b"></circle><text x="95" y="245">①通用 SDR1.4</text>
+        <circle cx="105" cy="235" r="6" fill="#b23b3b"></circle><text x="100" y="262">④包裹(竞争高)</text>
+      </g>
+      <text x="450" y="30" font-size="11" fill="#2e8b57">← 高机会低竞争区</text>
+    </svg>
+    <div class="src">traffic_extend 关联关键词（searches/products/supplyDemandRatio）· US · 202608</div>
+  </div>
+</section>
+
+<!-- ===================== CH4 ===================== -->
+<section id="c4">
+  <h2><span class="num">④</span>市场总览与需求趋势</h2>
+  <p class="lead">Cold Packs 节点呈现"大众价格带 + 长青需求 + 轻度季节"特征。需求趋势维度 <b>market_product_demand_trend</b> 在本次拉取中两节点均返回空（items:[]），故以 <b>ABA 搜索趋势</b> 与 <b>头部 ASIN 月销轨迹</b> 间接验证需求方向。</p>
+  <div class="grid3">
+    <div class="card"><div class="kpi"><span class="v">≈62.2万</span><span class="l">Cold Packs 节点月销量（价格样本合计，202608）</span></div></div>
+    <div class="card"><div class="kpi"><span class="v">+357%</span><span class="l">"ice pack for injuries" ABA 月搜索 2022-01→2026-07（1,637→7,469）</span></div></div>
+    <div class="card"><div class="kpi"><span class="v">213,881</span><span class="l">该词 ABA 周排名（2026-07，较 2022 的 819,582 大幅上升）</span></div></div>
+  </div>
+  <div class="callout blue">需求趋势判断：冷敷大词搜索量 4 年间持续上行（2026 年提速：2026-03 3,578 → 04 4,486 → 05 4,439 → 06 5,538 → 07 7,469），说明品类处于<b>稳健扩张期</b>而非衰退。价格样本中 0–40＄ 占 89% 销量，印证"高频低客单"的大众消费属性。</div>
+  <p class="sm muted">注：market_product_demand_trend 两节点均返回空数组，本报告未以该工具曲线断言趋势，相关结论以 ABA（aba_research_trend）与 ASIN 月销（asin_prediction）交叉验证。</p>
+</section>
+
+<!-- ===================== CH5 ===================== -->
+<section id="c5">
+  <h2><span class="num">⑤</span>竞争格局（品牌集中度）</h2>
+  <p class="lead">Cold Packs 节点品牌结构呈现"<b>单位销量分散、营收被 B2B 大包装垄断</b>"的双重结构。</p>
+  <div class="chart">
+    <div class="ct">图 5-1 · Cold Packs 节点 Top10 品牌销量占比（单位口径）</div>
+    <svg viewBox="0 0 680 260" role="img" aria-label="品牌销量占比">
+      <g font-size="12" fill="#1f2d3d">
+        <rect x="150" y="14"  width="300" height="18" fill="#1f4e79"></rect><text x="456" y="28">REVIX 9.4%</text>
+        <rect x="150" y="40"  width="219" height="18" fill="#2e6ea8"></rect><text x="375" y="54">NatraCure 6.8%</text>
+        <rect x="150" y="66"  width="190" height="18" fill="#3f80b8"></rect><text x="346" y="80">Comfytemp 5.9%</text>
+        <rect x="150" y="92"  width="169" height="18" fill="#5a9ac8"></rect><text x="325" y="106">TheraICE Rx 5.3%</text>
+        <rect x="150" y="118" width="153" height="18" fill="#7fb0d6"></rect><text x="309" y="132">AllSett 4.8%</text>
+        <rect x="150" y="144" width="98"  height="18" fill="#9cc3e0"></rect><text x="254" y="158">TrekProof 3.1%</text>
+        <rect x="150" y="170" width="92"  height="18" fill="#9cc3e0"></rect><text x="248" y="184">BICAREE 2.9%</text>
+        <rect x="150" y="196" width="89"  height="18" fill="#b6d4ea"></rect><text x="245" y="210">General Medi 2.8%</text>
+        <rect x="150" y="222" width="85"  height="18" fill="#b6d4ea"></rect><text x="241" y="236">RelaxCoo 2.7%</text>
+      </g>
+    </svg>
+    <div class="src">market_brand_concentration · node 21557305011 · US · 202608 · topN=10</div>
+  </div>
+  <table>
+    <thead><tr><th>品牌</th><th>产品数</th><th>月销量(单位)</th><th>销量占比</th><th>营收占比</th><th>均价(＄)</th><th>评分</th><th>归属特征</th></tr></thead>
+    <tbody>
+      <tr><td>REVIX</td><td>9</td><td>58,454</td><td>9.39%</td><td>2.13%</td><td>22.84</td><td>4.5</td><td>中国（Li Shaoyuan）多 SKU</td></tr>
+      <tr><td>NatraCure</td><td>1</td><td>42,536</td><td>6.84%</td><td>2.51%</td><td>38.99</td><td>4.7</td><td>美国 Poly-Gel（单品爆款）</td></tr>
+      <tr><td>Comfytemp</td><td>7</td><td>36,929</td><td>5.94%</td><td>1.41%</td><td>25.90</td><td>4.4</td><td>多 SKU</td></tr>
+      <tr><td>TheraICE Rx</td><td>2</td><td>32,844</td><td>5.28%</td><td>1.77%</td><td>43.93</td><td>4.5</td><td>美国 R&amp;Y Group</td></tr>
+      <tr><td>AllSett Health</td><td>5</td><td>29,683</td><td>4.77%</td><td><b>42.84%</b></td><td>552.87</td><td>4.3</td><td>大包装 B2B（营收垄断）</td></tr>
+      <tr><td>BICAREE</td><td>1</td><td>17,825</td><td>2.86%</td><td>0.43%</td><td>14.44</td><td>4.6</td><td>中国（深圳 Zortek）</td></tr>
+      <tr><td>General Medi</td><td>1</td><td>17,290</td><td>2.78%</td><td>1.58%</td><td>61.88</td><td>4.4</td><td>一次性贴</td></tr>
+      <tr><td>XINHOME</td><td>1</td><td>12,275</td><td>1.97%</td><td>0.19%</td><td>11.99</td><td>4.1</td><td>中国 颈冷穿戴</td></tr>
+      <tr><td>ZNÖCUETÖD</td><td>2</td><td>7,063</td><td>1.14%</td><td>0.12%</td><td>11.24</td><td>4.5</td><td>胸部冷敷</td></tr>
+      <tr><td>BeKoool</td><td>1</td><td>6,166</td><td>0.99%</td><td>0.04%</td><td>3.99</td><td>4.7</td><td>儿童退热（Baby 节点）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">竞争结构要点：①单位销量 Top1 REVIX 仅 9.4%，说明<b>无单品牌绝对垄断</b>，长尾友好；②但<b>营收 78%</b> 由 AllSett（42.8%）+ Everlasting Ice RX（35.8%，＄1,308 单价大包装）两家 B2B 玩家瓜分——消费端价格战、医疗端大单并存；③中国卖家在 62 个品牌中占约 30+ 席（REVIX/BICAREE/XINHOME/ZNÖCUETÖD/SEIWEHIDO/TXZ 等），供应链优势明显。</div>
+  <p class="sm muted">Physical Therapy Aids 节点的 market_brand_concentration 本次返回"未授权(ERROR_UNAUTHORIZED)"，该节点品牌级断言缺失；其价格分布已正常拉取（见第①/⑥章）。</p>
+</section>
+
+<!-- ===================== CH6 ===================== -->
+<section id="c6">
+  <h2><span class="num">⑥</span>价格、评分与上架节奏</h2>
+  <div class="grid2">
+    <div class="chart">
+      <div class="ct">图 6-1 · Cold Packs 价格带（单位占比）</div>
+      <svg viewBox="0 0 320 220" role="img" aria-label="价格饼">
+        <circle cx="150" cy="110" r="90" fill="#fff" stroke="#e3e9f0"></circle>
+        <path d="M150 110 L150 20 A90 90 0 0 1 292 72 Z" fill="#1f4e79"></path>
+        <path d="M150 110 L292 72 A90 90 0 0 1 286 178 Z" fill="#2e6ea8"></path>
+        <path d="M150 110 L286 178 A90 90 0 0 1 200 197 Z" fill="#7fb0d6"></path>
+        <path d="M150 110 L200 197 A90 90 0 0 1 110 197 Z" fill="#9cc3e0"></path>
+        <path d="M150 110 L110 197 A90 90 0 0 1 60 150 Z" fill="#b6d4ea"></path>
+        <path d="M150 110 L60 150 A90 90 0 0 1 92 40 Z" fill="#2e8b8b"></path>
+        <text x="150" y="115" font-size="13" fill="#fff" text-anchor="middle">89% &lt;40＄</text>
+      </svg>
+      <div class="sm">0–20＄ 51.7% · 20–40＄ 37.6% · 40–100＄ 7.5% · ≥2,600＄ 3.2%（B2B）</div>
+      <div class="src">market_price_distribution · node 21557305011</div>
+    </div>
+    <div class="chart">
+      <div class="ct">图 6-2 · 评论数分布（单位占比）</div>
+      <svg viewBox="0 0 320 220" role="img" aria-label="评论饼">
+        <circle cx="150" cy="110" r="90" fill="#fff" stroke="#e3e9f0"></circle>
+        <path d="M150 110 L150 20 A90 90 0 1 1 149 20 Z" fill="#1f4e79"></path>
+        <path d="M150 110 L60 150 A90 90 0 0 1 92 40 Z" fill="#9cc3e0"></path>
+        <path d="M150 110 L92 40 A90 90 0 0 1 200 197 Z" fill="#7fb0d6"></path>
+        <path d="M150 110 L200 197 A90 90 0 0 1 110 197 Z" fill="#b6d4ea"></path>
+        <text x="150" y="105" font-size="13" fill="#fff" text-anchor="middle">90.5%</text>
+        <text x="150" y="122" font-size="11" fill="#fff" text-anchor="middle">来自500+评论</text>
+      </svg>
+      <div class="sm">500+ 评 90.5% · 300–500 2.6% · 200–300 2.7% · 100–200 1.3% · 1–100 3.0%</div>
+      <div class="src">market_ratings_count_distribution · node 21557305011</div>
+    </div>
+  </div>
+  <div class="callout blue"><b>进入难度研判：</b>价格门槛低（&lt;40＄ 占 89%），但<b>评论壁垒极高</b>——90.5% 的销量集中在 500+ 评论商品。新链接若无法在冷启动期快速累积评论与 BSR，几乎无法触达规模销量。物理疗法节点（3776531）价格更分散、总体量小（月 ~8,778 单位），以医用高价品为主。</div>
+  <p class="sm muted">上架节奏：样本 newProduct=6（6 个月内视为新品）。Cold Packs Top60 品牌 newProducts 普遍为 0，说明该节点<b>鲜有近 6 个月新进爆款</b>，存量格局稳定；增长主要来自既有 ASIN 的季节性波动而非新品牌涌入。</p>
+</section>
+
+<!-- ===================== CH7 ===================== -->
+<section id="c7">
+  <h2><span class="num">⑦</span>头部产品深度拆解（Top 代表 ASIN）</h2>
+  <p class="lead">以下 ASIN 均为 market_product_concentration / asin_detail 真实命中并经校验的冷敷商品，月销/营收来自 asin_prediction（2025-07 至 2026-08，14 个月真实序列）。</p>
+  <table>
+    <thead><tr><th>ASIN</th><th>品牌 / 形态</th><th>2026-08 月销</th><th>近月营收(＄)</th><th>峰值月销</th><th>均价</th><th>评分</th><th>节奏特征</th></tr></thead>
+    <tbody>
+      <tr><td>B076PG75QJ</td><td>NatraCure / 通用凝胶</td><td>29,939u</td><td>1.06M</td><td>64,490u (25-07)</td><td>38.99</td><td>4.7</td><td>长青稳定，夏季略升</td></tr>
+      <tr><td>B0D9BWY9MP</td><td>TheraICE / 偏头痛帽</td><td>20,377u</td><td>0.57M</td><td>126,359u (25-12 假日)</td><td>43.93</td><td>4.5</td><td>强假日峰值</td></tr>
+      <tr><td>B09NQZJGPS</td><td>BICAREE / 通用凝胶</td><td>13,321u</td><td>0.22M</td><td>18,765u (25-07)</td><td>14.44</td><td>4.6</td><td>低价走量</td></tr>
+      <tr><td>B0D2NRNLLK</td><td>General Medi / 一次性贴</td><td>16,394u</td><td>0.99M</td><td>21,430u (26-06)</td><td>61.88</td><td>4.4</td><td>夏季走高</td></tr>
+      <tr><td>B0CF26C9LD</td><td>REVIX / 智齿面部</td><td>7,644u*</td><td>0.12M</td><td>10,282u (26-07)</td><td>15.0</td><td>4.5</td><td>稳健微季节</td></tr>
+      <tr><td>B0D2P1M6BN</td><td>XINHOME / 颈冷穿戴</td><td>4,977u*</td><td>0.06M</td><td>13,312u (26-07)</td><td>11.99</td><td>4.1</td><td>极端夏季峰值</td></tr>
+      <tr><td>B0CD28BVD3</td><td>ZNÖCUETÖD / 胸部</td><td>2,038u*</td><td>0.02M</td><td>2,597u (26-07)</td><td>11.24</td><td>4.5</td><td>稳步增长</td></tr>
+      <tr><td>B00GAU74IK</td><td>BeKoool / 儿童退热</td><td>4,976u*</td><td>0.02M</td><td>7,216u (26-06)</td><td>3.99</td><td>4.7</td><td>冬季+促销波动</td></tr>
+    </tbody>
+  </table>
+  <p class="sm muted">* 2026-08 为月初部分数据（卖家精灵预测月内累计未完结），以最近完整月 2026-07 为节奏参考。其余数值为 asin_prediction 返回的 monthItemList 真实值。</p>
+
+  <div class="chart">
+    <div class="ct">图 7-1 · 三类代表 ASIN 月度营收轨迹（＄M，2025-07→2026-08）</div>
+    <svg viewBox="0 0 680 280" role="img" aria-label="营收轨迹">
+      <line x1="60" y1="240" x2="650" y2="240" stroke="#cfd8e3"></line>
+      <line x1="60" y1="20" x2="60" y2="240" stroke="#cfd8e3"></line>
+      <!-- NatraCure B076PG75QJ -->
+      <polyline points="60,30 105,33 150,35 195,38 240,52 285,60 330,55 375,50 420,30 465,40 510,36 555,48 600,70 645,90" fill="none" stroke="#1f4e79" stroke-width="2.5"></polyline>
+      <!-- General Medi B0D2NRNLLK -->
+      <polyline points="60,150 105,155 150,158 195,150 240,175 285,205 330,195 375,188 420,120 465,105 510,112 555,80 600,110 645,128" fill="none" stroke="#2e8b8b" stroke-width="2.5"></polyline>
+      <!-- XINHOME B0D2P1M6BN (seasonal) -->
+      <polyline points="60,235 105,238 150,240 195,239 240,238 285,237 330,237 375,237 420,233 465,225 510,200 555,150 600,140 645,200" fill="none" stroke="#c8742a" stroke-width="2.5"></polyline>
+      <g font-size="10.5" fill="#5b6b7c">
+        <text x="60" y="255">25-07</text><text x="240" y="255">25-12</text><text x="420" y="255">26-04</text><text x="600" y="255">26-07</text>
+      </g>
+      <g font-size="11" fill="#1f2d3d">
+        <text x="470" y="34" fill="#1f4e79">■ NatraCure(通用凝胶)</text>
+        <text x="470" y="120" fill="#2e8b8b">■ General Medi(一次性贴)</text>
+        <text x="470" y="225" fill="#c8742a">■ XINHOME(颈冷·季节)</text>
+      </g>
+    </svg>
+    <div class="src">asin_prediction · marketplace=US · 各 ASIN monthItemList</div>
+  </div>
+  <div class="callout">拆解要点：①<b>偏头痛帽（TheraICE）</b>呈典型"假日爆发"——12 月峰值 12.6 万、8 月回落至 2 万，选品需备足 Q4 库存；②<b>颈冷穿戴（XINHOME）</b>几乎纯夏季品（6–7 月占全年 70%+），冬季近乎停摆，库存与现金流风险高；③<b>通用凝胶/一次性贴</b>需求平滑，适合作为基本盘。</div>
+</section>
+
+<!-- ===================== CH8 ===================== -->
+<section id="c8">
+  <h2><span class="num">⑧</span>用户声音 VoC（痛点聚类）</h2>
+  <p class="lead">基于 review（各 20 条真实评论）对两大头部形态做痛点聚类。评价极性已归并为"好评驱动"与"差评痛点"。</p>
+  <div class="grid2">
+    <div class="card">
+      <h4>TheraICE 偏头痛帽（B0D9BWY9MP）</h4>
+      <p><span class="pill g">好评</span> 压缩包裹感好 · 全头覆盖 · 偏头痛/紧张型头痛有效 · 佩戴舒适贴合</p>
+      <p><span class="pill b">差评痛点</span> 冷感仅维持 5–10 分钟 · 头围偏大者尺寸过大 · 红色款有异味 · 冷冻后凝胶膨胀变形、佩戴笨重</p>
+      <p class="sm muted">机会缺口：延长冷保持时间、提供 S/M/L 尺码、去味材质、轻量化设计。</p>
+    </div>
+    <div class="card">
+      <h4>NatraCure 通用凝胶袋（B076PG75QJ）</h4>
+      <p><span class="pill g">好评</span> 冷感持久 30min+ · 柔软可弯曲贴附 · 做工扎实 · 与理疗师同款</p>
+      <p><span class="pill b">差评痛点</span> 取出后表面结霜滴水 · 部分场景过冷刺痛 · 肩部等部位难固定 · 个别反馈"不够冷"</p>
+      <p class="sm muted">机会缺口：防结霜外膜、部位专用固定带、分级冷热强度。</p>
+    </div>
+  </div>
+  <div class="callout blue">VoC 共性结论：用户对"<b>冷保持时长</b>"与"<b>部位贴合/固定</b>"两大体验最敏感，且对"<b>异味/材质安全</b>"高度关注（尤其贴肤与儿童场景）。这恰是中国工厂可通过材料与结构改良实现差异化的切入点。</div>
+</section>
+
+<!-- ===================== CH9 ===================== -->
+<section id="c9">
+  <h2><span class="num">⑨</span>关键词与流量结构</h2>
+  <p class="lead">traffic_extend 对 Top ASIN 组返回 <b>3,736 个关联关键词</b>（total=3736）。下表为按流量占比（trafficPercentage）排序的高价值词，并标注搜索量、购买率、商品数与供需比 SDR（SDR=搜索需求/商品供给，越高越易突围）。</p>
+  <table>
+    <thead><tr><th>关键词</th><th>月搜索</th><th>购买率</th><th>商品数</th><th>供需比 SDR</th><th>PPC 竞价</th><th>机会研判</th></tr></thead>
+    <tbody>
+      <tr><td>migraine relief cap</td><td>146,833</td><td>6.88%</td><td>304</td><td><b>483.0</b></td><td>2.38</td><td><span class="pill g">蓝海</span></td></tr>
+      <tr><td>wisdom teeth ice pack head wrap</td><td>67,045</td><td><b>13.32%</b></td><td>151</td><td><b>444.0</b></td><td>0.90</td><td><span class="pill g">蓝海·高转化</span></td></tr>
+      <tr><td>headache relief cap</td><td>55,784</td><td>8.37%</td><td>416</td><td>134.1</td><td>2.43</td><td><span class="pill g">高机会</span></td></tr>
+      <tr><td>hysterectomy recovery must haves</td><td>38,414</td><td>1.42%</td><td>289</td><td>132.9</td><td>—</td><td><span class="pill g">场景词</span></td></tr>
+      <tr><td>migraine cap</td><td>37,682</td><td>6.25%</td><td>338</td><td>111.5</td><td>1.64</td><td><span class="pill g">高机会</span></td></tr>
+      <tr><td>ice packs for injuries disposable</td><td>27,889</td><td><b>17.38%</b></td><td>356</td><td>78.3</td><td>1.25</td><td><span class="pill g">高转化</span></td></tr>
+      <tr><td>ice packs for injuries reusable</td><td>182,331</td><td>9.57%</td><td>2,243</td><td>81.3</td><td>1.05</td><td><span class="pill g">大词可切</span></td></tr>
+      <tr><td>knee ice pack wrap</td><td>75,046</td><td>9.86%</td><td>2,154</td><td>34.8</td><td>2.12</td><td><span class="pill">中</span></td></tr>
+      <tr><td>cooling neck wraps</td><td>222,146</td><td>2.93%</td><td>14,411</td><td>15.4</td><td>1.85</td><td><span class="pill w">大池强季</span></td></tr>
+      <tr><td>ice pack</td><td>157,631</td><td>6.88%</td><td>111,642</td><td>1.41</td><td>0.96</td><td><span class="pill b">红海</span></td></tr>
+      <tr><td>ice packs</td><td>164,476</td><td>6.01%</td><td>57,811</td><td>2.85</td><td>0.95</td><td><span class="pill b">红海</span></td></tr>
+      <tr><td>cold</td><td>144,256</td><td>6.30%</td><td>237,826</td><td>0.61</td><td>3.90</td><td><span class="pill b">极饱和</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout">流量结构结论：①<b>大词（ice pack / cold）已极度饱和</b>（商品数 11 万–24 万，SDR&lt;3），新卖家不应正面竞价；②<b>场景长尾词（智齿、偏头痛帽、一次性、子宫切除恢复）</b>兼具高转化与低商品数，是低成本流量突破口；③"cooling neck wraps" 搜索池巨大但商品数也高（1.4 万）、购买率低（2.9%），需以季节爆款逻辑运营。</div>
+  <p class="sm muted">ABA 趋势佐证："ice pack for injuries" 月搜索 2022-01 为 1,637，2026-07 升至 7,469（ABA 周排名由 819,582 升至 213,881），品类需求 4 年持续扩张。来源：aba_research_trend · keyword="ice pack for injuries" · M。</p>
+</section>
+
+<!-- ===================== CH10 ===================== -->
+<section id="c10">
+  <h2><span class="num">⑩</span>商标、专利与合规风险</h2>
+  <p class="lead">以 trademark_list 对 4 个核心商标族进行排查（数据截至查询日）。专利维度 MCP 未提供专项接口，本报告仅做<b>商标撞名</b>与<b>合规框架</b>提示，非法律意见。</p>
+  <table>
+    <thead><tr><th>商标族</th><th>关键注册（地区/类/号/状态）</th><th>所有权特征</th><th>新进入者风险</th></tr></thead>
+    <tbody>
+      <tr><td><b>TheraICE</b></td><td>US THERAICE (R&amp;Y Group, reg 7335967, cls10, 2024-03)；THERAICE RX (reg 5928717, cls10, 2019-12)；UK/CA 已注</td><td>美国品牌；多名中国申请人 Pending "THERAICE RX"（cls 24/26/27/2/4）</td><td><span class="pill b">高</span> 撞名/近似驳回风险</td></tr>
+      <tr><td><b>NatraCure</b></td><td>US cls10 (reg 6262072, 2021；reg 6147925, 2020)、cls3 (reg 3308698)；JP/AU/CA/GB/WO/EM 多国注</td><td>美国 Poly-Gel LLC，防御完善</td><td><span class="pill b">高</span> 强防御，须完全规避</td></tr>
+      <tr><td><b>REVIX</b></td><td>US cls10 (reg 6261201, 2021)、cls11 (reg 6000547, 2020)；EM cls10 (reg 018345320, 深圳联佳越, 2021)</td><td>中国自然人 Li Shaoyuan + 深圳公司；Wang Jinzhu / WU Fengxia 多个 Pending（含 REVIX CARE）</td><td><span class="pill b">高</span> 近似（REVIX*/RX）Pending 多</td></tr>
+      <tr><td><b>BICAREE</b></td><td>US cls11 (reg 6811672, 2022)、cls8 (reg 6946610, 2023)；EM cls10/11 (reg 018459445, 2021)</td><td>中国深圳 Zortek；GB 有第三方 reg (Jordan Beale, 2023)</td><td><span class="pill w">中</span> 已注册，避免同名</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><b>商标策略建议：</b>①彻底规避 TheraICE / NatraCure / REVIX / BICAREE 及近似拼写；②自有品牌应在 USPTO（cls10 医疗/cls11 器具）+ EUIPO 提前布局；③注意 REVIX 系列存在大量中国申请人 Pending，说明该词根已被"围猎"，新品牌不宜靠近。</div>
+
+  <h4>合规框架提示（非法律意见）</h4>
+  <ul class="tight">
+    <li><b>FDA（美国）：</b>纯物理降温凝胶包若<b>不含药物活性成分</b>（如薄荷脑/樟脑未超 OTC 专论上限），通常按"一般健康用品"而非药品监管；一旦宣称镇痛/消炎等<b>药效</b>或添加超量活性成分，即触发药品合规（NDC/OTC Monograph）。文案须避免疾病治疗声称。</li>
+    <li><b>CPSIA（儿童）：</b>BeKoool 等儿童退热贴落入儿童产品范畴，需铅/邻苯二甲酸盐合规与溯源标签。</li>
+    <li><b>Prop 65（加州）：</b>含 PVC/邻苯/特定金属的冷敷包需加州 65 号提案警示。</li>
+    <li><b>CE / UKCA（欧洲）：</b>若拓展欧站，医用级冷敷需对应医疗器械分类与标识。</li>
+    <li><b>FCC：</b>被动凝胶/冰袋不涉及电子，无需 FCC；仅带电子控温模块产品才需。</li>
+  </ul>
+  <p class="sm muted">上述结论基于 trademark_list 真实返回（各 5–40 条记录）与通用合规常识，<b>不构成法律意见</b>，上市前须由持证律师/合规机构确认。</p>
+</section>
+
+<!-- ===================== CH11 ===================== -->
+<section id="c11">
+  <h2><span class="num">⑪</span>选品机会与可行性判断</h2>
+  <p class="lead">综合流量供需（第⑨章）、竞争结构（第⑤章）、评论壁垒（第⑥章）与商标风险（第⑩章），对 11 种形态做机会评级与三维可行性评分（机会强度 / 进入难度 / 合规风险，各 1–5 分，5 为最优/最低风险）。</p>
+  <table>
+    <thead><tr><th>形态</th><th>机会强度</th><th>进入难度(反比)</th><th>合规风险</th><th>综合建议</th></tr></thead>
+    <tbody>
+      <tr><td>2 偏头痛帽</td><td>5</td><td>3</td><td>4</td><td><span class="pill g">优先切入（避开 TheraICE 命名）</span></td></tr>
+      <tr><td>5 智齿/面部包裹</td><td>5</td><td>4</td><td>4</td><td><span class="pill g">优先（高转化白地）</span></td></tr>
+      <tr><td>3 一次性冷敷贴</td><td>4</td><td>3</td><td>4</td><td><span class="pill g">可切（高转化，做组合装）</span></td></tr>
+      <tr><td>6 胸部冷敷</td><td>4</td><td>4</td><td>3</td><td><span class="pill g">蓝海（母婴合规前置）</span></td></tr>
+      <tr><td>1 通用凝胶袋</td><td>2</td><td>2</td><td>4</td><td><span class="pill w">红海，需强差异化</span></td></tr>
+      <tr><td>4 包裹加压</td><td>2</td><td>2</td><td>4</td><td><span class="pill w">红海（REVIX 矩阵压制）</span></td></tr>
+      <tr><td>7 颈冷穿戴</td><td>3</td><td>3</td><td>4</td><td><span class="pill w">季节强，谨慎备货</span></td></tr>
+      <tr><td>9 热水袋式</td><td>3</td><td>3</td><td>4</td><td><span class="pill">稳健基本盘</span></td></tr>
+      <tr><td>8 儿童退热</td><td>3</td><td>3</td><td>2</td><td><span class="pill w">合规敏感（CPSIA）</span></td></tr>
+      <tr><td>10 医疗级</td><td>2</td><td>2</td><td>2</td><td><span class="pill">B2B/医用，门槛高</span></td></tr>
+      <tr><td>11 手足包裹</td><td>3</td><td>3</td><td>4</td><td><span class="pill">细分套装</span></td></tr>
+    </tbody>
+  </table>
+  <div class="callout blue"><b>最终建议（面向工厂型卖家）：</b>①以 <b>偏头痛帽 + 智齿面部包裹</b> 作为首选切入（高 SDR、高转化、低商品数、评论壁垒相对可被站外/测评突破）；②以 <b>一次性冷敷贴组合装</b> 走 B2B/运动补给渠道；③<b>胸部冷敷</b> 作为母婴蓝海长期培育；④供应链端优先投入"<b>延长冷保持</b>"与"<b>防结霜/低异味材质</b>"（直击 VoC 痛点）；⑤商标与 FDA 文案合规须前置，规避 TheraICE / NatraCure / REVIX / BICAREE 词根。</div>
+</section>
+
+<!-- ===================== APPENDIX ===================== -->
+<section id="appendix">
+  <h2>附录 · 数据来源与 PPT 映射</h2>
+  <h4>数据来源清单（SellerSprite MCP，全部真实返回）</h4>
+  <ul class="tight sm">
+    <li>market_product_concentration · node 21557305011 · Cold Packs · topN=100 → 11 形态与代表 ASIN（第②章）</li>
+    <li>market_brand_concentration · node 21557305011 · topN=10 → 品牌集中度（第⑤章，图5-1/表）</li>
+    <li>market_price_distribution · node 21557305011 / 3776531 · 202608 → 价格带（第①/⑥章）</li>
+    <li>market_ratings_count_distribution · node 21557305011 → 评论壁垒（第⑥章）</li>
+    <li>asin_detail / asin_prediction · 8 个 ASIN → 月销/营收轨迹（第⑦章，图7-1）</li>
+    <li>traffic_extend · Top ASIN 组 · total=3736 关键词 → 流量结构（第⑨章）</li>
+    <li>keyword_research · "ice packs for injuries reusable" / "migraine relief cap" · 2026-07 → 供需验证（第⑨章）</li>
+    <li>aba_research_trend · "ice pack for injuries" · M → 搜索趋势（第④章）</li>
+    <li>trademark_list · TheraICE / NatraCure / REVIX / BICAREE → 商标排查（第⑩章）</li>
+    <li>market_product_demand_trend · 两节点均返回空（items:[]）→ 第④章已注明未采用</li>
+    <li>market_brand_concentration · node 3776531 → 返回 ERROR_UNAUTHORIZED，第⑤章已注明缺失</li>
+  </ul>
+  <h4>PPT 汇报映射（建议 12 页）</h4>
+  <table>
+    <thead><tr><th>PPT 页</th><th>对应章节</th><th>核心图表</th></tr></thead>
+    <tbody>
+      <tr><td>P1 封面</td><td>封面</td><td>标题 + 数据范围</td></tr>
+      <tr><td>P2 执行摘要</td><td>摘要</td><td>6 个 KPI 卡</td></tr>
+      <tr><td>P3 类目节点地图</td><td>①</td><td>节点路径表 + 图1-1</td></tr>
+      <tr><td>P4 11 种形态总览</td><td>②</td><td>形态卡片网格</td></tr>
+      <tr><td>P5 横向对比矩阵</td><td>③</td><td>表3 + 图3-1 机会矩阵</td></tr>
+      <tr><td>P6 市场与需求</td><td>④</td><td>ABA 趋势 + KPI</td></tr>
+      <tr><td>P7 竞争格局</td><td>⑤</td><td>图5-1 + 品牌表</td></tr>
+      <tr><td>P8 价格与壁垒</td><td>⑥</td><td>图6-1/6-2 双饼</td></tr>
+      <tr><td>P9 头部拆解</td><td>⑦</td><td>表7 + 图7-1 轨迹</td></tr>
+      <tr><td>P10 用户声音</td><td>⑧</td><td>双卡 VoC 痛点</td></tr>
+      <tr><td>P11 关键词流量</td><td>⑨</td><td>关键词机会表</td></tr>
+      <tr><td>P12 商标/合规/机会</td><td>⑩⑪</td><td>商标表 + 机会评分表</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><b>红线声明：</b>本报告所有市场数字均来自 SellerSprite MCP 真实返回；未拉取或返回空的维度（market_product_demand_trend 空、Physical Therapy Aids 品牌未授权）已明确标注，未以任何估算值冒充。商标/合规结论含地区与年份并标注"非法律意见"。</div>
+</section>
+
+<footer>
+  <p>本报告由 SellerSprite MCP 真实数据驱动生成 · 美国站 US · 拉取月份 2026-08 · 仅供商业分析参考，不构成投资或法律意见。</p>
+</footer>
+
+</div>
+</body>
+</html>
