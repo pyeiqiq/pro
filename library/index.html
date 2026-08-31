@@ -1084,6 +1084,7 @@ async function renameFile(filePath){
 
 /* ========== 加载 ========== */
 async function load(){
+  searchTouched=false; $('#q').value=''; q='';   // 清掉浏览器可能预填的历史搜索词
   try{
     var r=await fetch('data.json?t='+Date.now(), {cache:'no-store'});
     if(!r.ok) throw new Error('data.json '+r.status);
@@ -1100,7 +1101,15 @@ async function load(){
 }
 
 /* ========== 事件 ========== */
-$('#q').addEventListener('input', function(){ q=this.value.trim(); renderList(); });
+/* 防浏览器（如 Edge）刷新时自动回填历史搜索词（例：deepseek-chat）导致列表被过滤为空。
+   只有真实键盘输入才视为有效搜索；浏览器自动填充(无 keydown)则清空，保持默认显示全部。 */
+var searchTouched=false;
+$('#q').addEventListener('keydown', function(){ searchTouched=true; });
+$('#q').addEventListener('input', function(){
+  if(searchTouched){ q=this.value.trim(); renderList(); }
+  else { this.value=''; q=''; }   // 浏览器自动回填，丢弃
+});
+window.addEventListener('pageshow', function(){ if(!searchTouched){ $('#q').value=''; q=''; } });
 
 $('#manageBtn').addEventListener('click', function(){
   adminOpen=!adminOpen;
