@@ -327,14 +327,6 @@
       "desc": "会议纪要、客户拜访与往来材料",
       "children": [
         {
-          "id": "cmtg3btg9",
-          "name": "Medela",
-          "icon": "users",
-          "desc": "美德乐客户相关资料",
-          "children": [],
-          "files": []
-        },
-        {
           "id": "cmtghyg177id",
           "name": "Willow",
           "icon": "users",
