@@ -824,19 +824,19 @@ function b64u(str){ return btoa(unescape(encodeURIComponent(str))); }
 function needToken(){ if(!token){ toast('请先输入 GitHub Token 并连接','err'); $('#manage').classList.add('open'); adminOpen=true; $('#manageBtn').textContent='收起管理'; return false; } return true; }
 
 async function ghGet(p){
-  var r=await fetch(API+apiPath(p)+'?ref='+BRANCH,{headers:ghHeaders()});
+  var r=await fetch(API+apiPath(p)+'?ref='+BRANCH,{headers:ghHeaders(),cache:'no-store'});
   if(!r.ok) throw new Error('读取失败 ('+r.status+')');
   return r.json();
 }
 async function ghPut(p, content, msg, sha){
   var body={message:msg, content:content, branch:BRANCH};
   if(sha) body.sha=sha;
-  var r=await fetch(API+apiPath(p),{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body)});
+  var r=await fetch(API+apiPath(p),{method:'PUT',headers:ghHeaders(),body:JSON.stringify(body),cache:'no-store'});
   if(!r.ok){ var t=await r.text(); throw new Error('提交失败 ('+r.status+') '+(t||'').slice(0,160)); }
   return r.json();
 }
 async function ghDel(p, msg, sha){
-  var r=await fetch(API+apiPath(p),{method:'DELETE',headers:ghHeaders(),body:JSON.stringify({message:msg, sha:sha, branch:BRANCH})});
+  var r=await fetch(API+apiPath(p),{method:'DELETE',headers:ghHeaders(),body:JSON.stringify({message:msg, sha:sha, branch:BRANCH}),cache:'no-store'});
   if(!r.ok){ var t=await r.text(); throw new Error('删除失败 ('+r.status+') '+(t||'').slice(0,160)); }
   return r.json();
 }
@@ -880,7 +880,7 @@ function saveToken(){
 async function verifyToken(){
   if(!token) return;
   try{
-    var r=await fetch('https://api.github.com/user',{headers:ghHeaders()});
+    var r=await fetch('https://api.github.com/user',{headers:ghHeaders(),cache:'no-store'});
     if(r.ok){ var u=await r.json(); $('#connSt').textContent='已连接 · '+u.login; $('#connSt').className='st on'; toast('已连接 GitHub：'+u.login); }
     else{ $('#connSt').textContent='连接失败 ('+r.status+')'; $('#connSt').className='st off'; toast('Token 无效或权限不足','err'); }
   }catch(e){ $('#connSt').textContent='网络错误'; $('#connSt').className='st off'; }
