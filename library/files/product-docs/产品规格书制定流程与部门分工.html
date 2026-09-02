@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品规格书制定流程与部门分工（建议稿）</title>
+<style>
+  :root{
+    --navy:#123a6b; --navy-2:#1b4b8f; --navy-3:#0e2f5a;
+    --gold:#c9a227; --gold-2:#b8912f;
+    --bg:#f4f6fa; --card:#ffffff; --line:#e3e8f0;
+    --ink:#1c2733; --ink-2:#5b6b7c;
+    --blue-soft:#eaf1fb; --gold-soft:#faf3dd; --gray-soft:#f0f2f5;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    background:var(--bg); color:var(--ink); font-size:14px; line-height:1.75;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px;}
+
+  /* ===== Header ===== */
+  header.hero{
+    background:linear-gradient(135deg,var(--navy-3) 0%,var(--navy) 55%,var(--navy-2) 100%);
+    color:#fff; padding:46px 40px 38px; border-radius:0 0 14px 14px;
+    box-shadow:0 4px 18px rgba(14,47,90,.25); position:relative; overflow:hidden;
+  }
+  header.hero::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:260px; height:260px;
+    border-radius:50%; border:2px solid rgba(201,162,39,.45);
+  }
+  header.hero::before{
+    content:""; position:absolute; right:30px; top:10px; width:120px; height:120px;
+    border-radius:50%; border:2px solid rgba(201,162,39,.3);
+  }
+  .hero .kicker{font-size:12px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;}
+  .hero h1{font-size:30px;font-weight:700;letter-spacing:1px;line-height:1.4;}
+  .hero .sub{font-size:14px;color:#c8d6ea;margin-top:10px;}
+  .hero .sub b{color:#fff;}
+  .doc-info{
+    display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:22px;padding-top:18px;
+    border-top:1px solid rgba(255,255,255,.18);font-size:12.5px;color:#c8d6ea;
+  }
+  .doc-info .k{color:var(--gold);margin-right:6px;}
+  .doc-info .ph{color:#ffd76a;font-style:normal;}
+
+  /* ===== Nav ===== */
+  nav.topnav{
+    position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line);
+    box-shadow:0 2px 8px rgba(18,58,107,.06);
+  }
+  nav.topnav .inner{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto;}
+  nav.topnav a{
+    display:block;padding:13px 14px;font-size:13px;color:var(--ink-2);
+    text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;transition:.2s;
+  }
+  nav.topnav a:hover{color:var(--navy);}
+  nav.topnav a.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:600;}
+  .print-btn{
+    margin-left:auto;align-self:center;padding:6px 14px;font-size:12px;color:#fff;
+    background:var(--navy);border:none;border-radius:6px;cursor:pointer;white-space:nowrap;
+  }
+  .print-btn:hover{background:var(--navy-2);}
+
+  /* ===== Sections ===== */
+  section{margin-top:44px;}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .sec-no{
+    flex:none;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:var(--navy);color:#fff;font-weight:700;font-size:15px;
+    box-shadow:0 3px 8px rgba(18,58,107,.28);
+  }
+  .sec-head h2{font-size:22px;color:var(--navy);letter-spacing:.5px;}
+  .sec-head .en{margin-left:auto;font-size:11px;letter-spacing:2px;color:#9aa7b5;text-transform:uppercase;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;box-shadow:0 2px 8px rgba(18,58,107,.05);}
+  .card + .card{margin-top:16px;}
+  p{color:var(--ink);}
+  .lead{font-size:14.5px;}
+  .muted{color:var(--ink-2);font-size:13px;}
+
+  h3.blk{font-size:16px;color:var(--navy);margin:22px 0 10px;padding-left:12px;border-left:4px solid var(--gold);}
+  h3.blk:first-child{margin-top:0;}
+
+  ul.clean{list-style:none;}
+  ul.clean li{position:relative;padding-left:20px;margin:7px 0;}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:10px;width:7px;height:7px;border-radius:2px;background:var(--gold);transform:rotate(45deg);}
+  ul.clean li b{color:var(--navy);}
+
+  /* highlight box */
+  .hl{
+    background:linear-gradient(90deg,var(--gold-soft),#fff);border:1px solid #ecd9a0;
+    border-left:5px solid var(--gold);border-radius:8px;padding:14px 18px;margin:14px 0;
+  }
+  .hl .t{font-weight:700;color:#8a6d1a;font-size:13.5px;margin-bottom:4px;}
+  .navy-box{
+    background:linear-gradient(90deg,var(--blue-soft),#fff);border:1px solid #c9d9ef;
+    border-left:5px solid var(--navy);border-radius:8px;padding:14px 18px;margin:14px 0;
+  }
+  .navy-box .t{font-weight:700;color:var(--navy);font-size:13.5px;margin-bottom:4px;}
+
+  .ph{display:inline-block;border-bottom:1px dashed var(--gold-2);color:#8a6d1a;padding:0 2px;}
+
+  /* ===== Overview strip ===== */
+  .overview{display:flex;align-items:stretch;gap:0;margin:6px 0 4px;}
+  .ov-node{
+    flex:1;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--navy);
+    border-radius:10px;padding:14px 10px;text-align:center;
+  }
+  .ov-node .n{font-size:11px;letter-spacing:1px;color:var(--gold-2);font-weight:700;}
+  .ov-node .t{font-size:13.5px;font-weight:700;color:var(--navy);margin-top:3px;}
+  .ov-node .d{font-size:11.5px;color:var(--ink-2);margin-top:3px;line-height:1.5;}
+  .ov-node .owner{display:inline-block;margin-top:7px;font-size:11px;color:var(--navy);background:var(--blue-soft);border:1px solid #c9d9ef;border-radius:20px;padding:1px 9px;}
+  .ov-arrow{flex:none;align-self:center;color:var(--gold-2);font-size:20px;padding:0 6px;}
+
+  /* ===== Flow ===== */
+  .stage{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:18px;overflow:hidden;box-shadow:0 2px 8px rgba(18,58,107,.05);}
+  .stage-head{
+    display:flex;align-items:center;gap:12px;padding:13px 22px;background:linear-gradient(90deg,var(--navy),var(--navy-2));color:#fff;
+  }
+  .stage-head .no{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+  .stage-head .t{font-size:15.5px;font-weight:700;}
+  .stage-head .tag{margin-left:auto;font-size:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:2px 10px;}
+  .stage-body{padding:16px 22px 18px;}
+  .step{display:flex;gap:14px;padding:10px 0;}
+  .step-dot{
+    flex:none;width:30px;height:30px;border-radius:50%;background:var(--blue-soft);border:2px solid var(--navy);
+    color:var(--navy);font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center;margin-top:2px;
+  }
+  .step-body{flex:1;}
+  .step-title{font-size:14.5px;font-weight:700;color:var(--ink);}
+  .step-desc{font-size:13.5px;color:var(--ink);margin-top:3px;}
+  .step-desc .dim{color:var(--ink-2);}
+  .step-out{margin-top:6px;font-size:12.5px;color:var(--navy);}
+  .step-out::before{content:"输出";display:inline-block;background:var(--navy);color:#fff;font-size:10.5px;border-radius:4px;padding:0 6px;margin-right:7px;vertical-align:1px;}
+  .step-out.gold::before{background:var(--gold-2);}
+  .step-arrow{text-align:center;color:#b9c4d2;font-size:16px;line-height:1;padding:1px 0;}
+
+  .badge{display:inline-block;font-size:11.5px;border-radius:20px;padding:1px 9px;margin-left:6px;vertical-align:1px;white-space:nowrap;}
+  .badge.r{background:var(--navy);color:#fff;}
+  .badge.a{background:var(--gold-2);color:#fff;}
+  .badge.c{background:var(--blue-soft);color:var(--navy);border:1px solid #c9d9ef;}
+  .badge.i{background:var(--gray-soft);color:var(--ink-2);border:1px solid #dde3ea;}
+  .badge.cust{background:#7a4fb0;color:#fff;}
+
+  /* ===== Tables ===== */
+  table{border-collapse:collapse;width:100%;font-size:12.5px;}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;}
+  thead th{background:var(--navy);color:#fff;font-weight:600;text-align:center;}
+  tbody tr:nth-child(even){background:#f8fafd;}
+  td.c{text-align:center;}
+  .raci{display:inline-block;min-width:26px;text-align:center;font-size:12px;font-weight:700;border-radius:5px;padding:1px 6px;}
+  .raci.R{background:var(--navy);color:#fff;}
+  .raci.A{background:var(--gold-2);color:#fff;}
+  .raci.C{background:var(--blue-soft);color:var(--navy);}
+  .raci.I{background:var(--gray-soft);color:var(--ink-2);}
+  .tbl-note{font-size:12px;color:var(--ink-2);margin-top:8px;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0 6px;font-size:12px;color:var(--ink-2);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+
+  /* ===== Q&A ===== */
+  .qa{border:1px solid var(--line);border-radius:10px;margin-top:14px;overflow:hidden;background:var(--card);}
+  .qa-q{background:var(--blue-soft);padding:12px 20px;font-weight:700;color:var(--navy);font-size:14.5px;display:flex;gap:10px;align-items:flex-start;}
+  .qa-q .qmark{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .qa-a{padding:14px 20px 16px;font-size:13.5px;color:var(--ink);}
+  .qa-a .concl{background:var(--gold-soft);border:1px solid #ecd9a0;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:13.5px;}
+  .qa-a .concl b{color:#8a6d1a;}
+
+  /* ===== Framework grid ===== */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .fw-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .fw-card .no{font-size:12px;font-weight:700;color:var(--gold-2);letter-spacing:1px;}
+  .fw-card .t{font-weight:700;color:var(--navy);font-size:14px;margin:2px 0 5px;}
+  .fw-card .d{font-size:12.5px;color:var(--ink-2);line-height:1.65;}
+
+  /* ===== Doc chain ===== */
+  .chain{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:12px 0 2px;}
+  .chain .node{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-align:center;}
+  .chain .node .t{font-size:13.5px;font-weight:700;color:var(--navy);}
+  .chain .node .r{font-size:11px;color:var(--ink-2);margin-top:2px;}
+  .chain .node.hot{border:2px solid var(--gold);box-shadow:0 0 0 3px var(--gold-soft);}
+  .chain .node.hot .t{color:var(--gold-2);}
+  .chain .arr{flex:none;align-self:center;color:var(--gold-2);font-size:18px;padding:0 8px;}
+
+  /* ===== Speed card ===== */
+  .speed{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:6px;}
+  .sp{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--navy);border-radius:10px;padding:16px 18px;}
+  .sp.gold{border-top-color:var(--gold);}
+  .sp .t{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .sp.gold .t{color:var(--gold-2);}
+  .sp .row{font-size:13px;margin:5px 0;}
+  .sp .row b{color:var(--ink);}
+  .redline{background:#fdf0f0;border:1px solid #f2c9c9;border-left:5px solid #c0392b;border-radius:8px;padding:12px 16px;margin-top:16px;font-size:13.5px;}
+  .redline .t{font-weight:700;color:#b03a2e;margin-bottom:4px;}
+
+  footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  /* ===== Print ===== */
+  @media print{
+    body{background:#fff;font-size:12px;}
+    nav.topnav{display:none;}
+    .print-btn{display:none;}
+    .wrap{max-width:none;padding:0;}
+    header.hero{border-radius:0;padding:30px 34px;}
+    section{margin-top:30px;page-break-inside:avoid;}
+    .card,.stage,.qa,.fw-card,.sp{box-shadow:none;}
+    .stage,.qa,.card{page-break-inside:avoid;}
+    .grid2,.speed{page-break-inside:avoid;}
+    .ov-arrow{color:#999;}
+    a{text-decoration:none;color:inherit;}
+    h2{page-break-after:avoid;}
+    .stage-head{page-break-after:avoid;}
+  }
+  @page{size:A4;margin:13mm 12mm;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">PRODUCT SPECIFICATION PROCESS · 内部流程文件</div>
+  <h1>产品规格书制定流程与部门分工</h1>
+  <div class="sub">适用于 <b>自研产品开发</b> 与 <b>客户 OEM/ODM 项目</b> —— 本文件为 <b>建议稿</b>，供内部评审确认后发布</div>
+  <div class="doc-info">
+    <span><span class="k">文件编号</span><span class="ph">[YM-PS-001]</span></span>
+    <span><span class="k">版本</span>V0.1（评审稿）</span>
+    <span><span class="k">密级</span>内部</span>
+    <span><span class="k">编制</span><span class="ph">[XX]</span></span>
+    <span><span class="k">审核</span><span class="ph">[XX]</span></span>
+    <span><span class="k">批准</span><span class="ph">[XX]</span></span>
+    <span><span class="k">日期</span>2026-09-02</span>
+  </div>
+</header>
+
+<nav class="topnav">
+  <div class="inner">
+    <a href="#s1">01 背景与目的</a>
+    <a href="#s2">02 术语与文档关系</a>
+    <a href="#s3">03 两种业务模式</a>
+    <a href="#s4">04 制定总流程</a>
+    <a href="#s5">05 部门分工 RACI</a>
+    <a href="#s6">06 争议焦点与建议</a>
+    <a href="#s7">07 规格书内容框架</a>
+    <a href="#s8">08 变更管理</a>
+    <a href="#s9">09 一页速查</a>
+    <button class="print-btn" onclick="window.print()">打印 / 导出 PDF</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ 01 ============ -->
+<section id="s1">
+  <div class="sec-head">
+    <div class="sec-no">01</div>
+    <h2>背景与目的</h2>
+    <div class="en">Background &amp; Purpose</div>
+  </div>
+  <div class="card">
+    <p class="lead">我司实行「自研产品 + 客户 OEM/ODM」双轨业务。当前某客户项目需向客户输出《产品规格书》，但内部对<strong>由谁主导编制、如何组织评审、由谁批准、客户提供的规格书如何引用</strong>存在争议，流程尚未统一，存在返工与口径不一致风险。</p>
+    <h3 class="blk">本文件目的</h3>
+    <ul class="clean">
+      <li>统一产品规格书从<strong>需求输入 → 编制 → 评审 → 批准 → 受控 → 变更</strong>的全流程，明确各环节主责部门与参与部门；</li>
+      <li>厘清<strong>自研产品</strong>与<strong>客户 OEM/ODM 项目</strong>两种模式下规格书定位与审批链的差异；</li>
+      <li>给出争议焦点问题的<strong>建议口径</strong>，供内部讨论拍板，最终形成受控管理文件。</li>
+    </ul>
+    <h3 class="blk">三条基本原则</h3>
+    <div class="hl">
+      <div class="t">原则一 · 主笔负责</div>
+      谁编写条款，谁对条款的技术与质量负责；跨专业条款必须由对应专业部门主笔，不允许单人闭门定稿。
+    </div>
+    <div class="hl">
+      <div class="t">原则二 · 会签评审</div>
+      规格书是产品开发与客户确认的基准文件，关键条款须经研发、工程、品质、采购、生产、财务等多部门评审会签。
+    </div>
+    <div class="hl">
+      <div class="t">原则三 · 先批后用</div>
+      规格书批准发布前，不得作为打样、开模、采购、试产的依据；发布后任何变更必须走受控变更流程，严禁口头变更。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section id="s2">
+  <div class="sec-head">
+    <div class="sec-no">02</div>
+    <h2>术语与文档关系</h2>
+    <div class="en">Terms &amp; Document Hierarchy</div>
+  </div>
+  <div class="card">
+    <h3 class="blk">核心术语</h3>
+    <ul class="clean">
+      <li><b>产品规格书（PS, Product Specification）</b>：定义产品功能、性能、结构、材料、安全、法规、包装等要求的受控文件，是产品开发、检验、采购、生产与客户确认的<strong>基准文件</strong>。</li>
+      <li><b>客户需求文件</b>：客户提供的需求输入（RFQ、需求表、客户版规格书、口头/邮件需求），属「输入文件」，需转化为内部规格书，不得直接作为内部开发与检验依据。</li>
+      <li><b>需求覆盖矩阵</b>：将客户每一条要求与内部规格书条款逐一映射，标注「满足 / 协商 / 超出 / 不适用」的对照表，是客户项目评审与验收的依据。</li>
+      <li><b>ECR / ECN</b>：工程变更申请（Engineering Change Request）/ 工程变更通知（Engineering Change Notice），规格书变更的受控载体。</li>
+    </ul>
+    <h3 class="blk">规格书在文件体系中的位置</h3>
+    <div class="chain">
+      <div class="node"><div class="t">立项书 / 产品定义</div><div class="r">回答 Why（为什么做）</div></div>
+      <div class="arr">→</div>
+      <div class="node hot"><div class="t">产品规格书 ★</div><div class="r">回答 What（做什么、做到什么程度）</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="t">技术方案 / 开发任务书</div><div class="r">回答 How（怎么做）</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="t">检验规范 / 测试报告</div><div class="r">回答 Verify（如何验证）</div></div>
+    </div>
+    <p class="muted" style="margin-top:10px;">规格书是承上启下的基准：上游承接立项书与客户需求，下游约束技术方案、检验规范、采购与生产。规格书一旦失准，下游全部失真。</p>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section id="s3">
+  <div class="sec-head">
+    <div class="sec-no">03</div>
+    <h2>两种业务模式下规格书的定位</h2>
+    <div class="en">Self-Developed vs OEM/ODM</div>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:16%;">维度</th>
+          <th style="width:42%;">自研产品</th>
+          <th>客户 OEM / ODM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>业务触发</b></td><td>产品部市场调研、立项（公司自主决策）</td><td>业务部接单：客户 RFQ / 客户需求</td></tr>
+        <tr><td><b>牵头部门</b></td><td>产品部牵头</td><td>项目部牵头组织（管进度与客户接口），产品部 + 研发部主笔编制</td></tr>
+        <tr><td><b>需求来源</b></td><td>产品定义（MRD / PRD）</td><td>客户需求文件（须经转化与条款映射）</td></tr>
+        <tr><td><b>评审重点</b></td><td>市场竞争力、技术可行性、成本目标</td><td>客户需求覆盖度、可实现性、成本与报价约束、交期约束</td></tr>
+        <tr><td><b>批准链</b></td><td>产品部负责人批准</td><td>内部：项目部负责人批准；外部：客户确认（签认 / 邮件）</td></tr>
+        <tr><td><b>附加要求</b></td><td>竞品对标、核心卖点定义</td><td>需求覆盖矩阵、客户条款映射、交期与认证约束、报价联动</td></tr>
+        <tr><td><b>变更管理</b></td><td>内部 ECN 流程</td><td>ECN 流程 + 涉及客户要求的变更须客户再确认</td></tr>
+      </tbody>
+    </table>
+    <div class="navy-box" style="margin-top:14px;">
+      <div class="t">关键判断</div>
+      无论哪种模式，规格书都是同一份受控文件，差异只在「触发、牵头、评审重点、批准链」四个维度。建议<strong>共用一套流程模板</strong>，用「项目类型」字段区分走哪条分支，避免两套流程打架。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 ============ -->
+<section id="s4">
+  <div class="sec-head">
+    <div class="sec-no">04</div>
+    <h2>制定总流程（六阶段）</h2>
+    <div class="en">End-to-End Process</div>
+  </div>
+
+  <div class="overview">
+    <div class="ov-node"><div class="n">STAGE 1</div><div class="t">需求输入</div><div class="d">业务部 / 产品部</div><div class="owner">触发</div></div>
+    <div class="ov-arrow">→</div>
+    <div class="ov-node"><div class="n">STAGE 2</div><div class="t">规格书编制</div><div class="d">产品部牵头 · 研发部主笔</div><div class="owner">草案 V0.x</div></div>
+    <div class="ov-arrow">→</div>
+    <div class="ov-node"><div class="n">STAGE 3</div><div class="t">内部评审</div><div class="d">多部门会签 · 问题闭环</div><div class="owner">修订版</div></div>
+    <div class="ov-arrow">→</div>
+    <div class="ov-node"><div class="n">STAGE 4</div><div class="t">批准发布</div><div class="d">内部批准 + 客户确认</div><div class="owner">受控版 V1.0</div></div>
+    <div class="ov-arrow">→</div>
+    <div class="ov-node"><div class="n">STAGE 5</div><div class="t">受控分发</div><div class="d">按用途发放 · 文控归档</div><div class="owner">基线化</div></div>
+  </div>
+  <p class="muted" style="margin-top:10px;">Stage 6「变更管理」贯穿全生命周期，规格书批准后任何调整均回归该流程。</p>
+
+  <!-- Stage 1 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 1</span><span class="t">需求输入与澄清</span><span class="tag">触发阶段</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">1.1</div>
+        <div class="step-body">
+          <div class="step-title">接收客户需求 / RFQ<span class="badge r">业务部</span><span class="badge c">项目部</span></div>
+          <div class="step-desc">客户项目：业务部接收客户 RFQ、需求表、客户版规格书，登记《需求记录单》，明确商务要素（数量、目标价、交期）。项目部同步介入确认客户技术接口人。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">1.2</div>
+        <div class="step-body">
+          <div class="step-title">客户技术澄清会<span class="badge r">项目部</span><span class="badge c">研发部</span><span class="badge c">产品部</span><span class="badge c">财务部</span></div>
+          <div class="step-desc">客户项目：组织澄清功能、性能、目标市场与法规、认证要求、目标成本、交期、数量；研发部做可行性预判。<span class="dim">自研产品跳过此步，由产品部立项并定义产品。</span></div>
+          <div class="step-out">需求记录单 / 客户技术澄清纪要</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">1.3</div>
+        <div class="step-body">
+          <div class="step-title">产品定义（自研）/ 需求确认（客户项目）<span class="badge r">产品部</span><span class="badge a">产品部负责人</span></div>
+          <div class="step-desc">自研：产品部基于市场调研输出产品定义（MRD/PRD），明确目标市场、目标用户、核心卖点。客户项目：与客户确认需求记录，形成规格书编制的输入基线。</div>
+          <div class="step-out">产品定义书（MRD/PRD）或《需求记录单》确认版</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 2 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 2</span><span class="t">规格书编制</span><span class="tag">草案阶段</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">2.1</div>
+        <div class="step-body">
+          <div class="step-title">搭建框架，编制产品定义类条款<span class="badge r">产品部</span></div>
+          <div class="step-desc">产品定位、功能清单、使用场景、性能目标、用户体验、竞品对标结论。性能目标须<strong>量化、可检验</strong>，例如「吸力 ≥ [XX] kPa、噪音 ≤ [XX] dB」——不确定项标注 <span class="ph">[TBD]</span> 待评审确认。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">2.2</div>
+        <div class="step-body">
+          <div class="step-title">编制技术条款<span class="badge r">研发部</span><span class="badge c">工程部</span><span class="badge c">品质部</span><span class="badge c">采购部</span></div>
+          <div class="step-desc">研发部主笔硬件/电气/软件/结构指标并确认可实现性；工程部补充结构、工艺、安规、包装条款；品质部补充质量标准、可靠性、认证要求；采购部提供关键物料选型与可采购性意见。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">2.3</div>
+        <div class="step-body">
+          <div class="step-title">汇总成稿<span class="badge r">产品部</span><span class="badge c">项目部</span><span class="badge c">行政人事部</span></div>
+          <div class="step-desc">产品部汇总各专业条款形成《产品规格书（草案）》，版本 V0.1 起；客户项目由项目部排期管控编制进度；文控登记草稿编号。附《需求覆盖矩阵》初版（客户项目必做）。</div>
+          <div class="step-out">产品规格书（草案 V0.x）+ 需求覆盖矩阵（初版）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 3 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 3</span><span class="t">内部评审（会签）</span><span class="tag">质量关口</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">3.1</div>
+        <div class="step-body">
+          <div class="step-title">组织评审会<span class="badge r">产品部</span><span class="badge r">项目部</span></div>
+          <div class="step-desc">自研：产品部组织；客户项目：项目部组织。提前发放草案与《评审表》，参会部门按专业维度审查。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">3.2</div>
+        <div class="step-body">
+          <div class="step-title">分专业评审</div>
+          <div class="step-desc">
+            <span class="badge c">研发部</span> 技术可行性、指标可实现性　<span class="badge c">工程部</span> 结构/工艺可行、DFM/DFA　<span class="badge c">品质部</span> 可检验性、标准合理性、法规符合性<br>
+            <span class="badge c">采购部</span> 物料齐套与供应风险　<span class="badge c">生产部</span> 可制造性、工艺能力　<span class="badge c">财务部</span> 目标成本核算（客户项目同步支撑报价）<br>
+            <span class="badge c">业务部</span> 客户需求覆盖度（对照需求记录 / 需求覆盖矩阵）
+          </div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">3.3</div>
+        <div class="step-body">
+          <div class="step-title">问题闭环与复审<span class="badge a">产品部 / 项目部</span></div>
+          <div class="step-desc">形成《问题清单》，逐条落实到责任人并限期修订；重大分歧由产品部（自研）/ 项目部（客户项目）主持裁决；修订后再复审，直至通过。<span class="dim">评审未通过不得进入批准环节。</span></div>
+          <div class="step-out">评审记录表 / 问题清单 / 修订版规格书</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 4 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 4</span><span class="t">批准与发布</span><span class="tag">定版关口</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">4.1</div>
+        <div class="step-body">
+          <div class="step-title">内部批准<span class="badge a">产品部负责人</span><span class="badge a">项目部负责人</span></div>
+          <div class="step-desc">自研：产品部负责人批准；客户项目：项目部负责人批准。<span class="dim">批准人须对规格书与输入（产品定义 / 客户需求）的一致性负最终责任。</span></div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">4.2</div>
+        <div class="step-body">
+          <div class="step-title">客户确认（客户项目必做）<span class="badge r">业务部</span><span class="badge c">项目部</span><span class="badge cust">客户</span></div>
+          <div class="step-desc">业务部/项目部将规格书提交客户签认或邮件确认；客户意见 → 修订 → 再确认，直至冻结。<span class="dim">未经客户确认不得进入开发执行阶段（客户项目）。</span></div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">4.3</div>
+        <div class="step-body">
+          <div class="step-title">定版与受控编号<span class="badge r">行政人事部</span><span class="badge c">品质部</span></div>
+          <div class="step-desc">文控（行政人事部设文控岗，或品质部文控兼任，按公司现状指定）赋受控编号、定版 V1.0、登记编制/审核/批准/日期/密级。</div>
+          <div class="step-out gold">受控版《产品规格书》V1.0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 5 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 5</span><span class="t">受控分发与基线化</span><span class="tag">执行依据</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">5.1</div>
+        <div class="step-body">
+          <div class="step-title">按用途发放<span class="badge r">行政人事部</span></div>
+          <div class="step-desc">
+            <span class="badge i">研发部</span> 开发设计依据　<span class="badge i">工程部</span> 开模/工艺依据　<span class="badge i">品质部</span> 检验/认证依据<br>
+            <span class="badge i">采购部</span> 询价/物料开发依据　<span class="badge i">生产部</span> 试产/量产依据　<span class="badge i">项目部</span> 项目基线存档
+          </div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">5.2</div>
+        <div class="step-body">
+          <div class="step-title">建立发放记录并归档<span class="badge r">行政人事部</span></div>
+          <div class="step-desc">登记发放对象与份数，原件归档；旧版文件按受控要求回收或加盖「作废」章。规格书冻结后作为<strong>打样、开模、采购、试产的前提条件</strong>。</div>
+          <div class="step-out">发放记录表 / 归档记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 6 -->
+  <div class="stage">
+    <div class="stage-head"><span class="no">STAGE 6</span><span class="t">变更管理（贯穿全周期）</span><span class="tag">受控变更</span></div>
+    <div class="stage-body">
+      <div class="step">
+        <div class="step-dot">6.1</div>
+        <div class="step-body">
+          <div class="step-title">变更触发与申请<span class="badge r">提出部门</span></div>
+          <div class="step-desc">触发源：客户需求变化、技术障碍、物料停产/替代、法规更新、成本压力、生产品质问题。提出部门填写《变更申请单（ECR）》，说明变更内容、原因与影响范围。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">6.2</div>
+        <div class="step-body">
+          <div class="step-title">变更评审（ECN）<span class="badge r">产品部</span><span class="badge c">研发 / 品质 / 工程 / 采购 / 生产 / 财务</span></div>
+          <div class="step-desc">产品部组织评估对技术、成本、交期、质量、法规的影响；涉及客户要求时须客户再确认（业务部对接）。分类审批规则见第 08 节。</div>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="step">
+        <div class="step-dot">6.3</div>
+        <div class="step-body">
+          <div class="step-title">更新版本并重新分发<span class="badge r">行政人事部</span><span class="badge a">产品部 / 项目部</span></div>
+          <div class="step-desc">批准后版本升级（V1.1…），登记修订记录；新版分发、旧版回收。<strong>严禁口头变更、严禁未批先动</strong>（未批准先改模/先采购）。</div>
+          <div class="step-out">变更记录 / 新版规格书 + 修订记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section id="s5">
+  <div class="sec-head">
+    <div class="sec-no">05</div>
+    <h2>部门分工矩阵（RACI）</h2>
+    <div class="en">Responsibility Matrix</div>
+  </div>
+  <div class="card" style="overflow-x:auto;">
+    <div class="legend">
+      <span><span class="raci R">R</span> 负责执行（Responsible）</span>
+      <span><span class="raci A">A</span> 最终批准（Accountable）</span>
+      <span><span class="raci C">C</span> 被咨询（Consulted）</span>
+      <span><span class="raci I">I</span> 被告知（Informed）</span>
+      <span style="color:#8a6d1a;">* 按项目类型二选一（自研 / 客户项目）</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="min-width:170px;">流程活动</th>
+          <th>产品部</th><th>研发部</th><th>项目部</th><th>工程部</th>
+          <th>品质部</th><th>采购部</th><th>财务部</th><th>行政人事部</th><th>生产部</th><th>业务部</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>客户需求收集与澄清（客户项目）</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td></tr>
+        <tr><td>产品定义 / 需求记录（自研）</td><td class="c"><span class="raci R">R</span><span class="raci A">A</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>规格书框架与产品条款编制</td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>技术 / 结构 / 质量条款编制</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td></tr>
+        <tr><td>草案汇总成稿</td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td></tr>
+        <tr><td>内部评审组织（自研）</td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>内部评审组织（客户项目）</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>评审结论确认</td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>目标成本核算与报价支持</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci A">A</span></td></tr>
+        <tr><td>批准发布（内部）</td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td></tr>
+        <tr><td>客户确认（客户项目）</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td></tr>
+        <tr><td>受控分发与归档</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span><span class="raci A">A</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td></tr>
+        <tr><td>变更申请（ECR）</td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci R">R</span></td></tr>
+        <tr><td>变更评审（ECN）</td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci C">C</span></td><td class="c"><span class="raci C">C</span></td></tr>
+        <tr><td>变更批准与新版发布</td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci A">A</span>*</td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td><td class="c"><span class="raci I">I</span></td><td class="c"><span class="raci R">R</span></td></tr>
+      </tbody>
+    </table>
+    <div class="tbl-note">
+      说明：① 产品部 = 自研项目牵头；项目部 = 客户项目牵头，二者按项目类型取其一，故部分活动出现两处 A*。② 「变更申请（ECR）」中，任何部门均可作为提出方（R）。③ 「客户确认」的最终批准方为客户（表外），业务部负责对接。④ 文控职能建议由行政人事部设文控岗或由品质部兼任，按公司现状指定后在受控文件中固化。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 ============ -->
+<section id="s6">
+  <div class="sec-head">
+    <div class="sec-no">06</div>
+    <h2>争议焦点与处理建议</h2>
+    <div class="en">Disputes &amp; Recommendations</div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q"><span class="qmark">?</span>争议一：产品规格书到底由哪个部门编制？</div>
+    <div class="qa-a">
+      争议源于「编制」被理解为单一部门的事。建议采用<strong>「牵头 + 主笔 + 会签」三级协作机制</strong>，而不是指定一个部门全权负责：
+      <ul class="clean" style="margin-top:6px;">
+        <li><b>牵头</b>：产品部（自研）/ 项目部（客户项目，管进度与客户接口）——负责组织、排期、汇总、裁决；</li>
+        <li><b>主笔</b>：产品部写产品定义类条款，研发部主笔技术条款，工程部、品质部、采购部分别补充结构/工艺、质量/认证、物料条款——<strong>谁的专业谁写</strong>；</li>
+        <li><b>会签</b>：草案提交各部门按专业维度评审会签，通过后由批准人定版。</li>
+      </ul>
+      <div class="concl"><b>结论：</b>规格书是「产品部牵头、研发部主笔、多部门会签」的集体产物，单一部门包办既不合理也不可行；客户项目由项目部牵头组织，避免产品部孤军作战。</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q"><span class="qmark">?</span>争议二：客户给了规格书，能不能直接引用、直接用？</div>
+    <div class="qa-a">
+      不能直接用。客户规格书是「<strong>需求输入</strong>」，缺内部工程实现、检验标准、公差与认证细节，直接引用会在开发与检验环节产生真空。
+      <div class="chain" style="margin:10px 0 4px;">
+        <div class="node"><div class="t">客户规格书 / RFQ</div><div class="r">需求输入</div></div>
+        <div class="arr">→</div>
+        <div class="node hot"><div class="t">需求解析 + 条款映射</div><div class="r">需求覆盖矩阵</div></div>
+        <div class="arr">→</div>
+        <div class="node"><div class="t">内部产品规格书</div><div class="r">客户要求 + 工程实现 + 检验标准</div></div>
+      </div>
+      <div class="concl"><b>结论：</b>客户规格书须转化为内部规格书，并通过<strong>需求覆盖矩阵</strong>逐条映射（满足 / 协商 / 超出 / 不适用）；转化后原客户要求仍保留原文备查，作为验收依据。</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q"><span class="qmark">?</span>争议三：评审会由谁主持？规格书由谁批准？</div>
+    <div class="qa-a">
+      <ul class="clean">
+        <li><b>评审主持</b>：自研 = 产品部；客户项目 = 项目部（可邀请产品部提供产品专业支持或联合主持）；</li>
+        <li><b>内部批准</b>：自研 = 产品部负责人；客户项目 = 项目部负责人——批准人对规格书与输入的<strong>一致性负最终责任</strong>；</li>
+        <li><b>外部确认</b>：客户项目必须经客户签认 / 邮件确认后方可进入开发执行阶段。</li>
+      </ul>
+      <div class="concl"><b>结论：</b>「谁组织评审」与「谁批准」分离——组织者负责流程与进度，批准人承担文件责任；客户项目双确认（内部批准 + 客户确认）缺一不可。</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q"><span class="qmark">?</span>争议四：规格书和报价、立项是什么关系？会不会拖慢报价？</div>
+    <div class="qa-a">
+      规格书编制与商务报价可以<strong>并行推进</strong>，不必串行等待：
+      <ul class="clean">
+        <li><b>报价阶段</b>：业务部接 RFQ 后，研发 + 采购 + 财务基于初步需求做<strong>粗成本测算</strong>，支撑报价——此时无需完整规格书；</li>
+        <li><b>立项 / 合同阶段</b>：规格书<strong>草案（V0.x）</strong>可作为合同技术附件的底稿，随合同签署同步完善；</li>
+        <li><b>开发阶段</b>：规格书<strong>正式版（V1.0）</strong>作为项目基线，冻结后方可打样 / 开模 / 采购 / 试产。</li>
+      </ul>
+      <div class="concl"><b>结论：</b>报价用「粗测算」、合同用「草案」、开发用「正式版」——三个时点三种颗粒度，规格书流程不阻塞报价，反而为报价提供依据。</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q"><span class="qmark">?</span>争议五：规格书批准后还能改吗？口头改行不行？</div>
+    <div class="qa-a">
+      可以改，但必须<strong>走受控变更</strong>。规格书冻结后即成为项目基线，任何调整（哪怕是客户口头要求）都必须：
+      <ul class="clean">
+        <li>提出部门提交 <b>ECR</b> → 产品部组织 <b>ECN 评审</b>（评估技术 / 成本 / 交期 / 质量影响）→ 按变更分类审批（见 08 节）；</li>
+        <li>客户项目涉及客户要求的变更，须<strong>客户书面再确认</strong>（邮件 / 签认）后方可实施；</li>
+        <li>版本升级并登记修订记录，新版分发、旧版回收。</li>
+      </ul>
+      <div class="concl"><b>结论：</b>规格书「可改、必受控」。口头变更不更新文件，是开发返工、成本超支、客诉纠纷的第一源头，应列入红线禁止。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section id="s7">
+  <div class="sec-head">
+    <div class="sec-no">07</div>
+    <h2>产品规格书内容框架（章节骨架）</h2>
+    <div class="en">Spec Outline</div>
+  </div>
+  <div class="card">
+    <p class="muted" style="margin-bottom:12px;">以下为建议章节骨架，各部门按分工填写；标注 <span class="ph">[TBD]</span> / <span class="ph">[XX]</span> 的项为待评审确认或待填项，成稿前必须清零。</p>
+    <div class="grid2">
+      <div class="fw-card"><div class="no">CH 01</div><div class="t">封面与文件信息</div><div class="d">文件编号 <span class="ph">[YM-PS-XXX]</span>、版本、编制 / 审核 / 批准 / 日期、密级、适用范围</div></div>
+      <div class="fw-card"><div class="no">CH 02</div><div class="t">产品概述</div><div class="d">产品定位、目标市场与法规区域、目标用户、核心卖点、与竞品对比结论</div></div>
+      <div class="fw-card"><div class="no">CH 03</div><div class="t">产品定义</div><div class="d">功能清单（<span class="ph">[XX]</span> 项）、使用场景、形态与佩戴 / 使用方式、人机交互</div></div>
+      <div class="fw-card"><div class="no">CH 04</div><div class="t">性能规格</div><div class="d">关键性能指标表（如吸力 ≥ <span class="ph">[XX]</span> kPa、噪音 ≤ <span class="ph">[XX]</span> dB、续航 ≥ <span class="ph">[XX]</span> min，按产品实际定义，须量化可检验）</div></div>
+      <div class="fw-card"><div class="no">CH 05</div><div class="t">结构与外观</div><div class="d">尺寸、重量、材料、颜色、表面处理、丝印 / 标识、ID 效果图</div></div>
+      <div class="fw-card"><div class="no">CH 06</div><div class="t">电子与软件</div><div class="d">电气参数、电源与充电、软件功能清单、连接方式（蓝牙 / APP 等）、固件升级</div></div>
+      <div class="fw-card"><div class="no">CH 07</div><div class="t">安全与合规</div><div class="d">安规、EMC、目标市场认证（<span class="ph">[XX]</span>）、环保要求（RoHS / REACH 等）</div></div>
+      <div class="fw-card"><div class="no">CH 08</div><div class="t">可靠性</div><div class="d">使用寿命、跌落、高低温、防水防尘、消毒次数、盐雾等环境试验要求</div></div>
+      <div class="fw-card"><div class="no">CH 09</div><div class="t">包装与附件</div><div class="d">包装形式与材料、说明书、配件清单、外箱标识</div></div>
+      <div class="fw-card"><div class="no">CH 10</div><div class="t">质量与检验标准</div><div class="d">关键参数允差、检验方法、抽样标准（AQL）、判定准则</div></div>
+      <div class="fw-card"><div class="no">CH 11</div><div class="t">环境与储存</div><div class="d">工作 / 储存温湿度范围、保质期、运输要求</div></div>
+      <div class="fw-card"><div class="no">CH 12</div><div class="t">客户特殊要求（客户项目）</div><div class="d">需求覆盖矩阵、客户条款原文与内部响应（满足 / 协商 / 超出 / 不适用）</div></div>
+      <div class="fw-card"><div class="no">CH 13</div><div class="t">修订记录</div><div class="d">版本、日期、变更内容摘要、变更人、批准人——每次变更必留痕</div></div>
+      <div class="fw-card" style="background:var(--gold-soft);border-color:#ecd9a0;"><div class="no">附</div><div class="t">签字栏（受控）</div><div class="d">编制（主笔各部门）→ 审核（评审组）→ 批准（产品部 / 项目部负责人）→ 客户确认（客户项目）</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 ============ -->
+<section id="s8">
+  <div class="sec-head">
+    <div class="sec-no">08</div>
+    <h2>变更管理细则</h2>
+    <div class="en">Change Control</div>
+  </div>
+  <div class="card">
+    <h3 class="blk">变更触发源</h3>
+    <p>客户需求变化 ｜ 技术障碍 ｜ 物料停产或替代 ｜ 法规 / 认证更新 ｜ 成本压力 ｜ 生产品质问题 ｜ 设计优化</p>
+    <h3 class="blk">变更分类与审批规则</h3>
+    <table>
+      <thead>
+        <tr><th style="width:12%;">分类</th><th style="width:38%;">变更情形</th><th>审批要求</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>A 类</b></td><td>影响客户需求 / 合同约定 / 法规认证的变更（功能增减、关键性能、认证范围）</td><td>ECR → ECN 评审 → <strong>客户书面确认</strong> → 产品部 / 项目部批准 → 发布新版</td></tr>
+        <tr><td><b>B 类</b></td><td>影响性能 / 成本 / 交期但未涉及客户约定的变更（材料替代、工艺调整、结构优化）</td><td>ECR → ECN 评审 → 产品部 / 项目部批准 → 发布新版（客户项目视合同约定通报客户）</td></tr>
+        <tr><td><b>C 类</b></td><td>编辑性修改（勘误、格式、措辞，不影响技术内容）</td><td>修订记录直接更新，产品部确认后发布新版</td></tr>
+      </tbody>
+    </table>
+    <h3 class="blk">时限建议</h3>
+    <ul class="clean">
+      <li>ECR 受理：<b>1 个工作日</b>内由产品部确认受理并指派评审组织人；</li>
+      <li>ECN 评审：<b>3 个工作日</b>内完成（A 类可延长至 5 个工作日）；</li>
+      <li>需客户确认的变更：按客户约定时限跟踪，<strong>闭环记录</strong>确认结果，禁止先动后报。</li>
+    </ul>
+    <div class="redline">
+      <div class="t">红线（不可逾越）</div>
+      ① 严禁口头变更、严禁未批先动（未批准先改模 / 先采购 / 先投产）；<br>
+      ② 变更必须更新版本号与修订记录，新版发布、旧版回收；<br>
+      ③ 客户项目涉及客户要求的变更，必须客户书面确认（邮件 / 签认），微信口头确认不作为依据。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 ============ -->
+<section id="s9">
+  <div class="sec-head">
+    <div class="sec-no">09</div>
+    <h2>一页速查</h2>
+    <div class="en">Cheat Sheet</div>
+  </div>
+  <div class="speed">
+    <div class="sp gold">
+      <div class="t">谁写？</div>
+      <div class="row"><b>牵头：</b>产品部（自研）/ 项目部（客户项目）</div>
+      <div class="row"><b>主笔：</b>产品部（产品条款）+ 研发部（技术条款）+ 工程 / 品质 / 采购（专业条款）</div>
+      <div class="row"><b>机制：</b>谁的专业谁写，多部门会签</div>
+    </div>
+    <div class="sp">
+      <div class="t">谁审？</div>
+      <div class="row"><b>组织：</b>产品部（自研）/ 项目部（客户项目）</div>
+      <div class="row"><b>会签：</b>研发 · 工程 · 品质 · 采购 · 生产 · 财务 · 业务</div>
+      <div class="row"><b>关口：</b>评审不通过不得进入批准</div>
+    </div>
+    <div class="sp">
+      <div class="t">谁批？</div>
+      <div class="row"><b>自研：</b>产品部负责人</div>
+      <div class="row"><b>客户项目：</b>项目部负责人（内部）+ 客户确认（外部）</div>
+      <div class="row"><b>定版：</b>文控编号，V1.0 受控发布</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <h3 class="blk">五阶段主线</h3>
+    <p style="font-size:14px;">需求输入（业务部 / 产品部）→ 规格书编制（产品部牵头 · 研发部主笔）→ 内部评审（多部门会签）→ 批准发布（内部批准 + 客户确认）→ 受控分发与变更（文控受控 · ECN）</p>
+    <h3 class="blk">客户项目三个「必须」</h3>
+    <ul class="clean">
+      <li>必须做<strong>需求覆盖矩阵</strong>：客户条款逐条映射到内部规格书条款；</li>
+      <li>必须<strong>客户书面确认</strong>：规格书定版前与涉及客户要求的变更时；</li>
+      <li>必须<strong>先批后用</strong>：未批准的规格书不得作为打样、开模、采购、试产依据。</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <span>文件编号 <span class="ph">[YM-PS-001]</span> ｜ 版本 V0.1（评审稿）｜ 密级：内部</span>
+  <span>广东幼萌电器科技有限公司 · 产品规格书制定流程与部门分工（建议稿）· 2026-09-02</span>
+</footer>
+
+</div>
+
+<script>
+  // 导航滚动高亮
+  var links = document.querySelectorAll('nav.topnav a[href^="#"]');
+  var sections = [];
+  links.forEach(function(l){ var s=document.querySelector(l.getAttribute('href')); if(s) sections.push({l:l,s:s}); });
+  window.addEventListener('scroll', function(){
+    var pos = window.scrollY + 140;
+    var cur = null;
+    sections.forEach(function(it){ if(it.s.offsetTop <= pos) cur = it; });
+    links.forEach(function(l){ l.classList.remove('active'); });
+    if(cur) cur.l.classList.add('active');
+  }, {passive:true});
+</script>
+
+</body>
+</html>
