@@ -416,7 +416,17 @@
       "icon": "search",
       "desc": "",
       "children": [],
-      "files": []
+      "files": [
+        {
+          "name": "智能补货逻辑报告.html",
+          "file": "files/cmu7cun4mqpz/智能补货逻辑报告.html",
+          "type": "code",
+          "size": "36 KB",
+          "date": "2026-09-19",
+          "desc": "",
+          "tags": []
+        }
+      ]
     }
   ]
 }
