@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-19",
+  "updated": "2026-10-16",
   "note": "资料库数据索引。文件按 library/files/<分类id>/ 存放；请通过资料库页面右上角「管理」或联系维护者修改本文件。",
   "categories": [
     {
@@ -427,6 +427,14 @@
           "tags": []
         }
       ]
+    },
+    {
+      "id": "cmvac6lgyzx6",
+      "name": "评论分析",
+      "icon": "users",
+      "desc": "",
+      "children": [],
+      "files": []
     }
   ]
 }
