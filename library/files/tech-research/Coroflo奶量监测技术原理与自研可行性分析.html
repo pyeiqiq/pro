@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coroflo 实时奶量监测技术原理与幼萌自研可行性分析</title>
+<style>
+  :root{
+    --navy:#0f2a47; --navy2:#16395f; --gold:#c9a24b; --gold2:#e3c178;
+    --ink:#1f2a36; --muted:#5b6b7c; --line:#e4e9f0; --bg:#f7f9fc; --card:#ffffff;
+    --green:#1f9d6b; --amber:#d98a2b; --red:#c0432f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px 60px;}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:38px 22px 30px;}
+  header .inner{max-width:980px;margin:0 auto;}
+  header .kicker{color:var(--gold2);letter-spacing:3px;font-size:12px;font-weight:600;text-transform:uppercase;}
+  header h1{margin:8px 0 6px;font-size:27px;font-weight:700;}
+  header p{margin:2px 0;color:#cdd9e8;font-size:13.5px;}
+  .badge{display:inline-block;background:rgba(201,162,75,.18);border:1px solid var(--gold);
+         color:var(--gold2);padding:3px 10px;border-radius:20px;font-size:12px;margin-top:10px;}
+  h2{color:var(--navy);border-left:5px solid var(--gold);padding-left:12px;margin:38px 0 14px;font-size:20px;}
+  h3{color:var(--navy2);margin:22px 0 8px;font-size:16.5px;}
+  p{margin:9px 0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0;
+        box-shadow:0 1px 3px rgba(15,42,71,.05);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;background:#fff;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:var(--navy);color:#fff;font-weight:600;}
+  tr:nth-child(even) td{background:#fafbfd;}
+  .tag{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:600;}
+  .t-g{background:#e6f6ee;color:var(--green);}
+  .t-a{background:#fbf0e0;color:var(--amber);}
+  .t-r{background:#fbe7e2;color:var(--red);}
+  .note{background:#fff8ec;border:1px solid #f0d9a8;border-radius:10px;padding:13px 16px;margin:14px 0;font-size:14px;}
+  .note b{color:var(--amber);}
+  .src{font-size:12px;color:var(--muted);margin-top:6px;}
+  .legend{font-size:12.5px;color:var(--muted);}
+  svg{display:block;width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px;margin:10px 0;}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:14px 0;}
+  .flow .step{background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;flex:1;min-width:120px;font-size:13px;}
+  .flow .step b{color:var(--navy);display:block;font-size:13px;}
+  .flow .arr{display:flex;align-items:center;color:var(--gold);font-weight:700;font-size:18px;}
+  .kv{display:grid;grid-template-columns:160px 1fr;gap:6px 14px;font-size:13.5px;}
+  .kv b{color:var(--navy2);}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:34px;padding-top:16px;border-top:1px solid var(--line);}
+  code{background:#eef2f7;padding:1px 6px;border-radius:5px;font-size:12.5px;color:#0f2a47;}
+  ul{margin:8px 0;padding-left:20px;} li{margin:4px 0;}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <div class="kicker">Technical Deep-Dive · 内部研究材料</div>
+    <h1>Coroflo 实时奶量监测技术原理与幼萌自研可行性分析</h1>
+    <p>基于 Coroflo 官方资料、3 项美国专利原文（US 10928228 / US 12053293 / US 12379235）及公开媒体核实</p>
+    <p>配套文件：Coroflo_品牌深度调研报告(1).pdf（23 页品牌调研）· 调研日期 2026-08</p>
+    <span class="badge">聚焦：传感器原理 → 自研路径 → 样品获取</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <h3 style="margin-top:4px">执行摘要（决策要点）</h3>
+    <ul>
+      <li><b>原理本质：</b>Coroflo 在硅胶乳头护罩的乳汁流道内，嵌入一枚<b>超小型微流量传感器</b>，直接测量流过护罩的母乳流速（ml/s），再对时间积分得到实时体积（ml）。它不是靠称重、图像或吞咽声估算，而是<b>物理层直接测量</b>。</li>
+      <li><b>两条专利路线：</b>①<b>靶式/应变（拖曳力）</b>传感器（US 10928228 / 最新的 US 12379235「紧凑型靶式流量计」）；②<b>热式微流量（热膜风速计）</b>传感器（US 12053293 / WO2020025337，加热电阻+乳汁对流冷却）。生产机型更可能采用<b>紧凑靶式</b>路线（与创始人"乳汁冲击桨片"的描述一致），并可能叠加温度补偿。</li>
+      <li><b>核心壁垒不在传感器元件，而在"每台独立标定"：</b>用标定夹具注入已知流量（0.007–2.8 ml/s），生成标定系数经蓝牙 OTA 写入，使微升级精度稳定复现。这是后来者最难抄的部分。</li>
+      <li><b>对幼萌的建议：</b>吸奶器天然有封闭奶路，做"实时泵奶量/流速"比护罩式亲喂测量<b>更容易且规避了 Coroflo 护罩专利</b>。推荐"①智能称重快赢 → ②法兰内置热式微流量做差异化"两阶段。</li>
+      <li><b>样品：</b>官网当前售罄为首批限量；零售补货渠道已明确（爱尔兰药房 2026/07、英国 John Lewis 2026/08、美国 2026/09）。工程拆解建议等补货后购 2–3 台零售版，或以 Willow ODM 伙伴身份接洽 Coroflo 商务/数据合作。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 一、原理 ============ -->
+  <h2>一、实时奶量监测原理（专利级深度）</h2>
+
+  <h3>1.1 产品形态与测量链路</h3>
+  <p>Coro = 极薄医用硅胶乳头护罩 + 内嵌微流量传感器 + 球形充电仓（Pod）+ 手机 APP。佩戴方式与普通乳头护罩无异，乳汁从母亲乳头 → 护罩流道 → 传感器 → 婴儿口腔。传感器对流经的乳汁做<b>直接</b>流速测量，MCU 放大/数字化/积分后，经 BLE 实时推送到 APP，呈现流速（ml/s）、累计体积（ml）、实时温度，并能区分气体与液体。</p>
+
+  <svg viewBox="0 0 680 300" role="img" aria-label="传感器在护罩流道中的位置">
+    <defs>
+      <linearGradient id="milk" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#eaf4fb"/><stop offset="1" stop-color="#cfe6f5"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="680" height="300" fill="#fff"/>
+    <!-- 乳房/乳头 -->
+    <ellipse cx="90" cy="150" rx="60" ry="80" fill="#f3d9cf" stroke="#d8a99a"/>
+    <circle cx="92" cy="150" r="14" fill="#e3b3a3" stroke="#c98c7c"/>
+    <text x="92" y="240" text-anchor="middle" font-size="12" fill="#5b6b7c">母亲乳头</text>
+    <!-- 护罩 -->
+    <path d="M150 80 Q250 70 250 150 Q250 230 150 220 Z" fill="#eef4f8" stroke="#9fb6c9" stroke-width="2"/>
+    <text x="200" y="60" text-anchor="middle" font-size="12" fill="#0f2a47">硅胶乳头护罩（薄如隐形眼镜）</text>
+    <!-- 流道 -->
+    <path d="M150 150 Q200 150 250 150" fill="none" stroke="#7fb6dd" stroke-width="14" stroke-linecap="round"/>
+    <path d="M150 150 Q200 150 250 150" fill="url(#milk)" stroke="none" stroke-width="10" opacity="0.6"/>
+    <text x="205" y="135" text-anchor="middle" font-size="11" fill="#2b6f9c">乳汁流道</text>
+    <!-- 传感器 -->
+    <rect x="186" y="132" width="34" height="36" rx="5" fill="#0f2a47" stroke="#c9a24b" stroke-width="2"/>
+    <text x="203" y="186" text-anchor="middle" font-size="11" fill="#c0432f">微流量传感器</text>
+    <text x="203" y="200" text-anchor="middle" font-size="10" fill="#5b6b7c">横向置于流道中</text>
+    <!-- FFC 线缆 -->
+    <path d="M203 168 L203 250 L320 250" fill="none" stroke="#c9a24b" stroke-width="3" stroke-dasharray="4 3"/>
+    <text x="265" y="268" text-anchor="middle" font-size="10.5" fill="#5b6b7c">FFC 扁平线缆 → 处理模组</text>
+    <!-- 婴儿 -->
+    <circle cx="560" cy="150" r="46" fill="#f7e3c9" stroke="#d8b58c"/>
+    <circle cx="560" cy="150" r="16" fill="#fff" stroke="#c98c7c"/>
+    <text x="560" y="218" text-anchor="middle" font-size="12" fill="#5b6b7c">婴儿口腔</text>
+    <!-- 流向箭头 -->
+    <path d="M255 150 L520 150" fill="none" stroke="#7fb6dd" stroke-width="2.5" marker-end="url(#ah)"/>
+    <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#7fb6dd"/></marker></defs>
+    <text x="400" y="138" text-anchor="middle" font-size="11" fill="#2b6f9c">乳汁流向</text>
+  </svg>
+  <p class="src">图示依据 US 10928228 权利要求书与说明书附图（传感器位于护罩流道中段，FFC 线缆嵌入护罩本体引出至处理单元）。</p>
+
+  <h3>1.2 两条传感技术路线（均来自 Coroflo 授权专利）</h3>
+  <div class="grid2">
+    <div class="card">
+      <b style="color:var(--navy)">路线 A｜靶式 / 应变（拖曳力）流量计</b>
+      <p style="font-size:13.5px">专利：<code>US 10928228</code>（2017 基础）、<code>US 12379235</code>（2025「Compact target flow meter」）。<br>
+      护罩流道内横向布置一枚柔性悬臂/桨片（target），乳汁流过产生<b>拖曳力</b>使其形变；桨片上贴<b>应变片</b>（多片组成惠斯通电桥）将形变转为电阻变化，电阻变化正比于流速。<br>
+      与创始人早期表述"measure the force of the breast milk against a paddle（乳汁冲击桨片的力）"完全吻合，且为<b>最新授权专利</b>主题，生产机型大概率采用此路线或其紧凑化版本。</p>
+    </div>
+    <div class="card">
+      <b style="color:var(--navy)">路线 B｜热式微流量（热膜风速计）</b>
+      <p style="font-size:13.5px">专利：<code>US 12053293</code> / <code>WO2020025337</code>（2019/2024）。<br>
+      流道中段放置一枚<b>可加热的温度依赖电阻</b>（RTD/热敏电阻/薄膜），加热至高于乳汁环境温度 T₁&gt;T₂；乳汁流过产生<b>强制对流冷却</b>，电阻随冷却量变化。配套<b>风速计（anemometry）电路</b>监测电阻变化 → 流速信号。<br>
+      专利明确其为"<b>非机械式、无可动部件</b>"传感器，可横向或纵向布置，直接测微升级流量。</p>
+    </div>
+  </div>
+  <div class="note"><b>判断：</b>两条路线 Coroflo 都有专利护城河。生产版 Coro 更可能是<b>紧凑靶式（路线 A）</b>为主、辅以温度/流速补偿；热式（路线 B）作为备选/升级 IP。无论哪条，"微升级直接测量 + 每台标定"才是精度（宣称 0.01 ml）的真正来源。</div>
+
+  <h3>1.3 热式微流量原理示意（路线 B 详解）</h3>
+  <svg viewBox="0 0 680 280" role="img" aria-label="热式微流量传感器冷却原理">
+    <rect x="0" y="0" width="680" height="280" fill="#fff"/>
+    <text x="340" y="26" text-anchor="middle" font-size="13" fill="#0f2a47"><b>加热电阻被乳汁对流冷却 → 电阻变化 ∝ 流速</b></text>
+    <!-- 流道 -->
+    <rect x="120" y="110" width="440" height="60" rx="10" fill="#eaf4fb" stroke="#9fb6c9" stroke-width="2"/>
+    <text x="340" y="100" text-anchor="middle" font-size="11" fill="#2b6f9c">乳汁流道（横向）</text>
+    <!-- 加热电阻 -->
+    <rect x="318" y="128" width="44" height="24" rx="4" fill="#c0432f" stroke="#7a261a"/>
+    <text x="340" y="175" text-anchor="middle" font-size="11" fill="#c0432f">加热电阻 R（T₁）</text>
+    <!-- 流向 -->
+    <path d="M135 140 L300 140" stroke="#7fb6dd" stroke-width="3" marker-end="url(#a2)"/>
+    <path d="M380 140 L545 140" stroke="#7fb6dd" stroke-width="3" marker-end="url(#a2)"/>
+    <defs><marker id="a2" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#7fb6dd"/></marker></defs>
+    <text x="215" y="128" text-anchor="middle" font-size="11" fill="#2b6f9c">乳汁进入 (T₂)</text>
+    <text x="465" y="128" text-anchor="middle" font-size="11" fill="#2b6f9c">冷却后流出</text>
+    <!-- 冷却示意 -->
+    <path d="M340 152 Q355 175 372 165" stroke="#1f9d6b" stroke-width="2.5" fill="none" marker-end="url(#a3)"/>
+    <defs><marker id="a3" markerWidth="9" markerHeight="9" refX="5" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 Z" fill="#1f9d6b"/></marker></defs>
+    <text x="395" y="185" font-size="11" fill="#1f9d6b">对流散热 ↑ 流速越高冷却越强</text>
+    <!-- 电路 -->
+    <rect x="300" y="210" width="80" height="40" rx="6" fill="#0f2a47"/>
+    <text x="340" y="234" text-anchor="middle" font-size="11" fill="#e3c178">风速计电路</text>
+    <path d="M340 152 L340 210" stroke="#c9a24b" stroke-width="2.5"/>
+    <text x="350" y="190" font-size="10.5" fill="#5b6b7c">监测 R 变化</text>
+  </svg>
+  <p class="src">依据 US 12053293 / WO2020025337 权利要求 1："a heatable temperature dependent resistor … heated to a first temperature T₁ greater than ambient temperature T₂ of milk … flow causes a measurable cooling effect … anemometry circuit monitors electrical characteristics."</p>
+
+  <h3>1.4 信号链与算法</h3>
+  <div class="flow">
+    <div class="step"><b>① 传感</b>微流量传感器（靶式/热式）将流速转为电阻/应变信号</div>
+    <div class="arr">→</div>
+    <div class="step"><b>② 调理</b>惠斯通电桥 / 风速计电路放大微弱模拟信号</div>
+    <div class="arr">→</div>
+    <div class="step"><b>③ 数字化</b>MCU ADC 采样 + 标定系数换算为流速</div>
+    <div class="arr">→</div>
+    <div class="step"><b>④ 积分</b>对时间积分得到累计体积；同步测温</div>
+    <div class="arr">→</div>
+    <div class="step"><b>⑤ 传输</b>BLE 推送至 APP；气/液区分算法</div>
+  </div>
+  <p>关键点：传感器原始信号极小且<b>器件间离散度大</b>，必须靠"标定系数 + 算法"将物理量稳定还原。专利披露标定流量区间 <b>0.007–2.8 ml/s</b>（≈0.4–168 ml/min），覆盖从微弱滴沥到旺盛喷乳的全哺乳区间。</p>
+
+  <h3>1.5 "每台独立标定"——真正的护城河</h3>
+  <p>这是 Coroflo 专利中最值得幼萌借鉴的工程细节：</p>
+  <ul>
+    <li>电子模组（含传感器 + MCU 的 PCB）先烧录<b>通用固件</b>，蓝牙留空"标定特征位"；</li>
+    <li>成品装进护罩模具后，夹入<b>标定夹具</b>，注入已知流型（含微小体积波动）；</li>
+    <li>计算机将响应拟合为<b>标定系数</b>，经 BLE <b>OTA 写入</b>设备并设为只读；</li>
+    <li>全程<b>无需物理连线</b>改写每台固件，单图量产可落地。</li>
+  </ul>
+  <div class="note"><b>启示：</b>微流量传感器"元件易得、标定难抄"。幼萌若要自研，标定夹具 + 流型数据库 + OTA 写入流程必须作为核心资产与专利一并布局，否则量产精度无法保证。</div>
+
+  <h3>1.6 多参数输出（APP 价值层）</h3>
+  <table>
+    <tr><th>参数</th><th>含义</th><th>差异化价值</th></tr>
+    <tr><td>流速 ml/s</td><td>实时流量</td><td>识别喷乳反射、喂养效率</td></tr>
+    <tr><td>累计体积 ml</td><td>单次摄入总量</td><td>取代前后称重法，精度 0.01 ml（宣称）</td></tr>
+    <tr><td>实时温度</td><td>乳汁温度</td><td>业内首次，异常可提醒</td></tr>
+    <tr><td>气/液区分</td><td>识别吞气</td><td>为反流/胀气风险提供参考</td></tr>
+    <tr><td>左右平衡</td><td>分侧记录</td><td>识别单侧依赖</td></tr>
+  </table>
+
+  <!-- ============ 二、自研路径 ============ -->
+  <h2>二、对幼萌的开发路径（如何做这个功能）</h2>
+
+  <h3>2.1 先定形态：吸奶器 vs 护罩式亲喂</h3>
+  <div class="grid2">
+    <div class="card">
+      <b style="color:var(--navy)">方案 ①：吸奶器实时奶量（推荐首选）</b>
+      <p style="font-size:13.5px">幼萌是吸奶器厂商，奶路本就是<b>封闭管道 + 集奶瓶</b>。在法兰/阀门/集奶通道内置传感器，测"泵出量+流速"，比护罩亲喂测量<b>几何限制更小、更易密封、且天然避开 Coroflo 的护罩专利权利要求</b>。可直接对标 Elvie/Willow 仅读瓶刻度的短板。</p>
+    </div>
+    <div class="card">
+      <b style="color:var(--navy)">方案 ②：护罩式亲喂监测（对标 Coroflo）</b>
+      <p style="font-size:13.5px">需做超薄硅胶护罩 + 内嵌传感器，技术难度与合规风险最高，且落入 Coroflo 专利核心区，<b>FTO（自由实施）风险大</b>。除非走授权/合作，不建议作为第一战场。</p>
+    </div>
+  </div>
+
+  <h3>2.2 传感方案对比（供选型）</h3>
+  <table>
+    <tr><th>方案</th><th>原理</th><th>精度</th><th>工程难度</th><th>成本</th><th>专利/合规风险</th><th>对幼萌适配</th></tr>
+    <tr><td><b>智能称重</b><br>（集奶瓶下置称重）</td><td>高精度称重传感器测质量增量</td><td>0.1–1 g（≈0.1–1 ml）</td><td><span class="tag t-g">低</span></td><td><span class="tag t-g">低</span></td><td><span class="tag t-g">低</span></td><td><span class="tag t-g">快赢首选</span></td></tr>
+    <tr><td><b>热式微流量</b><br>（法兰内置）</td><td>加热电阻对流冷却</td><td>可达 0.01–0.1 ml</td><td><span class="tag t-a">中高</span></td><td><span class="tag t-a">中</span></td><td><span class="tag t-a">中</span>（非护罩形态）</td><td><span class="tag t-a">差异化武器</span></td></tr>
+    <tr><td><b>靶式/应变</b><br>（仿 Coroflo）</td><td>拖曳力→应变电桥</td><td>0.01 ml 级</td><td><span class="tag t-a">高</span></td><td><span class="tag t-a">中</span></td><td><span class="tag t-r">高</span>（撞专利）</td><td><span class="tag t-r">不推荐</span></td></tr>
+    <tr><td><b>光学/IR</b></td><td>液滴/液位光学检测</td><td>中</td><td><span class="tag t-a">中</span></td><td><span class="tag t-g">低</span></td><td><span class="tag t-g">低</span></td><td><span class="tag t-a">泡沫干扰大</span></td></tr>
+    <tr><td><b>超声</b></td><td>穿壁时差/多普勒</td><td>中高</td><td><span class="tag t-r">高</span></td><td><span class="tag t-r">高</span></td><td><span class="tag t-a">中</span></td><td><span class="tag t-r">体积大</span></td></tr>
+  </table>
+
+  <h3>2.3 推荐两阶段路线</h3>
+  <svg viewBox="0 0 680 220" role="img" aria-label="自研两阶段路线图">
+    <rect x="0" y="0" width="680" height="220" fill="#fff"/>
+    <text x="20" y="28" font-size="13" fill="#0f2a47"><b>阶段 0（快赢，6–9 月）</b></text>
+    <rect x="20" y="42" width="300" height="120" rx="10" fill="#eef4f8" stroke="#9fb6c9"/>
+    <text x="36" y="66" font-size="12.5" fill="#0f2a47"><b>智能称重 + APP</b></text>
+    <text x="36" y="88" font-size="11.5" fill="#5b6b7c">· 集奶瓶下置称重模块</text>
+    <text x="36" y="106" font-size="11.5" fill="#5b6b7c">· BLE 实时泵奶量/流速</text>
+    <text x="36" y="124" font-size="11.5" fill="#5b6b7c">· 左/右、历史趋势</text>
+    <text x="36" y="146" font-size="11.5" fill="#1f9d6b">· 规避护罩专利 · 低风险上市</text>
+    <text x="360" y="28" font-size="13" fill="#0f2a47"><b>阶段 1（差异化，12–18 月）</b></text>
+    <rect x="360" y="42" width="300" height="120" rx="10" fill="#fbf0e0" stroke="#e0b463"/>
+    <text x="376" y="66" font-size="12.5" fill="#0f2a47"><b>法兰内置热式微流量</b></text>
+    <text x="376" y="88" font-size="11.5" fill="#5b6b7c">· 奶路内嵌热式传感器</text>
+    <text x="376" y="106" font-size="11.5" fill="#5b6b7c">· 每台标定夹具 + OTA</text>
+    <text x="376" y="124" font-size="11.5" fill="#5b6b7c">· 0.1 ml 级精度</text>
+    <text x="376" y="146" font-size="11.5" fill="#d98a2b">· 世界首创泵载微流量</text>
+    <path d="M320 102 L358 102" stroke="#c9a24b" stroke-width="3" marker-end="url(#a4)"/>
+    <defs><marker id="a4" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 Z" fill="#c9a24b"/></marker></defs>
+    <text x="330" y="200" text-anchor="middle" font-size="11" fill="#5b6b7c">先做占位（数据总线/接口预埋）→ 再叠加传感器</text>
+  </svg>
+
+  <h3>2.4 必须同步建设的能力</h3>
+  <ul>
+    <li><b>标定体系：</b>仿 Coroflo，建立"标定夹具 + 已知流型 + 系数 OTA"产线流程，是精度的生命线。</li>
+    <li><b>数据总线/接口预埋：</b>在 YM4-YF-06 / YM-8837H 等机型预留传感器接口与数据通道，作为模块化升级路径（与你的 PDF 启示 ① 一致）。</li>
+    <li><b>APP 层：</b>实时流速、累计体积、分侧、历史趋势、异常提醒——直接复用 Coroflo 验证过的价值框架。</li>
+    <li><b>模块化隔离：</b>任何可能变更的模块物理隔离，避免"变更即整机重测"（呼应 Coroflo 九年上市之痛与你的 PDF 启示 ③/⑥）。</li>
+  </ul>
+
+  <h3>2.5 合规与专利 FTO（不可省略）</h3>
+  <div class="card">
+    <div class="kv">
+      <b>专利 FTO</b><span>Coroflo 三项美专利核心在"乳头护罩装载传感器 + 体积测量"。吸奶器（非护罩）形态多数权利要求可绕开，但其<b>微流量测量方法</b>权利要求较宽，立项前必须做自由实施分析，必要时考虑<b>授权/合作</b>而非硬抄。</span>
+      <b>认证路径</b><span>若传感器接触奶路：需 <b>CE MDR 2017/745</b>（欧盟）→ <b>UKCA</b> → <b>FDA 510(k)</b>（美国，需 predicate，6–12 月）。硅胶件需 <b>ISO 10993</b> 生物相容性，体系需 <b>ISO 13485</b>。预留 18–24 月合规周期。</span>
+      <b>外部机会</b><span>你的 PDF（SWOT/启示）已指出 Coroflo "可与吸奶器品牌做数据层合作"。作为 Willow 的 ODM 伙伴，幼萌或可借 Willow 关系探索数据/技术合作，比单打自研更快。</span>
+    </div>
+  </div>
+
+  <!-- ============ 三、样品 ============ -->
+  <h2>三、样品在哪里可以买到（官网显示售罄）</h2>
+  <p>官网 <code>coroflo.com/coro-breast-feeding-monitor</code> 当前显示售罄，原因是 <b>2026/07 爱尔兰首发为限量首批</b>（公司仅 €10M 融资、18 人、刚商业化），并非停产。补货与渠道已公开明确：</p>
+  <table>
+    <tr><th>渠道</th><th>状态 / 时间</th><th>价格</th><th>备注</th></tr>
+    <tr><td><b>Coroflo 官网</b><br>（DTC 预购）</td><td>售罄中，预购补货</td><td>€299 / £279</td><td>开放预购，补货后第一时间发货；关注官网 Shop 与邮件通知</td></tr>
+    <tr><td><b>爱尔兰药房</b><br>McCauley / McCabe's / Tony Kealys</td><td>2026/07 起已上架</td><td>≈€299</td><td>线下实体，可托爱尔兰当地渠道/同事代购首批</td></tr>
+    <tr><td><b>英国 John Lewis</b></td><td>2026/08/10 起</td><td>£279</td><td>高端零售，英国可购</td></tr>
+    <tr><td><b>美国</b></td><td>2026/09 上市</td><td>$299</td><td>FDA 路径推进中，已接订单</td></tr>
+    <tr><td><b>欧洲大陆</b></td><td>2027 Q1 计划</td><td>—</td><td>远期</td></tr>
+    <tr><td><b>二手平台</b><br>eBay / Vinted / FB</td><td>极少（刚上市）</td><td>不定</td><td>暂不建议，假货/卫生风险高</td></tr>
+  </table>
+  <div class="note">
+    <b>给幼萌的工程采购建议：</b>
+    <ul style="margin:6px 0">
+      <li><b>拆解用：</b>等官网/药房补货后购 <b>2–3 台零售版</b>（不同批次更佳），用于传感器实物确认、护罩注塑与标定流程逆向研究。</li>
+      <li><b>商务/合作：</b>以"Willow ODM 伙伴 + 215 项专利母婴制造商"身份，经官网 <code>Contact Us</code> 接洽 Coroflo 商务/BD，探讨<b>评估样机供应或数据层合作</b>——比你单买几台更有战略价值（呼应 PDF 启示：可与吸奶器品牌做数据合作）。</li>
+      <li><b>时间窗：</b>美国 2026/09 上市是最稳的入手点；现在即可预购锁定。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 结论 ============ -->
+  <h2>四、结论与下一步</h2>
+  <ul>
+    <li><b>原理已清晰：</b>微流量传感器（靶式/热式）+ 每台标定 + BLE + APP，物理层直接测流速并积分得体积，精度靠标定而非元件。</li>
+    <li><b>自研可行且更优路径在吸奶器：</b>封闭奶路让幼萌比 Coroflo 更易做实时量测，且规避护罩专利；建议"称重快赢 → 热式微流量差异化"两阶段，并预埋接口。</li>
+    <li><b>样品可获：</b>官网售罄为首批限量，2026/07–09 爱尔兰/英国/美国依次补货；工程拆解购零售版，战略合作走商务接洽。</li>
+  </ul>
+  <div class="card">
+    <b style="color:var(--navy)">建议即刻行动项</b>
+    <ol style="margin:6px 0">
+      <li>预购 1–2 台 Coro（美国 2026/09 或托爱尔兰渠道），入库待拆解；</li>
+      <li>立项前做<b>专利 FTO 检索</b>（重点 US 10928228 / 12053293 / 12379235 方法权利要求）；</li>
+      <li>在 YM4-YF-06 / YM-8837H 预留传感器接口与数据总线；</li>
+      <li>搭建"标定夹具 + 流型数据库"实验室能力（自研精度核心）；</li>
+      <li>评估以 Willow 关系接洽 Coroflo 数据/技术合作的可行性。</li>
+    </ol>
+  </div>
+
+  <h3>参考资料（与你的 PDF 第 12 章互补）</h3>
+  <ul class="legend">
+    <li>US 10928228 B2 — Sensor-based breastfeeding volume measurement device（2017 申请 / 2021 授权）</li>
+    <li>US 12053293 B2 — Microsensor-based breastfeeding volume measurement device（2019 / 2024）</li>
+    <li>US 12379235 B2 — Compact target flow meter（2024 / 2025）</li>
+    <li>WO2020025337 A1 — Microsensor-based breastfeeding volume measurement device（WIPO，标定 OTA 流程）</li>
+    <li>coroflo.com 官网 / Shop / CES 2026 报道（ZDNet、NY Post）/ Silicon Republic / Irish Times</li>
+    <li>已读：Coroflo_品牌深度调研报告(1).pdf（23 页，含执行摘要、专利表、SWOT、对幼萌启示）</li>
+  </ul>
+
+  <footer>WorkBuddy 技术备忘录 · 2026-08 · 内部研究材料，请勿外发 · 与 Coroflo 品牌调研 PDF 配套使用</footer>
+</div>
+</body>
+</html>
