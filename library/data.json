@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-20",
+  "updated": "2026-11-09",
   "note": "资料库数据索引。文件按 library/files/<分类id>/ 存放；请通过资料库页面右上角「管理」或联系维护者修改本文件。",
   "categories": [
     {
@@ -324,6 +324,15 @@
           "type": "code",
           "size": "1.2 MB",
           "date": "2026-08-04",
+          "desc": "",
+          "tags": []
+        },
+        {
+          "name": "欧美女性乳房尺寸人体测量_冷敷罩设计参考.html",
+          "file": "files/tech-research/欧美女性乳房尺寸人体测量_冷敷罩设计参考.html",
+          "type": "code",
+          "size": "32 KB",
+          "date": "2026-11-09",
           "desc": "",
           "tags": []
         }
