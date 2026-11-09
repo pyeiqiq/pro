@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>欧美女性乳房尺寸人体测量调研 · 半导体冷敷罩设计参考</title>
+<style>
+  :root{
+    --ink:#1f2a33; --muted:#5b6b78; --line:#d7e0e6; --bg:#f6f9fb;
+    --pri:#1f6f8b; --pri2:#2a9d8f; --warn:#c0563b; --soft:#eaf3f6; --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;font-size:15px}
+  header{background:linear-gradient(135deg,#1f6f8b,#2a9d8f);color:#fff;padding:30px 24px}
+  header h1{margin:0 0 6px;font-size:23px;font-weight:700}
+  header p{margin:2px 0;opacity:.95;font-size:13.5px}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 18px 60px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  h2{color:var(--pri);font-size:18.5px;margin:0 0 12px;border-left:4px solid var(--pri2);padding-left:10px}
+  h3{color:var(--ink);font-size:15.5px;margin:18px 0 8px}
+  p{margin:8px 0}
+  .lead{color:var(--muted);font-size:13.5px}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--soft);color:var(--pri);font-weight:600}
+  td b{color:var(--pri)}
+  .fig{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0;text-align:center}
+  .fig svg{width:100%;max-width:560px;height:auto}
+  .cap{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .note{background:var(--soft);border-left:4px solid var(--pri2);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:13.5px}
+  .warn{background:#fdeee9;border-left:4px solid var(--warn);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+  .tag{display:inline-block;background:var(--pri);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;margin-right:6px}
+  ul,ol{margin:8px 0 8px 4px;padding-left:22px}
+  li{margin:6px 0}
+  .calc{background:var(--soft);border-radius:10px;padding:14px;margin:12px 0}
+  .calc select{font-size:14px;padding:6px 8px;border-radius:6px;border:1px solid var(--line);margin:0 6px}
+  .calc .out{margin-top:10px;font-size:14px}
+  .calc .out b{color:var(--pri)}
+  .bar{display:flex;align-items:center;margin:6px 0;font-size:13px}
+  .bar .lab{width:120px;color:var(--muted)}
+  .bar .track{flex:1;background:#eef3f6;border-radius:6px;height:18px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,#2a9d8f,#1f6f8b)}
+  .bar .val{width:90px;text-align:right;color:var(--ink);font-weight:600}
+  a{color:var(--pri);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .refs{font-size:12.5px;color:var(--muted)}
+  .refs li{margin:4px 0}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+  @media(max-width:720px){.kpi{grid-template-columns:repeat(2,1fr)}}
+  .kpi div{background:var(--soft);border-radius:10px;padding:12px;text-align:center}
+  .kpi .n{font-size:20px;font-weight:700;color:var(--pri)}
+  .kpi .t{font-size:12px;color:var(--muted)}
+  .toc{font-size:13.5px;color:var(--muted)}
+  .toc a{margin-right:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>欧美女性乳房尺寸人体测量调研 · 半导体冷敷罩设计参考</h1>
+  <p>目的：为「半导体胸部冷敷仪」冷敷罩（参考外形：蝶形单乳叶 + 乳头关键孔）提供尺寸、形状、曲率与分级的人体测量依据</p>
+  <p>适用人群：欧美成年女性及哺乳期宝妈（支撑海外/Willow 市场）；注：亚洲女性均值普遍偏小（乳头间距 16–19cm、乳晕 2.6–3.5cm），本文以欧美为准</p>
+</header>
+
+<div class="wrap">
+
+  <div class="note">
+    <b>数据性质说明：</b>以下数值来自整形外科/人体测量学文献、母婴生理学研究与内衣行业拟合统计，属<b>人群均值与范围</b>，个体差异极大（约 80% 女性穿着尺码不符、左右乳房本就不对称）。设计目标是覆盖<b>大多数</b>用户的可接受区间，而非追求单一"标准值"。
+  </div>
+
+  <div class="toc">
+    目录：
+    <a href="#s1">① 人群与尺码分布</a>
+    <a href="#s2">② 关键尺寸数据表</a>
+    <a href="#s3">③ SVG 图解</a>
+    <a href="#s4">④ 坐姿 vs 平躺</a>
+    <a href="#s5">⑤ 宝妈/哺乳期专项</a>
+    <a href="#s6">⑥ 易遗漏的关键参数</a>
+    <a href="#s7">⑦ 冷敷罩设计建议</a>
+    <a href="#s8">⑧ 数据来源</a>
+  </div>
+
+  <!-- ============ S1 ============ -->
+  <section id="s1">
+    <h2>① 人群与尺码分布（欧美）</h2>
+    <p class="lead">乳房尺寸随遗传、BMI、年龄、孕产显著变化。对<b>宝妈</b>而言，乳房在孕期增大 1–2 杯、涨奶（"下奶"）期再增大 1–2 杯，因此设计必须按<b>涨奶峰值</b>而非日常基线来覆盖。</p>
+
+    <div class="bar"><div class="lab">美国 (平均)</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">34DD</div></div>
+    <div class="bar"><div class="lab">英国 (平均)</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">36DD</div></div>
+    <div class="bar"><div class="lab">欧陆 (平均)</div><div class="track"><div class="fill" style="width:78%"></div></div><div class="val">36C–DD</div></div>
+    <div class="bar"><div class="lab">日本 (对照)</div><div class="track"><div class="fill" style="width:34%"></div></div><div class="val">30–34A/B</div></div>
+
+    <div class="kpi">
+      <div><div class="n">34DD</div><div class="t">美国当前平均（1991 年为 34B）</div></div>
+      <div><div class="n">+2~4</div><div class="t">宝妈涨奶峰值相对基线杯差</div></div>
+      <div><div class="n">20–22cm</div><div class="t">欧美乳头间距 N–N</div></div>
+      <div><div class="n">3.5–7cm</div><div class="t">乳晕直径（基线→涨奶）</div></div>
+    </div>
+    <div class="warn"><b>设计含义：</b>目标用户（哺乳期宝妈）多数落在 <b>C–F 杯、涨奶期</b>。冷敷罩若只按"日常 C 杯"设计会偏小、罩不住、压乳头 → 客诉与不适。建议按<b>涨奶峰值包络</b>做 M/L 主推、S 做小胸备用。</div>
+  </section>
+
+  <!-- ============ S2 ============ -->
+  <section id="s2">
+    <h2>② 关键尺寸数据表（位置参数 + 形态参数）</h2>
+    <table>
+      <thead><tr><th>参数</th><th>欧美女性均值 / 范围</th><th>哺乳期（涨奶）变化</th><th>对冷敷罩的设计含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>乳头间距 N–N</b></td><td>20–22 cm（亚洲 16.5–19，日本 16–18）</td><td>随胸宽/涨奶略增</td><td>双罩中央桥的跨度；不可压乳沟</td></tr>
+        <tr><td><b>胸骨凹–乳头 SN–N</b></td><td>19–21 cm</td><td>—</td><td>罩片纵向定位基准</td></tr>
+        <tr><td><b>乳头–人体中线 N–M</b></td><td>9–11 cm</td><td>—</td><td>单罩关键孔横向偏移量（左/右镜像）</td></tr>
+        <tr><td><b>锁骨–乳头 C–N</b></td><td>17–20 cm</td><td>—</td><td>罩片上方边界</td></tr>
+        <tr><td><b>乳头–下皱襞 N–IMF</b></td><td>7–8 cm（大杯可达 9 cm）</td><td>涨奶增大</td><td>罩片下缘需包住下极</td></tr>
+        <tr><td><b>乳房底盘直径 MBW</b></td><td>12–16 cm（A 约 10，D 约 16–18）</td><td>涨奶增大 → 可至 18–20</td><td><b>罩片覆盖直径的核心依据</b></td></tr>
+        <tr><td><b>乳房投影高度</b></td><td>3–11 cm（随杯递增）</td><td>涨奶增大</td><td>罩片需预弯/柔软以贴合凸度</td></tr>
+        <tr><td><b>乳晕直径 AD</b></td><td>3.5–4.0 cm（基线）</td><td><b>4–7 cm</b>（妊娠期起增大、着色加深）</td><td><b>关键孔直径需 ≥ 涨奶乳晕（建议 5–7 cm）</b></td></tr>
+        <tr><td><b>乳头直径</b></td><td>0.6–0.8 cm（可达 1.3 cm）</td><td>略增/产后乳头肥大</td><td>关键孔避让乳头，乳头从中穿过</td></tr>
+        <tr><td><b>乳头突出度</b></td><td>0.3–0.5 cm</td><td>更挺/肥大</td><td>关键孔周边需留空间，不夹乳头</td></tr>
+      </tbody>
+    </table>
+    <div class="note">"底盘直径"指乳房在胸壁上的基底横径；"投影高度"指乳头到基底平面的前突距离。两者共同决定冷敷罩的<b>覆盖面积</b>与<b>曲率</b>。</div>
+  </section>
+
+  <!-- ============ S3 ============ -->
+  <section id="s3">
+    <h2>③ SVG 图解</h2>
+
+    <h3>3.1 正面标注图（位置参数）</h3>
+    <div class="fig">
+      <svg viewBox="0 0 440 320" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+        <line x1="220" y1="20" x2="220" y2="300" stroke="#bbb" stroke-dasharray="4 3"/>
+        <text x="224" y="34" fill="#5b6b78" font-size="11">人体中线</text>
+        <!-- breasts -->
+        <path d="M95 175 C95 120 130 95 165 110 C200 125 200 200 175 230 C150 255 100 240 95 175 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.5"/>
+        <path d="M345 175 C345 120 310 95 275 110 C240 125 240 200 265 230 C290 255 340 240 345 175 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.5"/>
+        <!-- areola + nipple left -->
+        <circle cx="158" cy="168" r="14" fill="none" stroke="#c0563b" stroke-width="1.5"/>
+        <circle cx="158" cy="168" r="3.5" fill="#c0563b"/>
+        <circle cx="282" cy="168" r="14" fill="none" stroke="#c0563b" stroke-width="1.5"/>
+        <circle cx="282" cy="168" r="3.5" fill="#c0563b"/>
+        <!-- N-N -->
+        <line x1="158" y1="120" x2="282" y2="120" stroke="#1f6f8b" stroke-width="1.5" marker-start="url(#a)" marker-end="url(#a)"/>
+        <text x="200" y="113" fill="#1f6f8b" font-size="11">乳头间距 N–N 20–22cm</text>
+        <!-- N-M left -->
+        <line x1="220" y1="168" x2="158" y2="168" stroke="#2a9d8f" stroke-width="1.5" marker-start="url(#b)" marker-end="url(#b)"/>
+        <text x="166" y="160" fill="#2a9d8f" font-size="10">9–11cm</text>
+        <!-- base dia left -->
+        <line x1="108" y1="225" x2="196" y2="225" stroke="#7a5230" stroke-width="1.5" marker-start="url(#c)" marker-end="url(#c)"/>
+        <text x="112" y="240" fill="#7a5230" font-size="10">底盘 12–16cm</text>
+        <!-- SN-N left -->
+        <line x1="220" y1="40" x2="158" y2="168" stroke="#888" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#d)"/>
+        <text x="120" y="80" fill="#888" font-size="10">SN–N 19–21cm</text>
+        <!-- N-IMF left -->
+        <line x1="158" y1="168" x2="158" y2="232" stroke="#c0563b" stroke-width="1.2" marker-end="url(#e)"/>
+        <text x="162" y="210" fill="#c0563b" font-size="10">N–IMF 7–8cm</text>
+        <defs>
+          <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#1f6f8b"/></marker>
+          <marker id="b" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#2a9d8f"/></marker>
+          <marker id="c" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7a5230"/></marker>
+          <marker id="d" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#888"/></marker>
+          <marker id="e" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#c0563b"/></marker>
+        </defs>
+      </svg>
+      <div class="cap">图 1：正面观关键标志点。乳头略偏外上；底盘横径与乳头–中线距离是单罩定位的核心。</div>
+    </div>
+
+    <h3>3.2 侧面观：投影高度与曲率</h3>
+    <div class="fig">
+      <svg viewBox="0 0 380 250" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+        <line x1="60" y1="20" x2="60" y2="230" stroke="#999" stroke-width="2"/>
+        <text x="20" y="130" fill="#5b6b78" font-size="11" transform="rotate(-90 20 130)">胸壁</text>
+        <path d="M60 150 C110 90 175 90 200 130 C215 155 205 185 175 200 C120 222 70 215 60 175 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.5"/>
+        <circle cx="196" cy="132" r="4" fill="#c0563b"/>
+        <!-- projection -->
+        <line x1="60" y1="132" x2="196" y2="132" stroke="#1f6f8b" stroke-width="1.5" marker-end="url(#p)"/>
+        <text x="100" y="124" fill="#1f6f8b" font-size="11">投影高度 3–11cm</text>
+        <!-- base vertical -->
+        <line x1="60" y1="150" x2="60" y2="200" stroke="#7a5230" stroke-width="1.5" marker-end="url(#q)"/>
+        <text x="66" y="180" fill="#7a5230" font-size="10">底盘</text>
+        <!-- IMF -->
+        <line x1="60" y1="200" x2="175" y2="200" stroke="#c0563b" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="120" y="214" fill="#c0563b" font-size="10">下皱襞 IMF</text>
+        <!-- curvature arc -->
+        <path d="M90 120 Q150 100 196 132" fill="none" stroke="#2a9d8f" stroke-width="1.2" stroke-dasharray="3 3"/>
+        <text x="100" y="108" fill="#2a9d8f" font-size="10">曲率半径（需贴合）</text>
+        <defs>
+          <marker id="p" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#1f6f8b"/></marker>
+          <marker id="q" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7a5230"/></marker>
+        </defs>
+      </svg>
+      <div class="cap">图 2：乳房为穹顶状，非平面。罩片若为平板会边缘悬空、压迫点集中；需预弯穹顶或采用柔性硅胶。</div>
+    </div>
+
+    <h3>3.3 坐姿（直立）vs 平躺（仰卧）形态差异</h3>
+    <div class="grid2">
+      <div class="fig" style="margin:0">
+        <svg viewBox="0 0 230 220" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+          <text x="70" y="18" fill="#1f6f8b" font-size="12" font-weight="bold">直立 / 坐姿</text>
+          <line x1="40" y1="40" x2="40" y2="200" stroke="#999" stroke-width="2"/>
+          <path d="M40 120 C80 60 140 65 160 110 C172 140 160 165 130 178 C85 198 45 188 40 150 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.5"/>
+          <circle cx="156" cy="112" r="4" fill="#c0563b"/>
+          <text x="60" y="205" fill="#5b6b78" font-size="10">前突、集中、下垂</text>
+        </svg>
+      </div>
+      <div class="fig" style="margin:0">
+        <svg viewBox="0 0 230 220" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+          <text x="70" y="18" fill="#c0563b" font-size="12" font-weight="bold">平躺 / 仰卧</text>
+          <line x1="40" y1="60" x2="200" y2="60" stroke="#999" stroke-width="2"/>
+          <path d="M40 62 C90 55 175 55 200 64 C190 95 150 100 120 96 C80 92 45 90 40 72 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.5"/>
+          <circle cx="150" cy="70" r="4" fill="#c0563b"/>
+          <text x="55" y="120" fill="#5b6b78" font-size="10">摊开、变扁</text>
+          <text x="55" y="136" fill="#5b6b78" font-size="10">向腋下/锁骨移位</text>
+          <text x="55" y="152" fill="#5b6b78" font-size="10">投影↓ 宽度↑</text>
+        </svg>
+      </div>
+    </div>
+    <div class="cap">图 3：体积不变，但平躺时组织向胸壁四周与腋下摊开，乳头向外上方移位。详见 ④。</div>
+
+    <h3>3.4 参考蝶形罩片覆盖示意（关键孔避让乳头）</h3>
+    <div class="fig">
+      <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+        <line x1="220" y1="20" x2="220" y2="280" stroke="#bbb" stroke-dasharray="4 3"/>
+        <!-- breasts under -->
+        <path d="M95 165 C95 115 130 92 165 106 C200 120 200 190 175 220 C150 244 100 230 95 165 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.2" opacity=".7"/>
+        <path d="M345 165 C345 115 310 92 275 106 C240 120 240 190 265 220 C290 244 340 230 345 165 Z" fill="#f3d9d0" stroke="#c0563b" stroke-width="1.2" opacity=".7"/>
+        <circle cx="158" cy="162" r="14" fill="none" stroke="#c0563b" stroke-width="1" opacity=".7"/>
+        <circle cx="282" cy="162" r="14" fill="none" stroke="#c0563b" stroke-width="1" opacity=".7"/>
+        <!-- butterfly pad: two lobes + bridge -->
+        <path d="M95 150 C95 112 130 92 162 104 C190 114 192 150 178 178 C166 200 110 205 95 175 Z" fill="#2a9d8f" fill-opacity=".28" stroke="#1f6f8b" stroke-width="2"/>
+        <path d="M345 150 C345 112 310 92 278 104 C250 114 248 150 262 178 C274 200 330 205 345 175 Z" fill="#2a9d8f" fill-opacity=".28" stroke="#1f6f8b" stroke-width="2"/>
+        <path d="M178 150 C200 142 240 142 262 150" fill="none" stroke="#1f6f8b" stroke-width="3"/>
+        <!-- keyholes -->
+        <circle cx="158" cy="160" r="22" fill="#fff" stroke="#1f6f8b" stroke-width="2"/>
+        <circle cx="158" cy="160" r="3.5" fill="#c0563b"/>
+        <circle cx="282" cy="160" r="22" fill="#fff" stroke="#1f6f8b" stroke-width="2"/>
+        <circle cx="282" cy="160" r="3.5" fill="#c0563b"/>
+        <text x="158" y="200" fill="#1f6f8b" font-size="11" text-anchor="middle">关键孔(清乳晕)</text>
+        <text x="220" y="138" fill="#1f6f8b" font-size="10" text-anchor="middle">中央桥(坐胸骨)</text>
+        <text x="60" y="250" fill="#5b6b78" font-size="10">罩片覆盖底盘并避让乳头；关键孔使乳头穿过、仅冷周围涨奶组织</text>
+      </svg>
+      <div class="cap">图 4：基于你提供的蝶形参考外形的覆盖示意。单乳叶覆盖乳房底盘，中央桥跨乳沟坐于胸骨，关键孔避让并保护乳头。</div>
+    </div>
+  </section>
+
+  <!-- ============ S4 ============ -->
+  <section id="s4">
+    <h2>④ 坐姿与平躺：形态与数据差异</h2>
+    <p>3D 体表成像研究（ upright→supine，PMC4380553 ）结论：</p>
+    <ul>
+      <li><b>真实体积不变</b>，但<b>表观体积</b>在平躺时下降——高 BMI 者可达 <b>30–40%</b>，因组织向锁骨方向与腋下移位、摊薄。</li>
+      <li><b>乳头位移</b>：平躺时乳头向<b>外（腋下）与上（锁骨）</b>方向移动；乳头间距（软组织标志）变化明显，而骨性标志（如锁骨间距）稳定。</li>
+      <li>乳房越大、皮肤/韧带越松，平躺摊开越明显；哺乳期后弹性下降，变化更显著。</li>
+    </ul>
+    <div class="grid2">
+      <div class="note"><b>对佩戴的影响（直立）</b><br>乳房前突集中，罩片易于贴合穹顶；是产品宣传与日常佩戴主场景。</div>
+      <div class="warn"><b>对佩戴的影响（平躺）</b><br>乳房摊宽变扁、乳头外上移。若罩片为刚性、按直立尺寸裁切，平躺时会<b>边缘翘起/压迫点偏移</b>，舒适度下降。宝妈常仰卧休息/夜奶时使用 → 必须考虑。</div>
+    </div>
+    <div class="note"><b>设计对策：</b>① 罩片用<b>柔性硅胶</b>可随乳房摊开形变贴合；② 关键孔位置在平躺时仍大致对准乳头（因乳头随组织同步外上移，相对位置变化小于绝对值）；③ 说明书(IFU)注明仰卧时贴合变化，建议配合哺乳文胸承托。</div>
+  </section>
+
+  <!-- ============ S5 ============ -->
+  <section id="s5">
+    <h2>⑤ 宝妈 / 哺乳期专项</h2>
+    <table>
+      <thead><tr><th>生理现象</th><th>数据 / 表现</th><th>对冷敷罩的设计含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>体积增大</b></td><td>孕期 +1~2 杯；涨奶期（下奶）再 +1~2 杯，部分妈妈达 E–F</td><td>按<b>涨奶峰值包络</b>设计主尺寸，而非日常基线</td></tr>
+        <tr><td><b>乳晕变化</b></td><td>直径由 3.5–4.0cm 增至 <b>4–7cm</b>，着色加深，蒙哥马利腺明显</td><td>关键孔直径取 <b>5–7cm</b>，保证涨奶乳晕可露出/避让</td></tr>
+        <tr><td><b>皮肤温度</b></td><td>哺乳期乳房局部温度较体表高 <b>0.5–1℃</b></td><td>冷敷温差感知更明显，限温 ≥15℃ 仍必要（防冻伤）</td></tr>
+        <tr><td><b>敏感度/血管</b></td><td>皮肤更敏感、皮下静脉显露（血流量↑2–3倍）</td><td>边缘须圆滑、压力均匀；避免硬边压痕</td></tr>
+        <tr><td><b>左右不对称</b></td><td>天然常见，孕产可加重</td><td>左右独立适配；关键孔左右镜像可调</td></tr>
+        <tr><td><b>硬度/胀痛</b></td><td>涨奶时腺体充盈、质硬、压痛</td><td>罩片<b>轻触不压</b>（浮贴/软接触），忌刚性夹抱</td></tr>
+        <tr><td><b>回缩(involution)</b></td><td>断奶后腺体退化、脂肪回填滞后，暂显"松软"</td><td>分级/可调设计覆盖断奶前后尺寸波动</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ S6 ============ -->
+  <section id="s6">
+    <h2>⑥ 你可能没想到、但决定舒适度与合规的关键参数</h2>
+    <p class="lead">尺寸（长宽高）只是基础。以下参数若遗漏，极易导致"戴着不舒服/不合适"→ 退货差评。按优先级列出：</p>
+    <ol>
+      <li><span class="tag">贴合</span><b>曲率/穹顶匹配</b>：乳房是穹顶非平面，平板罩片边缘悬空、压强集中 → 必须预弯或柔性材料。</li>
+      <li><span class="tag">对称</span><b>左右不对称</b>：双乳本就不同，单罩须独立适配，关键孔左右镜像。</li>
+      <li><span class="tag">定位</span><b>乳头高度不等</b>：两乳头常不在同一水平线，刚性双罩易一侧压、一侧空。</li>
+      <li><span class="tag">避让</span><b>乳头关键孔</b>：孔位须按 N–M(9–11cm)、略偏上定位；涨奶时乳房肿大、乳头相对位置漂移 → 孔宜略大且可微调。</li>
+      <li><span class="tag">中央桥</span><b>乳沟间距变异</b>：双罩一体式的中央桥跨乳沟坐胸骨，间距随胸宽/杯差变化，须窄、软、可弯、不压。</li>
+      <li><span class="tag">躺姿</span><b>平躺摊开</b>：见 ④，柔性贴合是硬要求。</li>
+      <li><span class="tag">轻触</span><b>不压迫涨奶硬乳</b>：罩片应浮贴/软接触，忌刚性夹抱造成压痛。</li>
+      <li><span class="tag">温度</span><b>温度均匀性</b>：水道布局应覆盖<b>上外象限 + 乳晕周围</b>（涨奶痛常见区），避免局部过冷/冷死角。</li>
+      <li><span class="tag">重量</span><b>悬垂负荷</b>：涨奶乳房更重，罩片过重会下拉加重韧带负担 → 单片宜轻（主机外置腰间），建议 <40g。</li>
+      <li><span class="tag">卫生</span><b>奶渍/汗液</b>：硅胶须可水洗、不吸水、快干、无死角藏污。</li>
+      <li><span class="tag">固定</span><b>佩戴方式</b>：如何固定在位？文胸口袋 / 魔术贴 / 松紧带 / 一体式哺乳文胸？参考蝶形外形疑为"壳式插入"。固定不良=移位=无效冷敷。</li>
+      <li><span class="tag">分级</span><b>尺码覆盖</b>：单尺寸难覆盖 A–F；需 S/M/L 或可调，主推涨奶峰值(M/L)。</li>
+      <li><span class="tag">材质</span><b>冷感与触感</b>：低温硅胶偏硬、易与皮肤"粘"，长时间佩戴不适 → 可考虑绒布背衬或限时佩戴(20min)。</li>
+      <li><span class="tag">时长</span><b>佩戴时长与安全</b>：长时间冷敷致血管反应性充血/冻伤风险 → 与硬件限温≥15℃、20min 智能疗程联动。</li>
+      <li><span class="tag">侧卧</span><b>侧睡压迫</b>：侧卧时下方乳房受身压，罩片不应产生硬压点。</li>
+      <li><span class="tag">合规</span><b>宣称边界</b>：作为非医疗器械(Wellness)，不得宣称"通乳/治乳腺炎"，避免触发 FDA/MDR 监管（见开发需求书法规章节）。</li>
+      <li><span class="tag">可维护</span><b>拆装清洁</b>：罩片与主机/水管接口（带单向阀）须可拆洗、防漏。</li>
+    </ol>
+  </section>
+
+  <!-- ============ S7 ============ -->
+  <section id="s7">
+    <h2>⑦ 冷敷罩设计建议（尺寸 / 形状 / 曲率 / 关键孔 / 分级）</h2>
+
+    <div class="calc">
+      <b>尺码推荐速算（按罩杯 → 底盘直径 → 建议罩片覆盖直径 + 关键孔）</b><br>
+      <label>罩杯：
+        <select id="cup">
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D" selected>D</option><option value="DD">DD/E</option><option value="F">F</option>
+        </select>
+      </label>
+      <label>是否涨奶期：
+        <select id="lac">
+          <option value="0">否（日常）</option><option value="1" selected>是（涨奶峰值）</option>
+        </select>
+      </label>
+      <div class="out" id="out"></div>
+    </div>
+
+    <h3>7.1 单乳罩片尺寸包络</h3>
+    <table>
+      <thead><tr><th>分级</th><th>覆盖直径（约）</th><th>适用底盘</th><th>关键孔直径</th><th>定位</th></tr></thead>
+      <tbody>
+        <tr><td><b>S</b></td><td>11–14 cm</td><td>A–B（含涨奶 B–C）</td><td rowspan="3">5–7 cm<br>(清涨奶乳晕)</td><td rowspan="3">孔心偏外 9–11cm、略偏上；左右镜像；可微调 ±1cm</td></tr>
+        <tr><td><b>M（主推）</b></td><td>14–17 cm</td><td>C–D（含涨奶 D–DD）</td></tr>
+        <tr><td><b>L</b></td><td>17–20 cm</td><td>DD–F（涨奶峰值）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.2 形状与曲率</h3>
+    <ul>
+      <li><b>外形</b>：单乳叶状（蝶形单瓣），上缘随锁骨弧、下缘包住下皱襞；避免方正直角（压痕）。参考图 4 的柔边轮廓。</li>
+      <li><b>曲率</b>：预弯穹顶或采用柔性硅胶，使罩片内表面曲率半径 matches 乳房凸度；边缘做<b>渐薄(羽化)</b>处理消除压痕。</li>
+      <li><b>关键孔</b>：直径 5–7cm 露出乳晕、乳头穿过；孔缘圆滑外翻，不夹乳头；孔内不做冷源直触（保护泌乳与舒适度）。</li>
+      <li><b>中央桥</b>（若双乳一体）：窄(≤2cm)、软、可弯，坐胸骨/乳沟，不压迫；或改为<b>左右独立两片</b>更灵活（推荐，规避不对称与桥压迫）。</li>
+    </ul>
+
+    <h3>7.3 水道与温度</h3>
+    <ul>
+      <li>硅胶内水路覆盖<b>上外象限 + 乳晕周围</b>环形布局，保证均匀换热、无冷死角。</li>
+      <li>水温限温 <b>≥15℃</b>（防冻伤）、默认 18℃、20min 智能疗程（与主机联动）。</li>
+      <li>单片重量目标 <b>&lt;40g</b>（主机/水箱/泵外置腰间），降低悬垂负荷。</li>
+    </ul>
+
+    <div class="fig">
+      <svg viewBox="0 0 460 170" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+        <text x="20" y="20" fill="#1f6f8b" font-size="13" font-weight="bold">分级覆盖示意（单乳罩片直径）</text>
+        <circle cx="90" cy="100" r="34" fill="#2a9d8f" fill-opacity=".25" stroke="#1f6f8b" stroke-width="2"/>
+        <text x="90" y="104" fill="#1f6f8b" font-size="11" text-anchor="middle">S 11–14</text>
+        <circle cx="220" cy="100" r="46" fill="#2a9d8f" fill-opacity=".25" stroke="#1f6f8b" stroke-width="2"/>
+        <text x="220" y="104" fill="#1f6f8b" font-size="11" text-anchor="middle">M 14–17</text>
+        <circle cx="370" cy="100" r="58" fill="#2a9d8f" fill-opacity=".25" stroke="#1f6f8b" stroke-width="2"/>
+        <text x="370" y="104" fill="#1f6f8b" font-size="11" text-anchor="middle">L 17–20</text>
+        <text x="20" y="160" fill="#5b6b78" font-size="10">注：直径为罩片覆盖外径，关键孔(5–7cm)居中偏外上，详见 7.2</text>
+      </svg>
+      <div class="cap">图 5：S/M/L 单乳罩片覆盖包络（示意，非比例精确）。</div>
+    </div>
+    <div class="warn"><b>最高优先级验证项：</b>① 用 3D 打印/硅胶样件在 ≥20 名志愿者（覆盖 A–F、孕期/涨奶/断奶各阶段）实测贴合度与压痕；② 平躺佩戴测试；③ 关键孔对涨奶乳晕(4–7cm)的通过性；④ 左右不对称适配。任一不过即回改尺寸。</div>
+  </section>
+
+  <!-- ============ S8 ============ -->
+  <section id="s8">
+    <h2>⑧ 数据来源 / 参考链接</h2>
+    <ul class="refs">
+      <li>人民卫生出版社《乳房整形美容与再造外科》— 乳头间距(欧美20–21cm)、乳晕直径、乳头直径等均值。 <a href="https://mingyi.sogou.com/h5/pages/book-detail?id=2056737964553142273_c6">链接</a></li>
+      <li>医学论坛网《女性乳房美学标准研究进展》— SN–N/C–N/N–N/N–M/MBW/N–IMF/AD 等线性参数定义。 <a href="https://www.cmt.com.cn/detail/1264706.html">链接</a></li>
+      <li>SuperStar Clinic《隆乳美学与解剖》— SN–N 19–21、N–M 9–11、N–N 18–22、N–IMF 7–8cm。 <a href="https://superstarclinic.com/breast-augmentation-golden-ratio/">链接</a></li>
+      <li>达文西整形《隆乳手术前测量数据》— C–N 17–20、N–IMF 可达9cm、乳晕尺寸。 <a href="https://www.davinciplasty.com/2015/10/14/%e9%9a%86%e4%b9%b3%e6%89%8b%e8%a1%93-parameters/">链接</a></li>
+      <li>PMC《3D Surface Imaging of the Human Female Torso in Upright to Supine Positions》— 平躺表观体积↓30–40%、乳头外上移位、体积恒定。 <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4380553">链接</a></li>
+      <li>苹果绿《躺下为何乳房变平》— 解剖与重力解释。 <a href="https://www.pingguolv.com/ask/wOkrFJkO2.html">链接</a></li>
+      <li>Wikiwand《Maternal physiological changes in pregnancy》— 孕期+1~2杯、涨奶再+1~2杯、乳晕4–7cm、band+1~2。 <a href="https://www.wikiwand.com/en/Maternal_physiological_changes_in_pregnancy">链接</a></li>
+      <li>ScienceWalk《What Does Breastfeeding Do to Your Breasts》— 涨奶/engorgement、乳晕变化、involution。 <a href="https://sciencewalk.blog/breastfeeding-impact-on-breasts">链接</a></li>
+      <li>博禾医生《哺乳期正常乳房》— 乳晕4–7cm、乳房温度+0.5–1℃、静脉显露。 <a href="https://m.bohe.cn/zxmip/1507542.html">链接</a></li>
+      <li>Gitnux / Zipdo / BraSizeX — 欧美平均罩杯分布(美34DD/英36DD/欧36C–DD)。 <a href="https://gitnux.org/breast-size-statistics">链接</a> · <a href="https://brasizex.com/?p=2826/">链接</a></li>
+      <li>三九益生通/民福康/大众养生网 — 各罩杯底盘直径与投影高度(A 8–12/2–7、B 10–14/3–7、C 12–16/4–9、D 14–18/5–11cm)。</li>
+    </ul>
+    <p class="lead">说明：人体测量数据存在人种、年龄、BMI、孕产状态差异；医学来源以"范围"表述，本报告的尺寸包络已取较宽覆盖以容纳个体差异。最终尺寸须经实物样件人体验证。</p>
+  </section>
+
+</div>
+
+<script>
+  var data = {
+    A:{base:[10,12],proj:[2,5],note:"偏小，S 级可覆盖"},
+    B:{base:[10,14],proj:[3,7],note:"常见，S–M"},
+    C:{base:[12,16],proj:[4,9],note:"主流，M"},
+    D:{base:[14,18],proj:[5,11],note:"偏大，M–L"},
+    DD:{base:[16,19],proj:[7,12],note:"涨奶常见，L"},
+    F:{base:[18,21],proj:[9,14],note:"涨奶峰值，L 上限"}
+  };
+  function calc(){
+    var c=document.getElementById('cup').value;
+    var lac=+document.getElementById('lac').value;
+    var d=data[c];
+    var lo=d.base[0], hi=d.base[1];
+    if(lac){ lo+=2; hi+=2; } // 涨奶峰值增大
+    // 建议罩片覆盖直径 = 底盘上限 + 余量
+    var coverLo = Math.max(11, lo+1);
+    var coverHi = hi+2;
+    var size = coverHi<=14?"S":(coverHi<=17?"M":"L");
+    var key = lac? "5–7 cm（覆盖涨奶乳晕）":"4–6 cm";
+    document.getElementById('out').innerHTML =
+      "底盘直径约 <b>"+lo+"–"+hi+" cm</b>（"+(lac?"含涨奶峰值":"日常")+"）；"+
+      "建议罩片覆盖直径 <b>"+coverLo+"–"+coverHi+" cm</b> → 推荐分级 <b>"+size+"</b>；"+
+      "关键孔 <b>"+key+"</b>。<br><span style='color:#5b6b78;font-size:12.5px'>"+d.note+"</span>";
+  }
+  document.getElementById('cup').addEventListener('change',calc);
+  document.getElementById('lac').addEventListener('change',calc);
+  calc();
+</script>
+</body>
+</html>
